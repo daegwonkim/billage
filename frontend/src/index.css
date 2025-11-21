@@ -1,3 +1,10 @@
+@font-face {
+    font-family: 'Paperozi';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-9Black.woff2') format('woff2');
+    font-weight: 900;
+    font-display: swap;
+}
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -25,6 +32,7 @@ a:hover {
 body {
   margin: 0;
   display: flex;
+  justify-content: center;
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
@@ -49,7 +57,9 @@ button {
 button:hover {
   border-color: #646cff;
 }
-button:focus,
+button:focus {
+  outline: 'none'
+}
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
