@@ -11,7 +11,7 @@ const NAV_ITEMS = [
   { id: 'category' as NavTab, icon: Calendar, label: '커뮤니티' },
   { id: 'add' as NavTab, icon: PlusCircle, label: '등록' },
   { id: 'chat' as NavTab, icon: MessageCircle, label: '채팅' },
-  { id: 'my' as NavTab, icon: User, label: 'My 번개장' }
+  { id: 'my' as NavTab, icon: User, label: 'My 빌리지' }
 ]
 
 export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
@@ -23,7 +23,7 @@ export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
         left: '50%',
         transform: 'translateX(-50%)',
         width: '100%',
-        maxWidth: '480px',
+        maxWidth: '400px',
         backgroundColor: 'white',
         borderTop: '1px solid #e5e5e5'
       }}>
@@ -31,7 +31,7 @@ export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(5, 1fr)',
-          height: '64px'
+          height: '70px'
         }}>
         {NAV_ITEMS.map(({ id, icon: Icon, label }) => (
           <button
@@ -46,10 +46,11 @@ export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
               border: 'none',
               background: 'none',
               color: activeTab === id ? '#ef4444' : '#999',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              maxWidth: '80px'
             }}>
             <Icon size={24} />
-            <span style={{ fontSize: '11px' }}>{label}</span>
+            <span style={{ width: '48px', fontSize: '11px' }}>{label}</span>
           </button>
         ))}
       </div>

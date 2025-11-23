@@ -1,25 +1,28 @@
-import type { Product } from '../../types'
+import type { RentalItemCardViewModel } from '@/models/RentalItem'
+import { getTimeAgo } from '@/utils/utils'
 import { MapPin, Package, MessageCircleMore, Heart } from 'lucide-react'
 
-interface ProductCardProps {
-  product: Product
+interface RentalItemCardProps {
+  rentalItem: RentalItemCardViewModel
+  onClick?: () => void
 }
 
-export function ProductCard({ product }: ProductCardProps) {
+export function RentalItemCard({ rentalItem, onClick }: RentalItemCardProps) {
   return (
     <div
-      key={product.id}
+      key={rentalItem.id}
+      onClick={onClick}
       style={{
-        height: '144px',
+        height: '125px',
         backgroundColor: 'white',
-        marginBottom: '4px',
+        marginBottom: '3px',
         padding: '16px'
       }}>
-      <div style={{ height: '144px', display: 'flex', gap: '12px' }}>
-        <div style={{ width: '144px' }}>
+      <div style={{ height: '125px', display: 'flex', gap: '12px' }}>
+        <div style={{ width: '125px' }}>
           <img
-            src={product.image}
-            alt={product.title}
+            src={rentalItem.thumbnail}
+            alt={rentalItem.name}
             style={{
               width: '100%',
               height: '100%',
@@ -38,16 +41,16 @@ export function ProductCard({ product }: ProductCardProps) {
           }}>
           <h3
             style={{
-              fontSize: '17px',
-              fontWeight: '700',
-              margin: '6px 0px',
+              fontSize: '15px',
+              fontWeight: '500',
+              margin: '0px 0px',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               display: '-webkit-box',
               WebkitLineClamp: 2,
               WebkitBoxOrient: 'vertical'
             }}>
-            {product.title}
+            {rentalItem.name}
           </h3>
 
           <div style={{ position: 'relative', marginTop: 'auto' }}>
@@ -62,7 +65,7 @@ export function ProductCard({ product }: ProductCardProps) {
               }}>
               <MapPin
                 size={18}
-                color="#3b82f6"
+                color="#ff4d4f"
               />
               <span
                 style={{
@@ -70,12 +73,12 @@ export function ProductCard({ product }: ProductCardProps) {
                   textOverflow: 'ellipsis',
                   whiteSpace: 'nowrap'
                 }}>
-                {product.location}
+                {rentalItem.address}
               </span>
-              {product.time && (
+              {rentalItem.createdAt && (
                 <>
                   <span style={{ margin: '0 4px' }}>|</span>
-                  <span>{product.time}</span>
+                  <span>{getTimeAgo(new Date(rentalItem.createdAt))}</span>
                 </>
               )}
             </div>
@@ -87,7 +90,7 @@ export function ProductCard({ product }: ProductCardProps) {
                 marginBottom: '2px'
               }}>
               <span style={{ fontSize: '16px', fontWeight: 'bold' }}>
-                {product.priceDay}
+                {Number(rentalItem.pricePerDay).toLocaleString()}
               </span>
               <span style={{ fontSize: '14px', color: '#666' }}>원 / 일</span>
             </div>
@@ -99,7 +102,7 @@ export function ProductCard({ product }: ProductCardProps) {
                 marginBottom: '2px'
               }}>
               <span style={{ fontSize: '16px', fontWeight: 'bold' }}>
-                {product.priceWeek}
+                {Number(rentalItem.pricePerWeek).toLocaleString()}
               </span>
               <span style={{ fontSize: '14px', color: '#666' }}>원 / 주</span>
             </div>
@@ -111,37 +114,43 @@ export function ProductCard({ product }: ProductCardProps) {
                 right: 0,
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '10px',
-                fontSize: '15px',
+                gap: '8px',
+                fontSize: '13px',
                 color: '#8B939F'
               }}>
-              <span
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '4px'
-                }}>
-                <Package size={18} />
-                {product.rentals}
-              </span>
-              <span
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '4px'
-                }}>
-                <MessageCircleMore size={18} />
-                {product.comments}
-              </span>
-              <span
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '2px'
-                }}>
-                <Heart size={18} />
-                {product.likes}
-              </span>
+              {rentalItem.rentals > 0 && (
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px'
+                  }}>
+                  <Package size={16} />
+                  {rentalItem.rentals}
+                </span>
+              )}
+              {rentalItem.comments > 0 && (
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px'
+                  }}>
+                  <MessageCircleMore size={16} />
+                  {rentalItem.comments}
+                </span>
+              )}
+              {rentalItem.likes > 0 && (
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '2px'
+                  }}>
+                  <Heart size={16} />
+                  {rentalItem.likes}
+                </span>
+              )}
             </div>
           </div>
         </div>

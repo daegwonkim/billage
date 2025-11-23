@@ -1,10 +1,15 @@
 import { useState } from 'react'
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { Main } from './pages/Main'
 import { BottomNav } from './components/common/BottomNav'
 import type { NavTab } from './types'
+import { RentalItemDetail } from './pages/RentalItemDetail'
 
-export default function App() {
+function AppContent() {
   const [activeTab, setActiveTab] = useState<NavTab>('home')
+
+  const location = useLocation()
+  const showBottomNav = !location.pathname.includes('/api/rental-items/')
 
   return (
     <div
@@ -13,22 +18,41 @@ export default function App() {
         justifyContent: 'center',
         backgroundColor: '#f5f5f5',
         minHeight: '100vh',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+        outline: 'solid #e5e5e5 1px'
       }}>
       <div
         style={{
           width: '100%',
-          maxWidth: '480px',
+          maxWidth: '400px',
           backgroundColor: '#f5f5f5',
           fontFamily: 'system-ui, -apple-system, sans-serif',
           position: 'relative'
         }}>
-        <Main />
-        <BottomNav
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-        />
+        <Routes>
+          <Route
+            path="/"
+            element={<Main />}
+          />
+          <Route
+            path="/api/rental-items/:id"
+            element={<RentalItemDetail />}
+          />
+        </Routes>
+        {showBottomNav && (
+          <BottomNav
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+          />
+        )}
       </div>
     </div>
+  )
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AppContent />
+    </BrowserRouter>
   )
 }
