@@ -1,8 +1,8 @@
 import { useRef, useState } from 'react'
-import type { CategoryViewModel } from '@/models/Category'
+import type { RentalItemCategory } from '@/models/Category'
 
 interface CategoryListProps {
-  categories: CategoryViewModel[]
+  categories: RentalItemCategory[]
 }
 
 export function CategoryList({ categories }: CategoryListProps) {

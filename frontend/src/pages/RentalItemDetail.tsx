@@ -1,55 +1,37 @@
-import { getRentalItem } from '@/api/main'
+import { getRentalItem } from '@/api/detail'
 import { RentalItemDetailBottom } from '@/components/detail/RentalItemDetailBottom'
 import { RentalItemDetailHeader } from '@/components/detail/RentalItemDetailHeader'
 import { RentalItemDetailImage } from '@/components/detail/RentalItemDetailImage'
 import { RentalItemDetailInfo } from '@/components/detail/RentalItemDetailInfo'
-import { RentalItemDetailOther } from '@/components/detail/RentalItemDetailOther'
-import { RentalItemDetailRelated } from '@/components/detail/RentalItemDetailRelated'
+import { RentalItemDetailUser } from '@/components/detail/RentalItemDetailUser'
+import { RentalItemDetailSimilar } from '@/components/detail/RentalItemDetailSimilar'
 import { RentalItemDetailSeller } from '@/components/detail/RentalItemDetailSeller'
-import type { RentalItemDetailViewModel } from '@/models/RentalItem'
-import { useEffect, useState } from 'react'
+import { useFetch } from '@/hooks/useFetch'
 import { useNavigate, useParams } from 'react-router-dom'
 
 export function RentalItemDetail() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const [currentImageIndex, setCurrentImageIndex] = useState(0)
-  const [rentalItem, setRentalItem] =
-    useState<RentalItemDetailViewModel | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    const fetchRentalItem = async () => {
-      try {
-        setLoading(true)
-        const response = await getRentalItem(id!)
-        setRentalItem(response)
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.'
-        )
-      } finally {
-        setLoading(false)
-      }
-    }
+  if (!id) {
+    return <div>Error: Rental item ID is missing.</div>
+  }
 
-    fetchRentalItem()
-  }, [id])
+  const {
+    data: rentalItemData,
+    loading: rentalItemLoading,
+    error: rentalItemError
+  } = useFetch(() => getRentalItem(id))
 
-  if (loading) {
+  if (rentalItemLoading) {
     return <div>Loading...</div>
   }
 
-  if (error) {
-    return <div>Error: {error}</div>
+  if (rentalItemError || !rentalItemData) {
+    return <div>Error: {rentalItemError}</div>
   }
 
-  if (!rentalItem) {
-    throw new Error('상품 조회 오류')
-  }
-
-  const images = rentalItem.images
+  const imageUrls = rentalItemData.imageUrls
 
   return (
     <div
@@ -59,11 +41,8 @@ export function RentalItemDetail() {
         paddingBottom: '115px'
       }}>
       <RentalItemDetailHeader navigate={navigate} />
-      <RentalItemDetailImage
-        images={images}
-        currentImageIndex={currentImageIndex}
-      />
-      <RentalItemDetailSeller rentalItem={rentalItem} />
+      <RentalItemDetailImage imageUrls={imageUrls} />
+      <RentalItemDetailSeller rentalItem={rentalItemData} />
       <hr
         style={{
           width: '90%',
@@ -73,7 +52,7 @@ export function RentalItemDetail() {
           opacity: '0.5'
         }}
       />
-      <RentalItemDetailInfo rentalItem={rentalItem} />
+      <RentalItemDetailInfo rentalItem={rentalItemData} />
       <hr
         style={{
           width: '90%',
@@ -83,7 +62,7 @@ export function RentalItemDetail() {
           opacity: '0.5'
         }}
       />
-      <RentalItemDetailRelated />
+      <RentalItemDetailSimilar rentalItemId={id} />
       <hr
         style={{
           width: '90%',
@@ -93,11 +72,15 @@ export function RentalItemDetail() {
           opacity: '0.5'
         }}
       />
-      <RentalItemDetailOther seller={rentalItem.seller.name} />
+      <RentalItemDetailUser
+        seller={rentalItemData.seller.name}
+        userId={rentalItemData.seller.id}
+        rentalItemId={id}
+      />
       <RentalItemDetailBottom
-        isLiked={rentalItem.isLiked}
-        pricePerDay={rentalItem.pricePerDay}
-        pricePerWeek={rentalItem.pricePerWeek}
+        isLiked={rentalItemData.isLiked}
+        pricePerDay={rentalItemData.pricePerDay}
+        pricePerWeek={rentalItemData.pricePerWeek}
       />
     </div>
   )

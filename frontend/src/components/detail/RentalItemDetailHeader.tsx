@@ -1,4 +1,4 @@
-import { ChevronLeft, Undo2 } from 'lucide-react'
+import { Undo2 } from 'lucide-react'
 import type { NavigateFunction } from 'react-router-dom'
 
 interface RentalItemDetailHeaderProps {

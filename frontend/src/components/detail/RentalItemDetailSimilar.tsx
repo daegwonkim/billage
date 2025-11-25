@@ -1,11 +1,15 @@
+import { getSimilarRentalItems } from '@/api/detail'
+import { useFetch } from '@/hooks/useFetch'
 import { ChevronRight } from 'lucide-react'
 import { useRef, useState } from 'react'
 
-interface RentalItemDetailOtherProps {
-  seller: string
+interface RentalItemDetailSimilarProps {
+  rentalItemId: string
 }
 
-export function RentalItemDetailOther({ seller }: RentalItemDetailOtherProps) {
+export function RentalItemDetailSimilar({
+  rentalItemId
+}: RentalItemDetailSimilarProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const [isDragging, setIsDragging] = useState(false)
   const [startX, setStartX] = useState(0)
@@ -52,8 +56,22 @@ export function RentalItemDetailOther({ seller }: RentalItemDetailOtherProps) {
     setIsDragging(false)
   }
 
+  const {
+    data: similarRentalItemData,
+    loading: similarRentalItemLoading,
+    error: similarRentalItemError
+  } = useFetch(() => getSimilarRentalItems(rentalItemId))
+
+  if (similarRentalItemLoading) {
+    return <div>Loading...</div>
+  }
+
+  if (similarRentalItemError || !similarRentalItemData) {
+    return <div>Error: {similarRentalItemError}</div>
+  }
+
   return (
-    <div style={{ overflow: 'hidden' }}>
+    <div style={{ overflow: 'hidden', paddingBottom: '16px' }}>
       <div style={{ padding: '0px 16px' }}>
         <div
           style={{
@@ -61,7 +79,7 @@ export function RentalItemDetailOther({ seller }: RentalItemDetailOtherProps) {
             alignItems: 'center',
             justifyContent: 'space-between'
           }}>
-          <h3>{seller}님의 대여 물품</h3>
+          <h3>지금 보고 있는 물품과 비슷해요</h3>
           <ChevronRight color="#707070" />
         </div>
       </div>
@@ -88,15 +106,15 @@ export function RentalItemDetailOther({ seller }: RentalItemDetailOtherProps) {
           paddingRight: '16px'
         }}
         className="hide-scrollbar">
-        {[1, 2, 3, 4, 5].map(item => (
+        {similarRentalItemData.rentalItems.map(item => (
           <div
-            key={item}
+            key={item.id}
             style={{
               width: '110px',
               flexShrink: 0
             }}>
             <img
-              src="https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=400&h=300&fit=crop"
+              src={item.thumbnailImageUrl}
               style={{
                 width: '110px',
                 height: '110px',
@@ -114,14 +132,14 @@ export function RentalItemDetailOther({ seller }: RentalItemDetailOtherProps) {
                 WebkitLineClamp: 2,
                 WebkitBoxOrient: 'vertical'
               }}>
-              유니클로 경량 패딩 블랙
+              {item.name}
             </div>
             <div style={{ fontSize: '15px', fontWeight: 700 }}>
-              4,000
+              {item.pricePerDay}
               <span style={{ fontSize: '13px', color: '#666' }}>원 / 일</span>
             </div>
             <div style={{ fontSize: '15px', fontWeight: 700 }}>
-              27,000
+              {item.pricePerWeek}
               <span style={{ fontSize: '13px', color: '#666' }}>원 / 주</span>
             </div>
           </div>

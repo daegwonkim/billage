@@ -1,37 +1,57 @@
-export interface RentalItemCardViewModel {
+export interface RentalItemsQueryResponse {
+  content: RentalItemsCard[]
+  page: number
+  size: number
+  totalElements: number
+  totalPages: number
+}
+
+export interface RentalItemsCard {
   id: string
   name: string
-  thumbnail: string
+  thumbnailImageUrl: string
   address: string
   pricePerDay: number
   pricePerWeek: number
   rentals: number
-  comments: number
+  chats: number
   likes: number
   createdAt: Date
 }
 
-export interface RentalItemDetailViewModel {
+export interface RentalItemDetailResponse {
   id: string
-  seller: RentalItemDetailUserViewModel
+  seller: Seller
   category: string
   name: string
   description: string
-  images: string[]
+  imageUrls: string[]
   pricePerDay: number
   pricePerWeek: number
   isLiked: boolean
   rentals: number
-  comments: number
+  chats: number
   likes: number
   views: number
   createdAt: Date
 }
 
-export interface RentalItemDetailUserViewModel {
+export interface Seller {
   id: string
   name: string
   address: string
-  profileImage: string
-  dealSatisfaction: number
+  profileImageUrl: string
+  trustLevel: number
+}
+
+export interface RentalItemSimilarResponse {
+  rentalItems: SimilarRentalItem[]
+}
+
+export interface SimilarRentalItem {
+  id: string
+  name: string
+  thumbnailImageUrl: string
+  pricePerDay: number
+  pricePerWeek: number
 }

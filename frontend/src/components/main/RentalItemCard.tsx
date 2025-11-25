@@ -1,9 +1,9 @@
-import type { RentalItemCardViewModel } from '@/models/RentalItem'
+import type { RentalItemsCard } from '@/models/RentalItem'
 import { getTimeAgo } from '@/utils/utils'
 import { MapPin, Package, MessageCircleMore, Heart } from 'lucide-react'
 
 interface RentalItemCardProps {
-  rentalItem: RentalItemCardViewModel
+  rentalItem: RentalItemsCard
   onClick?: () => void
 }
 
@@ -21,7 +21,7 @@ export function RentalItemCard({ rentalItem, onClick }: RentalItemCardProps) {
       <div style={{ height: '125px', display: 'flex', gap: '12px' }}>
         <div style={{ width: '125px' }}>
           <img
-            src={rentalItem.thumbnail}
+            src={rentalItem.thumbnailImageUrl}
             alt={rentalItem.name}
             style={{
               width: '100%',
@@ -129,7 +129,7 @@ export function RentalItemCard({ rentalItem, onClick }: RentalItemCardProps) {
                   {rentalItem.rentals}
                 </span>
               )}
-              {rentalItem.comments > 0 && (
+              {rentalItem.chats > 0 && (
                 <span
                   style={{
                     display: 'inline-flex',
@@ -137,7 +137,7 @@ export function RentalItemCard({ rentalItem, onClick }: RentalItemCardProps) {
                     gap: '4px'
                   }}>
                   <MessageCircleMore size={16} />
-                  {rentalItem.comments}
+                  {rentalItem.chats}
                 </span>
               )}
               {rentalItem.likes > 0 && (

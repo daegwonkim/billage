@@ -4,13 +4,11 @@ import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
 
 interface RentalItemDetailImageProps {
-  images: string[]
-  currentImageIndex: number
+  imageUrls: string[]
 }
 
 export function RentalItemDetailImage({
-  images,
-  currentImageIndex: initialIndex
+  imageUrls
 }: RentalItemDetailImageProps) {
   const sliderRef = useRef<Slider>(null)
 
@@ -20,7 +18,7 @@ export function RentalItemDetailImage({
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
-    initialSlide: initialIndex,
+    initialSlide: 0,
     arrows: false,
     customPaging: (i: number) => (
       <div
@@ -104,12 +102,12 @@ export function RentalItemDetailImage({
       <Slider
         ref={sliderRef}
         {...settings}>
-        {images.map((image, idx) => (
+        {imageUrls.map((imageUrl, idx) => (
           <div
             key={idx}
             style={{ height: '100%' }}>
             <img
-              src={image}
+              src={imageUrl}
               alt={`Slide ${idx + 1}`}
               style={{
                 width: '400px',

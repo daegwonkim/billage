@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import type { RentalItemDetailViewModel } from '@/models/RentalItem'
-import { Award } from 'lucide-react'
+import type { RentalItemDetailResponse } from '@/models/RentalItem'
+import { MapPin } from 'lucide-react'
 import lowIcon from '@/assets/level/low.png'
 import fairIcon from '@/assets/level/fair.png'
 import normalIcon from '@/assets/level/normal.png'
@@ -9,7 +9,7 @@ import topIcon from '@/assets/level/top.png'
 import '@/css/BottomSheet.css'
 
 interface RentalItemDetailSellerProps {
-  rentalItem: RentalItemDetailViewModel
+  rentalItem: RentalItemDetailResponse
 }
 
 export function RentalItemDetailSeller({
@@ -33,7 +33,7 @@ export function RentalItemDetailSeller({
             gap: '12px'
           }}>
           <img
-            src={rentalItem.seller?.profileImage}
+            src={rentalItem.seller?.profileImageUrl}
             alt={rentalItem.seller?.name}
             style={{
               width: '48px',
@@ -43,33 +43,27 @@ export function RentalItemDetailSeller({
             }}
           />
           <div>
-            <div style={{ marginBottom: '4px' }}>
-              <span
-                style={{
-                  fontSize: '11px',
-                  padding: '3px 8px',
-                  backgroundColor: '#FFFBEA',
-                  borderRadius: '3px',
-                  fontWeight: '600',
-                  color: '#B8860B',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '4px'
-                }}>
-                <Award
-                  size={12}
-                  strokeWidth={2.5}
-                />
-                프로 쉐어러
-              </span>
-            </div>
             <div style={{ fontSize: '18px', fontWeight: 'bold' }}>
               {rentalItem.seller?.name}
+            </div>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '2px'
+              }}>
+              <MapPin
+                size={15}
+                color="#ff4d4f"
+              />
+              <span style={{ fontSize: '13px', color: '#666' }}>
+                {rentalItem.seller.address}
+              </span>
             </div>
           </div>
         </div>
 
-        {rentalItem.seller.dealSatisfaction && (
+        {rentalItem.seller.trustLevel && (
           <div
             style={{
               display: 'flex',
@@ -84,7 +78,7 @@ export function RentalItemDetailSeller({
                 fontSize: '16px',
                 gap: '4px'
               }}>
-              {rentalItem.seller.dealSatisfaction}Lv
+              {rentalItem.seller.trustLevel}Lv
               <div style={{ width: '30px', height: '30px' }}>
                 <img
                   src={topIcon}

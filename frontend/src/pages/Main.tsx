@@ -1,11 +1,9 @@
-import { useEffect, useState } from 'react'
 import { RentalItemList } from '@/components/main/RentalItemList'
 import { Header } from '../components/common/Header'
 import { CategoryList } from '../components/main/CategoryList'
-import type { RentalItemCardViewModel } from '@/models/RentalItem'
 import { getCategories, getRentalItems } from '@/api/main'
-import type { CategoryViewModel } from '@/models/Category'
 import { useNavigate } from 'react-router-dom'
+import { useFetch } from '@/hooks/useFetch'
 
 export function Main() {
   const navigate = useNavigate()
@@ -14,45 +12,35 @@ export function Main() {
     navigate(`/api/rental-items/${rentalItemId}`)
   }
 
-  const [categories, setCategories] = useState<CategoryViewModel[]>([])
-  const [rentalItems, setRentalItems] = useState<RentalItemCardViewModel[]>([])
-  const [loading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const {
+    data: categoriesData,
+    loading: categoriesLoading,
+    error: categoriesError
+  } = useFetch(getCategories)
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        setIsLoading(true)
-        const [categoriesData, rentalItemsData] = await Promise.all([
-          getCategories(),
-          getRentalItems()
-        ])
-        setCategories(categoriesData)
-        setRentalItems(rentalItemsData)
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred')
-      } finally {
-        setIsLoading(false)
-      }
-    }
+  const {
+    data: rentalItemsData,
+    loading: rentalItemsLoading,
+    error: rentalItemsError
+  } = useFetch(() => getRentalItems())
 
-    fetchData()
-  }, [])
+  const loading = categoriesLoading || rentalItemsLoading
+  const error = categoriesError || rentalItemsError
 
   if (loading) {
     return <div>Loading...</div>
   }
 
-  if (error) {
+  if (error || !categoriesData || !rentalItemsData) {
     return <div>Error: {error}</div>
   }
 
   return (
     <>
       <Header />
-      <CategoryList categories={categories} />
+      <CategoryList categories={categoriesData.categories} />
       <RentalItemList
-        rentalItems={rentalItems}
+        rentalItems={rentalItemsData}
         onRentalItemClick={onRentalItemClick}
       />
     </>

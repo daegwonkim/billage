@@ -1,9 +1,9 @@
-import type { RentalItemDetailViewModel } from '@/models/RentalItem'
+import type { RentalItemDetailResponse } from '@/models/RentalItem'
 import { getTimeAgo } from '@/utils/utils'
 import { MapPin } from 'lucide-react'
 
 interface RentalItemDetailInfoProps {
-  rentalItem: RentalItemDetailViewModel
+  rentalItem: RentalItemDetailResponse
 }
 
 export function RentalItemDetailInfo({
@@ -11,7 +11,7 @@ export function RentalItemDetailInfo({
 }: RentalItemDetailInfoProps) {
   const infoItems = [
     rentalItem.rentals > 0 ? `대여 ${rentalItem.rentals}` : null,
-    rentalItem.comments > 0 ? `채팅 ${rentalItem.comments}` : null,
+    rentalItem.chats > 0 ? `채팅 ${rentalItem.chats}` : null,
     rentalItem.likes > 0 ? `관심 ${rentalItem.likes}` : null,
     rentalItem.views > 0 ? `조회 ${rentalItem.views}` : null
   ].filter(Boolean)
@@ -47,13 +47,6 @@ export function RentalItemDetailInfo({
             {rentalItem.category}
           </span>
         )}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-          <MapPin
-            size={18}
-            color="#ff4d4f"
-          />
-          <span>{rentalItem.seller.address}</span>
-        </div>
         <span style={{ marginLeft: 'auto' }}>
           {rentalItem.createdAt && (
             <span>{getTimeAgo(new Date(rentalItem.createdAt))}</span>
