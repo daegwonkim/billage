@@ -6,7 +6,7 @@ plugins {
 
 group = "io.github.daegwonkim"
 version = "0.0.1-SNAPSHOT"
-description = "ReFit Backend"
+description = "Billage Backend"
 
 java {
 	toolchain {
@@ -27,7 +27,8 @@ repositories {
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-web")
-	compileOnly("org.projectlombok:lombok")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6")
+    compileOnly("org.projectlombok:lombok")
 	runtimeOnly("org.postgresql:postgresql")
 	annotationProcessor("org.projectlombok:lombok")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
