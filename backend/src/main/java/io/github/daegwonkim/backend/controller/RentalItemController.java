@@ -1,9 +1,9 @@
 package io.github.daegwonkim.backend.controller;
 
 import io.github.daegwonkim.backend.dto.page.PageResponse;
-import io.github.daegwonkim.backend.dto.rental_item.response.RentalItemCategoryResponse;
+import io.github.daegwonkim.backend.dto.rental_item.response.RentalItemCategoriesResponse;
 import io.github.daegwonkim.backend.dto.rental_item.response.RentalItemDetailResponse;
-import io.github.daegwonkim.backend.dto.rental_item.response.RentalItemsSimilarResponse;
+import io.github.daegwonkim.backend.dto.rental_item.response.SimilarRentalItemsResponse;
 import io.github.daegwonkim.backend.dto.rental_item.response.RentalItemsQueryResponse;
 import io.github.daegwonkim.backend.enumerate.entity.RentalItemCategory;
 import io.github.daegwonkim.backend.enumerate.page.SortBy;
@@ -26,24 +26,24 @@ public class RentalItemController {
             description = "대여 상품 카테고리 목록을 조회합니다."
     )
     @GetMapping("/category")
-    public RentalItemCategoryResponse getCategories(HttpServletRequest request) {
+    public RentalItemCategoriesResponse getCategories(HttpServletRequest request) {
         String baseUrl = request.getScheme() + "://" +
                 request.getServerName() +
                 (request.getServerPort() != 80 && request.getServerPort() != 443
                         ? ":" + request.getServerPort()
                         : "");
 
-        List<RentalItemCategoryResponse.RentalItemCategory> categories = List.of(
-                new RentalItemCategoryResponse.RentalItemCategory(0, baseUrl + "/icons/popular.png", "인기상품"),
-                new RentalItemCategoryResponse.RentalItemCategory(1, baseUrl + "/icons/household.png", "가정용품"),
-                new RentalItemCategoryResponse.RentalItemCategory(2, baseUrl + "/icons/travel.png", "여행용품"),
-                new RentalItemCategoryResponse.RentalItemCategory(3, baseUrl + "/icons/sports.png", "스포츠/운동"),
-                new RentalItemCategoryResponse.RentalItemCategory(4, baseUrl + "/icons/electronics.png", "전자제품"),
-                new RentalItemCategoryResponse.RentalItemCategory(5, baseUrl + "/icons/fashion.png", "패션"),
-                new RentalItemCategoryResponse.RentalItemCategory(6, baseUrl + "/icons/childcare.png", "육아/교육")
+        List<RentalItemCategoriesResponse.RentalItemCategory> categories = List.of(
+                new RentalItemCategoriesResponse.RentalItemCategory(0, baseUrl + "/icons/popular.png", "인기상품"),
+                new RentalItemCategoriesResponse.RentalItemCategory(1, baseUrl + "/icons/household.png", "가정용품"),
+                new RentalItemCategoriesResponse.RentalItemCategory(2, baseUrl + "/icons/travel.png", "여행용품"),
+                new RentalItemCategoriesResponse.RentalItemCategory(3, baseUrl + "/icons/sports.png", "스포츠/운동"),
+                new RentalItemCategoriesResponse.RentalItemCategory(4, baseUrl + "/icons/electronics.png", "전자제품"),
+                new RentalItemCategoriesResponse.RentalItemCategory(5, baseUrl + "/icons/fashion.png", "패션"),
+                new RentalItemCategoriesResponse.RentalItemCategory(6, baseUrl + "/icons/childcare.png", "육아/교육")
         );
 
-        return new RentalItemCategoryResponse(categories);
+        return new RentalItemCategoriesResponse(categories);
     }
 
     @Operation(
@@ -140,11 +140,11 @@ public class RentalItemController {
             description = "비슷한 대여 상품 목록을 조회합니다."
     )
     @GetMapping("/{id}/similar")
-    public RentalItemsSimilarResponse getSimilarRentalItems() {
-        List<RentalItemsSimilarResponse.RentalItem> rentalItems = new ArrayList<>();
+    public SimilarRentalItemsResponse getSimilarRentalItems() {
+        List<SimilarRentalItemsResponse.RentalItem> rentalItems = new ArrayList<>();
 
         for (int i = 0; i < 10; i++) {
-            RentalItemsSimilarResponse.RentalItem rentalItem = RentalItemsSimilarResponse.RentalItem.builder()
+            SimilarRentalItemsResponse.RentalItem rentalItem = SimilarRentalItemsResponse.RentalItem.builder()
                     .id(UUID.randomUUID())
                     .name("유니클로 경량 패딩 블랙")
                     .thumbnailImageUrl("https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=400&h=300&fit=crop")
@@ -155,6 +155,6 @@ public class RentalItemController {
             rentalItems.add(rentalItem);
         }
 
-        return new RentalItemsSimilarResponse(rentalItems);
+        return new SimilarRentalItemsResponse(rentalItems);
     }
 }

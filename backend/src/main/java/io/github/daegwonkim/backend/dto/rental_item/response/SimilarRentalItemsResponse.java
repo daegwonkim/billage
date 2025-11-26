@@ -1,11 +1,11 @@
-package io.github.daegwonkim.backend.dto.user;
+package io.github.daegwonkim.backend.dto.rental_item.response;
 
 import lombok.Builder;
 
 import java.util.List;
 import java.util.UUID;
 
-public record UserRentalItemsResponse(
+public record SimilarRentalItemsResponse(
         List<RentalItem> rentalItems
 ) {
     @Builder
