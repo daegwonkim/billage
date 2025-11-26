@@ -46,10 +46,6 @@ public class RentalItemController {
         return new RentalItemCategoriesResponse(categories);
     }
 
-    @Operation(
-            summary = "대여 상품 목록 조회",
-            description = "조건에 따라 대여 상품 목록을 조회합니다."
-    )
     @GetMapping
     public PageResponse<RentalItemsQueryResponse> getRentalItems(
             @RequestParam(defaultValue = "POPULAR") RentalItemCategory category,
@@ -60,7 +56,7 @@ public class RentalItemController {
     ) {
         List<RentalItemsQueryResponse> content = new ArrayList<>();
 
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < size; i++) {
             RentalItemsQueryResponse rentalItem = RentalItemsQueryResponse.builder()
                     .id(UUID.randomUUID())
                     .name("안드로이드11 스마트티비 4K 43")
@@ -77,12 +73,15 @@ public class RentalItemController {
             content.add(rentalItem);
         }
 
+        int totalElements = 100;
+        int totalPages = (int) Math.ceil((double) totalElements / size);
+
         return PageResponse.<RentalItemsQueryResponse>builder()
                 .content(content)
                 .page(page)
                 .size(size)
-                .totalElements(20)
-                .totalPages(2)
+                .totalElements(totalElements)
+                .totalPages(totalPages)
                 .build();
     }
 
