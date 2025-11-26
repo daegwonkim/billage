@@ -1,11 +1,13 @@
 import { useRef, useState } from 'react'
-import type { RentalItemCategory } from '@/models/Category'
+import type { RentalItemCategory } from '@/models/RentalItemCategory'
 
-interface CategoryListProps {
-  categories: RentalItemCategory[]
+interface RentalItemCategoriesProps {
+  rentalItemCategories: RentalItemCategory[]
 }
 
-export function CategoryList({ categories }: CategoryListProps) {
+export function RentalItemCategories({
+  rentalItemCategories
+}: RentalItemCategoriesProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const [isDragging, setIsDragging] = useState(false)
   const [startX, setStartX] = useState(0)
@@ -75,7 +77,7 @@ export function CategoryList({ categories }: CategoryListProps) {
       }}
       className="hide-scrollbar">
       <div style={{ display: 'flex', gap: '15px', minWidth: 'max-content' }}>
-        {categories.map((cat, idx) => (
+        {rentalItemCategories.map((cat, idx) => (
           <div
             key={idx}
             style={{

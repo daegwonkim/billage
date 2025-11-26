@@ -1,12 +1,11 @@
-import { getRentalItem } from '@/api/detail'
 import { RentalItemDetailBottom } from '@/components/detail/RentalItemDetailBottom'
 import { RentalItemDetailHeader } from '@/components/detail/RentalItemDetailHeader'
-import { RentalItemDetailImage } from '@/components/detail/RentalItemDetailImage'
+import { RentalItemDetailImages } from '@/components/detail/RentalItemDetailImages'
 import { RentalItemDetailInfo } from '@/components/detail/RentalItemDetailInfo'
-import { RentalItemDetailUser } from '@/components/detail/RentalItemDetailUser'
-import { RentalItemDetailSimilar } from '@/components/detail/RentalItemDetailSimilar'
+import { RentalItemDetailSellerItems } from '@/components/detail/RentalItemDetailSellerItems'
+import { RentalItemDetailSimilarItems } from '@/components/detail/RentalItemDetailSimilarItems'
 import { RentalItemDetailSeller } from '@/components/detail/RentalItemDetailSeller'
-import { useFetch } from '@/hooks/useFetch'
+import { useRentalItemDetail } from '@/hooks/useRentalItemDetail'
 import { useNavigate, useParams } from 'react-router-dom'
 
 export function RentalItemDetail() {
@@ -19,16 +18,16 @@ export function RentalItemDetail() {
 
   const {
     data: rentalItemData,
-    loading: rentalItemLoading,
+    isLoading: rentalItemLoading,
     error: rentalItemError
-  } = useFetch(() => getRentalItem(id))
+  } = useRentalItemDetail(id)
 
   if (rentalItemLoading) {
     return <div>Loading...</div>
   }
 
   if (rentalItemError || !rentalItemData) {
-    return <div>Error: {rentalItemError}</div>
+    return <div>Error: {rentalItemError?.message}</div>
   }
 
   const imageUrls = rentalItemData.imageUrls
@@ -41,7 +40,7 @@ export function RentalItemDetail() {
         paddingBottom: '115px'
       }}>
       <RentalItemDetailHeader navigate={navigate} />
-      <RentalItemDetailImage imageUrls={imageUrls} />
+      <RentalItemDetailImages imageUrls={imageUrls} />
       <RentalItemDetailSeller rentalItem={rentalItemData} />
       <hr
         style={{
@@ -62,7 +61,7 @@ export function RentalItemDetail() {
           opacity: '0.5'
         }}
       />
-      <RentalItemDetailSimilar rentalItemId={id} />
+      <RentalItemDetailSimilarItems rentalItemId={id} />
       <hr
         style={{
           width: '90%',
@@ -72,9 +71,8 @@ export function RentalItemDetail() {
           opacity: '0.5'
         }}
       />
-      <RentalItemDetailUser
-        seller={rentalItemData.seller.name}
-        userId={rentalItemData.seller.id}
+      <RentalItemDetailSellerItems
+        seller={rentalItemData.seller}
         rentalItemId={id}
       />
       <RentalItemDetailBottom

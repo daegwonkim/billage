@@ -4,6 +4,9 @@ import { Main } from './pages/Main'
 import { BottomNav } from './components/common/BottomNav'
 import type { NavTab } from './types'
 import { RentalItemDetail } from './pages/RentalItemDetail'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+
+const queryClient = new QueryClient()
 
 function AppContent() {
   const [activeTab, setActiveTab] = useState<NavTab>('home')
@@ -51,8 +54,10 @@ function AppContent() {
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <AppContent />
-    </BrowserRouter>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <AppContent />
+      </BrowserRouter>
+    </QueryClientProvider>
   )
 }

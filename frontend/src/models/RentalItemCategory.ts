@@ -1,5 +1,5 @@
 export interface RentalItemCategoryResponse {
-  categories: RentalItemCategory[]
+  rentalItemCategories: RentalItemCategory[]
 }
 
 export interface RentalItemCategory {

@@ -1,3 +1,5 @@
+import type { Seller } from './User'
+
 export interface RentalItemsQueryResponse {
   content: RentalItemsCard[]
   page: number
@@ -36,15 +38,7 @@ export interface RentalItemDetailResponse {
   createdAt: Date
 }
 
-export interface Seller {
-  id: string
-  name: string
-  address: string
-  profileImageUrl: string
-  trustLevel: number
-}
-
-export interface RentalItemSimilarResponse {
+export interface SimilarRentalItemResponse {
   rentalItems: SimilarRentalItem[]
 }
 

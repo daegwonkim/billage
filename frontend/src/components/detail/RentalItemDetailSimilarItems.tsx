@@ -1,15 +1,14 @@
-import { getSimilarRentalItems } from '@/api/detail'
-import { useFetch } from '@/hooks/useFetch'
+import { useSimilarRentalItems } from '@/hooks/useSimilarRentalItems'
 import { ChevronRight } from 'lucide-react'
 import { useRef, useState } from 'react'
 
-interface RentalItemDetailSimilarProps {
+interface RentalItemDetailSimilarItemsProps {
   rentalItemId: string
 }
 
-export function RentalItemDetailSimilar({
+export function RentalItemDetailSimilarItems({
   rentalItemId
-}: RentalItemDetailSimilarProps) {
+}: RentalItemDetailSimilarItemsProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const [isDragging, setIsDragging] = useState(false)
   const [startX, setStartX] = useState(0)
@@ -58,16 +57,16 @@ export function RentalItemDetailSimilar({
 
   const {
     data: similarRentalItemData,
-    loading: similarRentalItemLoading,
+    isLoading: similarRentalItemLoading,
     error: similarRentalItemError
-  } = useFetch(() => getSimilarRentalItems(rentalItemId))
+  } = useSimilarRentalItems(rentalItemId)
 
   if (similarRentalItemLoading) {
     return <div>Loading...</div>
   }
 
   if (similarRentalItemError || !similarRentalItemData) {
-    return <div>Error: {similarRentalItemError}</div>
+    return <div>Error: {similarRentalItemError?.message}</div>
   }
 
   return (

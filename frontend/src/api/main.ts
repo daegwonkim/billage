@@ -1,4 +1,4 @@
-import type { RentalItemCategoryResponse } from '@/models/Category'
+import type { RentalItemCategoryResponse } from '@/models/RentalItemCategory'
 import type { RentalItemsQueryResponse } from '@/models/RentalItem'
 
 const API_BASE_URL = 'http://localhost:8080'

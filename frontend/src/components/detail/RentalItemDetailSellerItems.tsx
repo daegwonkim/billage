@@ -1,19 +1,17 @@
-import { getUserRentalItems } from '@/api/detail'
-import { useFetch } from '@/hooks/useFetch'
+import { useSellerRentalItems } from '@/hooks/useSellerRentalItems'
+import type { Seller } from '@/models/User'
 import { ChevronRight } from 'lucide-react'
 import { useRef, useState } from 'react'
 
-interface RentalItemDetailUserProps {
-  seller: string
-  userId: string
+interface RentalItemDetailSellerItemsProps {
+  seller: Seller
   rentalItemId: string
 }
 
-export function RentalItemDetailUser({
+export function RentalItemDetailSellerItems({
   seller,
-  userId,
   rentalItemId
-}: RentalItemDetailUserProps) {
+}: RentalItemDetailSellerItemsProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const [isDragging, setIsDragging] = useState(false)
   const [startX, setStartX] = useState(0)
@@ -61,17 +59,17 @@ export function RentalItemDetailUser({
   }
 
   const {
-    data: userRentalItemData,
-    loading: userRentalItemLoading,
-    error: userRentalItemError
-  } = useFetch(() => getUserRentalItems(userId, rentalItemId))
+    data: sellerRentalItemData,
+    isLoading: sellerRentalItemLoading,
+    error: sellerRentalItemError
+  } = useSellerRentalItems(seller.id, rentalItemId)
 
-  if (userRentalItemLoading) {
+  if (sellerRentalItemLoading) {
     return <div>Loading...</div>
   }
 
-  if (userRentalItemError || !userRentalItemData) {
-    return <div>Error: {userRentalItemError}</div>
+  if (sellerRentalItemError || !sellerRentalItemData) {
+    return <div>Error: {sellerRentalItemError?.message}</div>
   }
 
   return (
@@ -83,7 +81,7 @@ export function RentalItemDetailUser({
             alignItems: 'center',
             justifyContent: 'space-between'
           }}>
-          <h3>{seller}님의 다른 대여 물품</h3>
+          <h3>{seller.name}님의 다른 대여 물품</h3>
           <ChevronRight color="#707070" />
         </div>
       </div>
@@ -110,7 +108,7 @@ export function RentalItemDetailUser({
           paddingRight: '16px'
         }}
         className="hide-scrollbar">
-        {userRentalItemData.rentalItems.map(item => (
+        {sellerRentalItemData.rentalItems.map(item => (
           <div
             key={item.id}
             style={{

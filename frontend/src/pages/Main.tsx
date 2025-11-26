@@ -1,9 +1,9 @@
-import { RentalItemList } from '@/components/main/RentalItemList'
+import { RentalItems } from '@/components/main/RentalItems'
 import { Header } from '../components/common/Header'
-import { CategoryList } from '../components/main/CategoryList'
-import { getCategories, getRentalItems } from '@/api/main'
+import { RentalItemCategories } from '../components/main/RentalItemCategories'
 import { useNavigate } from 'react-router-dom'
-import { useFetch } from '@/hooks/useFetch'
+import { useRentalItemCategories } from '@/hooks/useRentalItemCategories'
+import { useRentalItems } from '@/hooks/useRentalItems'
 
 export function Main() {
   const navigate = useNavigate()
@@ -13,33 +13,35 @@ export function Main() {
   }
 
   const {
-    data: categoriesData,
-    loading: categoriesLoading,
-    error: categoriesError
-  } = useFetch(getCategories)
+    data: rentalItemCategoriesData,
+    isLoading: rentalItemCategoriesLoading,
+    error: rentalItemCategoriesError
+  } = useRentalItemCategories()
 
   const {
     data: rentalItemsData,
-    loading: rentalItemsLoading,
+    isLoading: rentalItemsLoading,
     error: rentalItemsError
-  } = useFetch(() => getRentalItems())
+  } = useRentalItems()
 
-  const loading = categoriesLoading || rentalItemsLoading
-  const error = categoriesError || rentalItemsError
+  const isLoading = rentalItemCategoriesLoading || rentalItemsLoading
+  const error = rentalItemCategoriesError || rentalItemsError
 
-  if (loading) {
+  if (isLoading) {
     return <div>Loading...</div>
   }
 
-  if (error || !categoriesData || !rentalItemsData) {
-    return <div>Error: {error}</div>
+  if (error || !rentalItemCategoriesData || !rentalItemsData) {
+    return <div>Error: {error?.message}</div>
   }
 
   return (
     <>
       <Header />
-      <CategoryList categories={categoriesData.categories} />
-      <RentalItemList
+      <RentalItemCategories
+        rentalItemCategories={rentalItemCategoriesData.rentalItemCategories}
+      />
+      <RentalItems
         rentalItems={rentalItemsData}
         onRentalItemClick={onRentalItemClick}
       />

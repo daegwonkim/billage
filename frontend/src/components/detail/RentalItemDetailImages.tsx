@@ -3,13 +3,13 @@ import Slider from 'react-slick'
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
 
-interface RentalItemDetailImageProps {
+interface RentalItemDetailImagesProps {
   imageUrls: string[]
 }
 
-export function RentalItemDetailImage({
+export function RentalItemDetailImages({
   imageUrls
-}: RentalItemDetailImageProps) {
+}: RentalItemDetailImagesProps) {
   const sliderRef = useRef<Slider>(null)
 
   const settings = {
