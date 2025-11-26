@@ -11,7 +11,7 @@ export async function getCategories(): Promise<RentalItemCategoryResponse> {
 
 export async function getRentalItems(
   page = 0,
-  size = 20,
+  size = 10,
   sortBy = 'CREATED_AT',
   sortDirection = 'DESC'
 ): Promise<RentalItemsQueryResponse> {

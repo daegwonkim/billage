@@ -1,8 +1,8 @@
-import type { RentalItemsQueryResponse } from '@/models/RentalItem'
+import type { RentalItemsCard } from '@/models/RentalItem'
 import { RentalItemCard } from './RentalItemCard'
 
 interface RentalItemsProps {
-  rentalItems: RentalItemsQueryResponse
+  rentalItems: RentalItemsCard[]
   onRentalItemClick: (rentalItemId: string) => void
 }
 
@@ -12,7 +12,7 @@ export function RentalItems({
 }: RentalItemsProps) {
   return (
     <div style={{ paddingBottom: '64px' }}>
-      {rentalItems.content.map(rentalItem => (
+      {rentalItems.map(rentalItem => (
         <RentalItemCard
           key={rentalItem.id}
           rentalItem={rentalItem}
