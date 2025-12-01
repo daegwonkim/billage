@@ -8,8 +8,8 @@ import java.util.UUID;
 
 @Getter
 @Entity
-@Table(name = "Addresses")
-public class Address extends BaseEntity {
+@Table(name = "user_neighborhoods")
+public class UserNeighborhood {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -19,8 +19,8 @@ public class Address extends BaseEntity {
     @Column(name = "user_id", columnDefinition = "UUID", nullable = false)
     private UUID userId;
 
-    @Column(nullable = false)
-    private String address;
+    @Column(name = "eupmyeondong_id", columnDefinition = "UUID", nullable = false)
+    private UUID eupmyeondongId;
 
     @Column(precision = 10, scale = 8, nullable = false)
     private BigDecimal latitude;
