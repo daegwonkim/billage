@@ -1,7 +1,7 @@
 import type { RentalItemCategoryResponse } from '@/models/RentalItemCategory'
 import type { RentalItemsQueryResponse } from '@/models/RentalItem'
 
-const API_BASE_URL = 'http://localhost:8080'
+const API_BASE_URL = 'https://billage.onrender.com'
 
 export async function getCategories(): Promise<RentalItemCategoryResponse> {
   const response = await fetch(`${API_BASE_URL}/api/rental-items/category`)

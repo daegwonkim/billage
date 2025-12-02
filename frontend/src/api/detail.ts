@@ -4,7 +4,7 @@ import type {
 } from '@/models/RentalItem'
 import type { SellerRentalItemsResponse } from '@/models/User'
 
-const API_BASE_URL = 'http://localhost:8080'
+const API_BASE_URL = 'https://billage.onrender.com'
 
 export async function getRentalItem(
   rentalItemId: string
