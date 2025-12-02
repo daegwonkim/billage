@@ -7,3 +7,16 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
+
+  data:
+    redis:
+      host: https://endless-kitten-6997.upstash.io
+      port: 6379
+      password:
+      ssl: true
+
+coolsms:
+  url: https://api.coolsms.co.kr
+  apiKey:
+  secretKey:
+  from: 01046244800

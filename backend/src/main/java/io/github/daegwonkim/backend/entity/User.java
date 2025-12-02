@@ -14,11 +14,8 @@ public class User extends BaseEntity {
     @Column(columnDefinition = "UUID")
     private UUID id;
 
-    @Column(nullable = false)
-    private String username;
-
-    @Column(nullable = false)
-    private String password;
+    @Column(name= "phone_no", nullable = false)
+    private String phoneNo;
 
     @Column(nullable = false)
     private String nickname;
