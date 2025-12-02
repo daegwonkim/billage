@@ -3,7 +3,6 @@ package io.github.daegwonkim.backend.service;
 import io.github.daegwonkim.backend.common.exception.ErrorCode;
 import io.github.daegwonkim.backend.common.exception.domain.VerificationException;
 import lombok.extern.slf4j.Slf4j;
-import net.nurigo.sdk.NurigoApp;
 import net.nurigo.sdk.message.model.Message;
 import net.nurigo.sdk.message.request.SingleMessageSendingRequest;
 import net.nurigo.sdk.message.response.SingleMessageSentResponse;
