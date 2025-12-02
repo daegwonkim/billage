@@ -19,3 +19,6 @@ coolsms:
   apiKey: ${COOLSMS_API_KEY}
   secretKey: ${COOLSMS_SECRET_KEY}
   from: ${COOLSMS_FROM}
+
+verification-code:
+  expiration: 5

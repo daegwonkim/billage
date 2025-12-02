@@ -23,18 +23,20 @@ public class VerificationCodeService {
     private final DefaultMessageService messageService;
     private final RedisTemplate<String, String> redisTemplate;
     private final String from;
+    private final long verificationCodeExpiration;
 
-    private static final long AUTH_CODE_EXPIRATION = 5;
     private static final String KEY_PREFIX = "verificationCode:";
 
     public VerificationCodeService(
             DefaultMessageService messageService,
             RedisTemplate<String, String> redisTemplate,
-            @Value("${coolsms.from}") String from
+            @Value("${coolsms.from}") String from,
+            @Value("${verification-code.expiration}") long verificationCodeExpiration
     ) {
         this.messageService = messageService;
         this.redisTemplate = redisTemplate;
         this.from = from;
+        this.verificationCodeExpiration = verificationCodeExpiration;
     }
 
     /**
@@ -54,7 +56,7 @@ public class VerificationCodeService {
 
             if (Objects.requireNonNull(response).getStatusCode().equals("2000")) {
                 ValueOperations<String, String> ops = redisTemplate.opsForValue();
-                ops.set(KEY_PREFIX + phoneNo, verificationCode, AUTH_CODE_EXPIRATION, TimeUnit.MINUTES);
+                ops.set(KEY_PREFIX + phoneNo, verificationCode, verificationCodeExpiration, TimeUnit.MINUTES);
             } else {
                 throw new VerificationException(ErrorCode.SMS_SEND_FAILED);
             }
