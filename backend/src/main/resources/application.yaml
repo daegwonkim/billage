@@ -13,7 +13,8 @@ spring:
       host: https://endless-kitten-6997.upstash.io
       port: 6379
       password: ${REDIS_PASSWORD}
-      ssl: true
+      ssl:
+        enabled: true
 
 coolsms:
   url: https://api.coolsms.co.kr
