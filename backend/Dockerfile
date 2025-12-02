@@ -4,7 +4,7 @@ FROM gradle:8.5-jdk17 AS builder
 WORKDIR /app
 
 # Gradle 캐싱 최적화
-COPY build.gradle settings.gradle ./
+COPY build.gradle.kts settings.gradle.kts ./
 COPY gradle ./gradle
 RUN gradle dependencies --no-daemon || true
 
