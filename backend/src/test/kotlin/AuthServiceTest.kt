@@ -1,6 +1,8 @@
 import io.github.daegwonkim.backend.common.exception.ErrorCode
 import io.github.daegwonkim.backend.common.exception.ExternalServiceException
 import io.github.daegwonkim.backend.common.exception.NotFoundException
+import io.github.daegwonkim.backend.common.jwt.JwtTokenProvider
+import io.github.daegwonkim.backend.common.jwt.RefreshTokenService
 import io.github.daegwonkim.backend.dto.PhoneNoConfirmRequest
 import io.github.daegwonkim.backend.dto.VerificationCodeConfirmRequest
 import io.github.daegwonkim.backend.dto.VerificationCodeSendRequest
@@ -22,7 +24,9 @@ import java.util.concurrent.TimeUnit
 
 class AuthServiceTest : BehaviorSpec({
     val messageService = mockk<DefaultMessageService>()
-    val redisTemplate = mockk<StringRedisTemplate>(relaxed = true)
+    val refreshTokenService = mockk<RefreshTokenService>()
+    val stringRedisTemplate = mockk<StringRedisTemplate>(relaxed = true)
+    val jwtTokenProvider = mockk<JwtTokenProvider>()
     val valueOperations = mockk<ValueOperations<String, String>>(relaxed = true)
     val userRepository = mockk<UserRepository>()
 
@@ -32,7 +36,9 @@ class AuthServiceTest : BehaviorSpec({
 
     val authService = AuthService(
         messageService = messageService,
-        redisTemplate = redisTemplate,
+        refreshTokenService = refreshTokenService,
+        stringRedisTemplate = stringRedisTemplate,
+        jwtTokenProvider = jwtTokenProvider,
         userRepository = userRepository,
         smsFrom = smsFrom,
         verificationCodeExpiration = verificationCodeExpiration,
@@ -52,7 +58,7 @@ class AuthServiceTest : BehaviorSpec({
                 every { statusCode } returns "2000"
             }
             every { messageService.sendOne(any()) } returns successResponse
-            every { redisTemplate.opsForValue() } returns valueOperations
+            every { stringRedisTemplate.opsForValue() } returns valueOperations
             every {
                 valueOperations.set(
                     any(),
@@ -114,9 +120,9 @@ class AuthServiceTest : BehaviorSpec({
         )
 
         When("올바른 인증번호로 요청하면") {
-            every { redisTemplate.opsForValue() } returns valueOperations
+            every { stringRedisTemplate.opsForValue() } returns valueOperations
             every { valueOperations.get("verificationCode:$phoneNo") } returns verificationCode
-            every { redisTemplate.delete(any<String>()) } returns true
+            every { stringRedisTemplate.delete(any<String>()) } returns true
             every {
                 valueOperations.set(
                     "verifiedToken:$phoneNo",
@@ -129,13 +135,13 @@ class AuthServiceTest : BehaviorSpec({
             val response = authService.confirmVerificationCode(request)
 
             Then("인증토큰을 반환한다") {
-                response shouldNotBe null
-                response shouldMatch Regex("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
+                response.verifiedToken shouldNotBe null
+                response.verifiedToken shouldMatch Regex("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
             }
 
             Then("Redis에서 인증번호가 삭제된다") {
                 verify(exactly = 1) {
-                    redisTemplate.delete("verificationCode:$phoneNo")
+                    stringRedisTemplate.delete("verificationCode:$phoneNo")
                 }
             }
 
@@ -152,7 +158,7 @@ class AuthServiceTest : BehaviorSpec({
         }
 
         When("인증번호가 일치하지 않으면") {
-            every { redisTemplate.opsForValue() } returns valueOperations
+            every { stringRedisTemplate.opsForValue() } returns valueOperations
             every { valueOperations.get("verificationCode:$phoneNo") } returns "000000"
 
             val exception = runCatching {
@@ -166,7 +172,7 @@ class AuthServiceTest : BehaviorSpec({
 
             Then("Redis에서 인증번호가 삭제되지 않는다") {
                 verify(exactly = 0) {
-                    redisTemplate.delete(any<String>())
+                    stringRedisTemplate.delete(any<String>())
                 }
             }
 
@@ -183,7 +189,7 @@ class AuthServiceTest : BehaviorSpec({
         }
 
         When("인증번호가 존재하지 않거나 만료되었으면") {
-            every { redisTemplate.opsForValue() } returns valueOperations
+            every { stringRedisTemplate.opsForValue() } returns valueOperations
             every { valueOperations.get("verificationCode:$phoneNo") } returns null
 
             val exception = runCatching {

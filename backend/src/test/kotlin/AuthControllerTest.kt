@@ -16,6 +16,7 @@ import io.github.daegwonkim.backend.common.exception.NotFoundException
 import io.github.daegwonkim.backend.controller.AuthController
 import io.github.daegwonkim.backend.dto.PhoneNoConfirmRequest
 import io.github.daegwonkim.backend.dto.VerificationCodeConfirmRequest
+import io.github.daegwonkim.backend.dto.VerificationCodeConfirmResponse
 import io.github.daegwonkim.backend.dto.VerificationCodeSendRequest
 import io.github.daegwonkim.backend.service.AuthService
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
@@ -73,7 +74,7 @@ class AuthControllerTest : BehaviorSpec({
 
         When("올바른 인증번호로 요청하면") {
             val verifiedToken = "test-verified-token"
-            every { authService.confirmVerificationCode(any()) } returns verifiedToken
+            every { authService.confirmVerificationCode(any()) } returns VerificationCodeConfirmResponse(verifiedToken)
 
             val response = mockMvc.perform(
                 post("/api/auth/verification-code/confirm")

@@ -3,8 +3,13 @@ package io.github.daegwonkim.backend.service
 import io.github.daegwonkim.backend.common.exception.ErrorCode
 import io.github.daegwonkim.backend.common.exception.ExternalServiceException
 import io.github.daegwonkim.backend.common.exception.NotFoundException
+import io.github.daegwonkim.backend.common.jwt.JwtTokenProvider
+import io.github.daegwonkim.backend.common.jwt.RefreshTokenService
 import io.github.daegwonkim.backend.dto.PhoneNoConfirmRequest
+import io.github.daegwonkim.backend.dto.SigninRequest
+import io.github.daegwonkim.backend.dto.SigninResponse
 import io.github.daegwonkim.backend.dto.VerificationCodeConfirmRequest
+import io.github.daegwonkim.backend.dto.VerificationCodeConfirmResponse
 import io.github.daegwonkim.backend.dto.VerificationCodeSendRequest
 import io.github.daegwonkim.backend.repository.UserRepository
 import net.nurigo.sdk.message.model.Message
@@ -21,7 +26,9 @@ import kotlin.also
 @Service
 class AuthService(
     private val messageService: DefaultMessageService,
-    private val redisTemplate: StringRedisTemplate,
+    private val refreshTokenService: RefreshTokenService,
+    private val stringRedisTemplate: StringRedisTemplate,
+    private val jwtTokenProvider: JwtTokenProvider,
     private val userRepository: UserRepository,
     @Value($$"${coolsms.from}")
     private val smsFrom: String,
@@ -42,27 +49,50 @@ class AuthService(
 
         sendSms(request.phoneNo, verificationCode)
             .takeIf { it }
-            ?.also { redisTemplate.saveVerificationCode(request.phoneNo, verificationCode) }
+            ?.also { stringRedisTemplate.saveVerificationCode(request.phoneNo, verificationCode) }
             ?: throw ExternalServiceException(ErrorCode.SMS_SEND_FAILED)
     }
 
-    fun confirmVerificationCode(request: VerificationCodeConfirmRequest): String {
-        val savedCode = redisTemplate.getVerificationCode(request.phoneNo)
+    fun confirmVerificationCode(request: VerificationCodeConfirmRequest): VerificationCodeConfirmResponse {
+        val savedCode = stringRedisTemplate.getVerificationCode(request.phoneNo)
             ?: throw NotFoundException(ErrorCode.VERIFICATION_CODE_NOT_FOUND)
 
         savedCode.takeIf { it == request.verificationCode }
             ?: throw NotFoundException(ErrorCode.VERIFICATION_CODE_MISMATCH)
 
-        redisTemplate.deleteVerificationCode(request.phoneNo)
+        stringRedisTemplate.deleteVerificationCode(request.phoneNo)
 
-        return UUID.randomUUID().toString().also { verifiedToken ->
-            redisTemplate.saveVerifiedToken(request.phoneNo, verifiedToken)
+        val verifiedToken = UUID.randomUUID().toString().also { verifiedToken ->
+            stringRedisTemplate.saveVerifiedToken(request.phoneNo, verifiedToken)
         }
+
+        return VerificationCodeConfirmResponse(verifiedToken)
     }
 
     fun confirmPhoneNo(request: PhoneNoConfirmRequest) {
         userRepository.findByPhoneNoAndIsWithdrawnFalse(request.phoneNo)
             ?: throw NotFoundException(ErrorCode.USER_NOT_FOUND)
+    }
+
+    fun signin(request: SigninRequest): SigninResponse {
+        val user = userRepository.findByPhoneNoAndIsWithdrawnFalse(request.phoneNo)
+            ?: throw NotFoundException(ErrorCode.USER_NOT_FOUND)
+        val userId = requireNotNull(user.id) { "User ID cannot be null" }
+
+        val savedToken = stringRedisTemplate.getVerifiedToken(request.phoneNo)
+            ?: throw NotFoundException(ErrorCode.VERIFIED_TOKEN_NOT_FOUND)
+
+        savedToken.takeIf { it == request.verifiedToken }
+            ?: throw NotFoundException(ErrorCode.VERIFIED_TOKEN_MISMATCH)
+
+        stringRedisTemplate.deleteVerifiedToken(request.phoneNo)
+
+        val accessToken = jwtTokenProvider.generateAccessToken(userId)
+        val refreshToken = jwtTokenProvider.generateRefreshToken(userId)
+
+        refreshTokenService.saveRefreshToken(userId, refreshToken)
+
+        return SigninResponse(accessToken)
     }
 
     private fun sendSms(phoneNo: String, code: String): Boolean {
@@ -104,9 +134,11 @@ class AuthService(
         )
     }
 
-    private fun StringRedisTemplate.deleteVerificationCode(phoneNo: String) {
+    private fun StringRedisTemplate.deleteVerificationCode(phoneNo: String) =
         delete(verificationCodeKey(phoneNo))
-    }
+
+    private fun StringRedisTemplate.getVerifiedToken(phoneNo: String): String? =
+        opsForValue().get(verifiedTokenKey(phoneNo))
 
     private fun StringRedisTemplate.saveVerifiedToken(phoneNo: String, token: String) {
         opsForValue().set(
@@ -116,4 +148,7 @@ class AuthService(
             TimeUnit.MINUTES
         )
     }
+
+    private fun StringRedisTemplate.deleteVerifiedToken(phoneNo: String) =
+        delete(verifiedTokenKey(phoneNo))
 }

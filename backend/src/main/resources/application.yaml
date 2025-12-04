@@ -6,7 +6,7 @@ spring:
     url: ${DATASOURCE_URL}
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
 
   data:
     redis:
@@ -25,3 +25,8 @@ verification-code:
 
 verified-token:
   expiration: 1
+
+jwt:
+  secret: ${SECRET}
+  access-token-expiration: ${ACCESS_TOKEN_EXPIRATION}
+  refresh-token-expiration: ${REFRESH_TOKEN_EXPIRATION}
