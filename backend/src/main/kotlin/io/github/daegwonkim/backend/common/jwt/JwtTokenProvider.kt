@@ -75,11 +75,12 @@ class JwtTokenProvider(
             true
         } catch (e: Exception) {
             when (e) {
-                is SecurityException -> log.warn("Security policy violation occurred: {}", e.message)
-                is MalformedJwtException -> log.warn("Invalid JWT token format: {}", e.message)
-                is ExpiredJwtException -> log.warn("Expired JWT token: {}", e.message)
-                is UnsupportedJwtException -> log.warn("Unsupported JWT token: {}", e.message)
-                is IllegalArgumentException -> log.warn("JWT claims string is empty: {}", e.message)
+                is SecurityException -> log.warn("Security policy violation occurred: ${e.message}")
+                is MalformedJwtException -> log.warn("Invalid JWT token format: ${e.message}")
+                is ExpiredJwtException -> log.warn("Expired JWT token: ${e.message}")
+                is UnsupportedJwtException -> log.warn("Unsupported JWT token: ${e.message}")
+                is IllegalArgumentException -> log.warn("JWT claims string is empty: ${e.message}")
+                is Exception -> log.warn("JWT validation error: ${e.message}")
             }
             false
         }
