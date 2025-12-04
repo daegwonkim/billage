@@ -8,7 +8,7 @@ plugins {
 
 group = "io.github.daegwonkim"
 version = "0.0.1-SNAPSHOT"
-description = "billage backend-kotlin"
+description = "billage backend"
 
 java {
 	toolchain {

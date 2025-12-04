@@ -9,15 +9,15 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.github.daegwonkim.backend_kotlin.common.exception.ErrorCode
-import io.github.daegwonkim.backend_kotlin.common.exception.ExternalServiceException
-import io.github.daegwonkim.backend_kotlin.common.exception.GlobalExceptionHandler
-import io.github.daegwonkim.backend_kotlin.common.exception.NotFoundException
-import io.github.daegwonkim.backend_kotlin.controller.AuthController
-import io.github.daegwonkim.backend_kotlin.dto.PhoneNoConfirmRequest
-import io.github.daegwonkim.backend_kotlin.dto.VerificationCodeConfirmRequest
-import io.github.daegwonkim.backend_kotlin.dto.VerificationCodeSendRequest
-import io.github.daegwonkim.backend_kotlin.service.AuthService
+import io.github.daegwonkim.backend.common.exception.ErrorCode
+import io.github.daegwonkim.backend.common.exception.ExternalServiceException
+import io.github.daegwonkim.backend.common.exception.GlobalExceptionHandler
+import io.github.daegwonkim.backend.common.exception.NotFoundException
+import io.github.daegwonkim.backend.controller.AuthController
+import io.github.daegwonkim.backend.dto.PhoneNoConfirmRequest
+import io.github.daegwonkim.backend.dto.VerificationCodeConfirmRequest
+import io.github.daegwonkim.backend.dto.VerificationCodeSendRequest
+import io.github.daegwonkim.backend.service.AuthService
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 
 class AuthControllerTest : BehaviorSpec({
