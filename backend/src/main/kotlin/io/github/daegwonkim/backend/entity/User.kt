@@ -26,5 +26,5 @@ class User(
     var profileImageUrl: String? = null,
 
     @Column(name = "is_withdrawn", nullable = false)
-    var isWithdrawn: Boolean
+    var isWithdrawn: Boolean = false
 ) : BaseEntity()

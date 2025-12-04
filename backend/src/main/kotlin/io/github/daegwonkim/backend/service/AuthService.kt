@@ -1,5 +1,7 @@
 package io.github.daegwonkim.backend.service
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import io.github.daegwonkim.backend.common.exception.ErrorCode
 import io.github.daegwonkim.backend.common.exception.ExternalServiceException
 import io.github.daegwonkim.backend.common.exception.NotFoundException
@@ -8,20 +10,29 @@ import io.github.daegwonkim.backend.common.jwt.RefreshTokenService
 import io.github.daegwonkim.backend.dto.PhoneNoConfirmRequest
 import io.github.daegwonkim.backend.dto.SigninRequest
 import io.github.daegwonkim.backend.dto.SigninResponse
+import io.github.daegwonkim.backend.dto.SignupRequest
+import io.github.daegwonkim.backend.dto.SignupResponse
 import io.github.daegwonkim.backend.dto.VerificationCodeConfirmRequest
 import io.github.daegwonkim.backend.dto.VerificationCodeConfirmResponse
 import io.github.daegwonkim.backend.dto.VerificationCodeSendRequest
+import io.github.daegwonkim.backend.entity.User
 import io.github.daegwonkim.backend.repository.UserRepository
 import net.nurigo.sdk.message.model.Message
 import net.nurigo.sdk.message.request.SingleMessageSendingRequest
 import net.nurigo.sdk.message.service.DefaultMessageService
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.core.io.ClassPathResource
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Service
 import java.security.SecureRandom
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 import kotlin.also
+
+data class NicknameWords(
+    val adjectives: List<String>,
+    val nouns: List<String>
+)
 
 @Service
 class AuthService(
@@ -37,6 +48,14 @@ class AuthService(
     @Value($$"${verified-token.expiration}")
     private val verifiedTokenExpiration: Long
 ) {
+    private val mapper = jacksonObjectMapper()
+    private val words: NicknameWords
+
+    init {
+        val resource = ClassPathResource("data/nicknames.json")
+        words = mapper.readValue(resource.inputStream)
+    }
+
     companion object {
         private const val VERIFICATION_CODE_KEY_PREFIX = "verificationCode:"
         private const val VERIFIED_TOKEN_KEY_PREFIX = "verifiedToken:"
@@ -74,6 +93,29 @@ class AuthService(
             ?: throw NotFoundException(ErrorCode.USER_NOT_FOUND)
     }
 
+    fun signup(request: SignupRequest): SignupResponse {
+        val savedToken = stringRedisTemplate.getVerifiedToken(request.phoneNo)
+            ?: throw NotFoundException(ErrorCode.VERIFIED_TOKEN_NOT_FOUND)
+
+        savedToken.takeIf { it == request.verifiedToken }
+            ?: throw NotFoundException(ErrorCode.VERIFIED_TOKEN_MISMATCH)
+
+        stringRedisTemplate.deleteVerifiedToken(request.phoneNo)
+
+        val user = userRepository.save(User(
+            phoneNo = request.phoneNo,
+            nickname = generateNickname()
+        ))
+        val userId = requireNotNull(user.id) { "User ID cannot be null" }
+
+        val accessToken = jwtTokenProvider.generateAccessToken(userId)
+        val refreshToken = jwtTokenProvider.generateRefreshToken(userId)
+
+        refreshTokenService.saveRefreshToken(userId, refreshToken)
+
+        return SignupResponse(accessToken)
+    }
+
     fun signin(request: SigninRequest): SigninResponse {
         val user = userRepository.findByPhoneNoAndIsWithdrawnFalse(request.phoneNo)
             ?: throw NotFoundException(ErrorCode.USER_NOT_FOUND)
@@ -93,6 +135,12 @@ class AuthService(
         refreshTokenService.saveRefreshToken(userId, refreshToken)
 
         return SigninResponse(accessToken)
+    }
+
+    private fun generateNickname(): String {
+        val adj = words.adjectives.random()
+        val noun = words.nouns.random()
+        return "$adj $noun"
     }
 
     private fun sendSms(phoneNo: String, code: String): Boolean {
