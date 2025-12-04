@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: backend-kotlin
+
+  datasource:
+    url: ${DATASOURCE_URL}
+  jpa:
+    hibernate:
+      ddl-auto: create
+
+  data:
+    redis:
+      url: ${UPSTASH_REDIS_URL}
+      username: default
+      password: ${UPSTASH_REDIS_TOKEN}
+
+coolsms:
+  url: https://api.coolsms.co.kr
+  apiKey: ${COOLSMS_API_KEY}
+  secretKey: ${COOLSMS_SECRET_KEY}
+  from: ${COOLSMS_FROM}
+
+verification-code:
+  expiration: 5
+
+verified-token:
+  expiration: 1
