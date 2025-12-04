@@ -2,16 +2,15 @@ import { RentalItems } from '@/components/main/RentalItems'
 import { Header } from '../components/common/Header'
 import { RentalItemCategories } from '../components/main/RentalItemCategories'
 import { useNavigate } from 'react-router-dom'
-import { useRentalItemCategories } from '@/hooks/useRentalItemCategories'
-import { useRentalItems } from '@/hooks/useRentalItems'
 import { useEffect, useRef } from 'react'
+import { useRentalItemCategories, useRentalItems } from '@/hooks/rentalItem'
 
 export function Main() {
   const navigate = useNavigate()
   const observerTarget = useRef<HTMLDivElement>(null)
 
   const onRentalItemClick = (rentalItemId: string) => {
-    navigate(`/api/rental-items/${rentalItemId}`)
+    navigate(`/rental-items/${rentalItemId}`)
   }
 
   const {

@@ -1,4 +1,4 @@
-import { useSellerRentalItems } from '@/hooks/useSellerRentalItems'
+import { useSellerRentalItems } from '@/hooks/User'
 import type { Seller } from '@/models/User'
 import { ChevronRight } from 'lucide-react'
 import { useRef, useState } from 'react'

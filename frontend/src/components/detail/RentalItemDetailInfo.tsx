@@ -1,6 +1,5 @@
 import type { RentalItemDetailResponse } from '@/models/RentalItem'
 import { getTimeAgo } from '@/utils/utils'
-import { MapPin } from 'lucide-react'
 
 interface RentalItemDetailInfoProps {
   rentalItem: RentalItemDetailResponse

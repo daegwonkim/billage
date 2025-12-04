@@ -5,6 +5,11 @@ import { BottomNav } from './components/common/BottomNav'
 import type { NavTab } from './types'
 import { RentalItemDetail } from './pages/RentalItemDetail'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import OnboardingStart from './pages/OnboardingStart'
+import OnboardingNeighborhood from './pages/OnboardingNeighborhood'
+import OnboardingAuthentication from './pages/OnboardingAuthentication'
+import OnboardingVerification from './pages/OnboardingVerification'
+import OnboardingSignin from './pages/OnboardingSignin'
 
 const queryClient = new QueryClient()
 
@@ -12,32 +17,50 @@ function AppContent() {
   const [activeTab, setActiveTab] = useState<NavTab>('home')
 
   const location = useLocation()
-  const showBottomNav = !location.pathname.includes('/api/rental-items/')
+  const hideBottomNavPaths = ['/rental-items/', '/onboarding']
+  const showBottomNav = !hideBottomNavPaths.some(path =>
+    location.pathname.includes(path)
+  )
 
   return (
     <div
+      className="bg-red-50"
       style={{
         display: 'flex',
-        justifyContent: 'center',
-        backgroundColor: '#f5f5f5',
-        minHeight: '100vh',
-        outline: 'solid #e5e5e5 1px'
+        justifyContent: 'center'
       }}>
       <div
         style={{
-          width: '100%',
-          maxWidth: '400px',
-          backgroundColor: '#f5f5f5',
           fontFamily: 'system-ui, -apple-system, sans-serif',
           position: 'relative'
         }}>
         <Routes>
           <Route
+            path="/onboarding"
+            element={<OnboardingStart />}
+          />
+          <Route
+            path="/onboarding/authentication"
+            element={<OnboardingAuthentication />}
+          />
+          <Route
+            path="/onboarding/verification"
+            element={<OnboardingVerification />}
+          />
+          <Route
+            path="/onboarding/neighborhood"
+            element={<OnboardingNeighborhood />}
+          />
+          <Route
+            path="/onboarding/signin"
+            element={<OnboardingSignin />}
+          />
+          <Route
             path="/"
             element={<Main />}
           />
           <Route
-            path="/api/rental-items/:id"
+            path="/rental-items/:id"
             element={<RentalItemDetail />}
           />
         </Routes>
