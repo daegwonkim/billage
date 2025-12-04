@@ -1,6 +1,6 @@
 spring:
   application:
-    name: backend
+    name: backend-kotlin
 
   datasource:
     url: ${DATASOURCE_URL}
@@ -22,3 +22,6 @@ coolsms:
 
 verification-code:
   expiration: 5
+
+verified-token:
+  expiration: 1
