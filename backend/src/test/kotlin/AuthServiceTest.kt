@@ -4,9 +4,13 @@ import io.github.daegwonkim.backend.common.exception.NotFoundException
 import io.github.daegwonkim.backend.common.jwt.JwtTokenProvider
 import io.github.daegwonkim.backend.common.jwt.RefreshTokenService
 import io.github.daegwonkim.backend.dto.PhoneNoConfirmRequest
+import io.github.daegwonkim.backend.dto.SigninRequest
+import io.github.daegwonkim.backend.dto.SignupRequest
 import io.github.daegwonkim.backend.dto.VerificationCodeConfirmRequest
 import io.github.daegwonkim.backend.dto.VerificationCodeSendRequest
 import io.github.daegwonkim.backend.entity.User
+import io.github.daegwonkim.backend.event.RefreshTokenSaveEvent
+import io.github.daegwonkim.backend.event.VerifiedTokenDeleteEvent
 import io.github.daegwonkim.backend.repository.UserRepository
 import io.github.daegwonkim.backend.service.AuthService
 import io.kotest.assertions.throwables.shouldThrow
@@ -18,8 +22,10 @@ import io.kotest.matchers.types.shouldBeInstanceOf
 import io.mockk.*
 import net.nurigo.sdk.message.response.SingleMessageSentResponse
 import net.nurigo.sdk.message.service.DefaultMessageService
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.data.redis.core.ValueOperations
+import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 class AuthServiceTest : BehaviorSpec({
@@ -29,6 +35,7 @@ class AuthServiceTest : BehaviorSpec({
     val jwtTokenProvider = mockk<JwtTokenProvider>()
     val valueOperations = mockk<ValueOperations<String, String>>(relaxed = true)
     val userRepository = mockk<UserRepository>()
+    val eventPublisher = mockk<ApplicationEventPublisher>()
 
     val smsFrom = "01000000000"
     val verificationCodeExpiration = 5L
@@ -40,6 +47,7 @@ class AuthServiceTest : BehaviorSpec({
         stringRedisTemplate = stringRedisTemplate,
         jwtTokenProvider = jwtTokenProvider,
         userRepository = userRepository,
+        eventPublisher = eventPublisher,
         smsFrom = smsFrom,
         verificationCodeExpiration = verificationCodeExpiration,
         verifiedTokenExpiration = verifiedTokenExpiration
@@ -238,6 +246,165 @@ class AuthServiceTest : BehaviorSpec({
                 shouldThrow<NotFoundException> {
                     authService.confirmPhoneNo(request)
                 }.errorCode shouldBe ErrorCode.USER_NOT_FOUND
+            }
+        }
+    }
+
+    Given("회원가입 요청이 있을 때") {
+        val phoneNo = "01012345678"
+        val verifiedToken = "verifiedToken"
+        val request = SignupRequest(phoneNo = phoneNo, verifiedToken = verifiedToken)
+
+        When("회원가입에 성공하면") {
+            val userId = UUID.randomUUID()
+            val user = mockk<User>() {
+                every { id } returns userId
+            }
+            every { stringRedisTemplate.opsForValue() } returns valueOperations
+            every { valueOperations.get("verifiedToken:$phoneNo") } returns verifiedToken
+            every { stringRedisTemplate.delete("verifiedToken:$phoneNo") } returns true
+            every { userRepository.save(any()) } returns user
+            every { jwtTokenProvider.generateAccessToken(userId) } returns "accessToken"
+            every { jwtTokenProvider.generateRefreshToken(userId) } returns "refreshToken"
+            every { refreshTokenService.saveRefreshToken(userId, "refreshToken") } just Runs
+            every { eventPublisher.publishEvent(any<VerifiedTokenDeleteEvent>()) } just Runs
+
+            val response = authService.signup(request)
+
+            Then("데이터베이스에 사용자 데이터가 저장된다") {
+                verify(exactly = 1) {
+                    userRepository.save(match {
+                        it.phoneNo == phoneNo
+                    })
+                }
+            }
+
+            Then("인증토큰 삭제 이벤트가 발행된다") {
+                verify(exactly = 1) {
+                    eventPublisher.publishEvent(match<VerifiedTokenDeleteEvent> {
+                        it.phoneNo == phoneNo
+                    })
+                }
+            }
+
+            Then("RefreshToken 저장 이벤트가 발행된다") {
+                verify(exactly = 1) {
+                    eventPublisher.publishEvent(match<RefreshTokenSaveEvent> {
+                        it.userId == userId && it.refreshToken == "refreshToken"
+                    })
+                }
+            }
+
+            Then("올바른 토큰 정보가 반환된다") {
+                response.accessToken shouldBe "accessToken"
+                response.refreshToken shouldBe "refreshToken"
+            }
+        }
+
+        When("인증토큰이 존재하지 않거나 만료되었으면") {
+            every { stringRedisTemplate.opsForValue() } returns valueOperations
+            every { valueOperations.get("verifiedToken:$phoneNo") } returns null
+
+            Then("예외가 발생한다") {
+                shouldThrow<NotFoundException> {
+                    authService.signup(request)
+                }.errorCode shouldBe ErrorCode.VERIFIED_TOKEN_NOT_FOUND
+            }
+        }
+
+        When("인증토큰이 일치하지 않으면") {
+            every { stringRedisTemplate.opsForValue() } returns valueOperations
+            every { valueOperations.get("verifiedToken:$phoneNo") } returns "abc"
+
+            Then("예외가 발생한다") {
+                shouldThrow<NotFoundException> {
+                    authService.signup(request)
+                }.errorCode shouldBe ErrorCode.VERIFIED_TOKEN_MISMATCH
+            }
+        }
+    }
+
+    Given("로그인 요청이 있을 때") {
+        val phoneNo = "01012345678"
+        val verifiedToken = "verifiedToken"
+        val request = SigninRequest(phoneNo = phoneNo, verifiedToken = verifiedToken)
+
+        When("로그인에 성공하면") {
+            val userId = UUID.randomUUID()
+            val user = mockk<User> {
+                every { id } returns userId
+            }
+            every { userRepository.findByPhoneNoAndIsWithdrawnFalse(phoneNo) } returns user
+            every { stringRedisTemplate.opsForValue() } returns valueOperations
+            every { valueOperations.get("verifiedToken:$phoneNo") } returns verifiedToken
+            every { jwtTokenProvider.generateAccessToken(userId) } returns "accessToken"
+            every { jwtTokenProvider.generateRefreshToken(userId) } returns "refreshToken"
+            every { refreshTokenService.saveRefreshToken(userId, "refreshToken") } just Runs
+            every { eventPublisher.publishEvent(any<VerifiedTokenDeleteEvent>()) } just Runs
+
+            val response = authService.signin(request)
+
+            Then("인증토큰 삭제 이벤트가 발행된다") {
+                verify(exactly = 1) {
+                    eventPublisher.publishEvent(match<VerifiedTokenDeleteEvent> {
+                        it.phoneNo == phoneNo
+                    })
+                }
+            }
+
+            Then("RefreshToken 저장 이벤트가 발행된다") {
+                verify(exactly = 1) {
+                    eventPublisher.publishEvent(match<RefreshTokenSaveEvent> {
+                        it.userId == userId && it.refreshToken == "refreshToken"
+                    })
+                }
+            }
+
+            Then("올바른 토큰 정보가 반환된다") {
+                response.accessToken shouldBe "accessToken"
+                response.refreshToken shouldBe "refreshToken"
+            }
+        }
+
+        When("등록된 사용자가 아니면") {
+            every { userRepository.findByPhoneNoAndIsWithdrawnFalse(phoneNo) } returns null
+
+            Then("예외가 발생한다") {
+                shouldThrow<NotFoundException> {
+                    authService.signin(request)
+                }.errorCode shouldBe ErrorCode.USER_NOT_FOUND
+            }
+        }
+
+        When("인증토큰이 존재하지 않거나 만료되었으면") {
+            val userId = UUID.randomUUID()
+            val user = mockk<User> {
+                every { id } returns userId
+            }
+            every { userRepository.findByPhoneNoAndIsWithdrawnFalse(phoneNo) } returns user
+            every { stringRedisTemplate.opsForValue() } returns valueOperations
+            every { valueOperations.get("verifiedToken:$phoneNo") } returns null
+
+            Then("예외가 발생한다") {
+                shouldThrow<NotFoundException> {
+                    authService.signin(request)
+                }.errorCode shouldBe ErrorCode.VERIFIED_TOKEN_NOT_FOUND
+            }
+        }
+
+        When("인증토큰이 일치하지 않으면") {
+            val userId = UUID.randomUUID()
+            val user = mockk<User> {
+                every { id } returns userId
+            }
+            every { userRepository.findByPhoneNoAndIsWithdrawnFalse(phoneNo) } returns user
+            every { stringRedisTemplate.opsForValue() } returns valueOperations
+            every { valueOperations.get("verifiedToken:$phoneNo") } returns "abc"
+
+            Then("예외가 발생한다") {
+                shouldThrow<NotFoundException> {
+                    authService.signin(request)
+                }.errorCode shouldBe ErrorCode.VERIFIED_TOKEN_MISMATCH
             }
         }
     }
