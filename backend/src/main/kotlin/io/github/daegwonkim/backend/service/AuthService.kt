@@ -17,6 +17,7 @@ import io.github.daegwonkim.backend.dto.VerificationCodeConfirmResponse
 import io.github.daegwonkim.backend.dto.VerificationCodeSendRequest
 import io.github.daegwonkim.backend.entity.User
 import io.github.daegwonkim.backend.repository.UserRepository
+import io.github.daegwonkim.backend.vo.NicknameWords
 import net.nurigo.sdk.message.model.Message
 import net.nurigo.sdk.message.request.SingleMessageSendingRequest
 import net.nurigo.sdk.message.service.DefaultMessageService
@@ -28,11 +29,6 @@ import java.security.SecureRandom
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 import kotlin.also
-
-data class NicknameWords(
-    val adjectives: List<String>,
-    val nouns: List<String>
-)
 
 @Service
 class AuthService(
