@@ -1,4 +1,4 @@
-package io.github.daegwonkim.backend.common.jwt
+package io.github.daegwonkim.backend.repository
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.redis.core.StringRedisTemplate
@@ -7,7 +7,7 @@ import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 @Service
-class RefreshTokenService(
+class RefreshTokenRedisRepository(
     private val stringRedisTemplate: StringRedisTemplate,
     @Value($$"${jwt.refresh-token-expiration}")
     private val refreshTokenExpiration: Long
@@ -16,10 +16,7 @@ class RefreshTokenService(
         private const val REFRESH_TOKEN_PREFIX = "refreshToken:"
     }
 
-    /**
-     * RefreshToken 저장
-     */
-    fun saveRefreshToken(userId: UUID, refreshToken: String) {
+    fun save(userId: UUID, refreshToken: String) {
         val key = REFRESH_TOKEN_PREFIX + userId
         stringRedisTemplate.opsForValue().set(
             key,
@@ -29,19 +26,13 @@ class RefreshTokenService(
         )
     }
 
-    /**
-     * RefreshToken 조회
-     */
-    fun getRefreshToken(userId: UUID): String? {
+    fun find(userId: UUID): String? {
         val key = REFRESH_TOKEN_PREFIX + userId
         return stringRedisTemplate.opsForValue().get(key)
     }
 
-    /**
-     * RefreshToken 삭제 (로그아웃 시)
-     */
-    fun deleteRefreshToken(userId: UUID) {
+    fun delete(userId: UUID): Boolean {
         val key = REFRESH_TOKEN_PREFIX + userId
-        stringRedisTemplate.delete(key)
+        return stringRedisTemplate.delete(key)
     }
 }

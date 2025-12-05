@@ -1,6 +1,6 @@
 package io.github.daegwonkim.backend.common.event
 
-import io.github.daegwonkim.backend.common.jwt.RefreshTokenService
+import io.github.daegwonkim.backend.repository.RefreshTokenRedisRepository
 import io.github.daegwonkim.backend.common.event.dto.RefreshTokenDeleteEvent
 import io.github.daegwonkim.backend.common.event.dto.RefreshTokenSaveEvent
 import io.github.daegwonkim.backend.common.event.dto.VerifiedTokenDeleteEvent
@@ -12,7 +12,7 @@ import org.springframework.transaction.event.TransactionalEventListener
 @Component
 class RedisEventListener(
     private val stringRedisTemplate: StringRedisTemplate,
-    private val refreshTokenService: RefreshTokenService
+    private val refreshTokenRedisRepository: RefreshTokenRedisRepository
 ) {
     companion object {
         private const val VERIFIED_TOKEN_KEY_PREFIX = "verifiedToken:"
@@ -25,12 +25,12 @@ class RedisEventListener(
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     fun handleRefreshTokenSave(event: RefreshTokenSaveEvent) {
-        refreshTokenService.saveRefreshToken(event.userId, event.refreshToken)
+        refreshTokenRedisRepository.save(event.userId, event.refreshToken)
     }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     fun handleRefreshTokenDelete(event: RefreshTokenDeleteEvent) {
-        refreshTokenService.deleteRefreshToken(event.userId)
+        refreshTokenRedisRepository.delete(event.userId)
     }
 
     private fun verifiedTokenKey(phoneNo: String): String =

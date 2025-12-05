@@ -1,13 +1,11 @@
 package io.github.daegwonkim.backend.service
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import io.github.daegwonkim.backend.common.exception.ErrorCode
 import io.github.daegwonkim.backend.common.exception.ExternalServiceException
 import io.github.daegwonkim.backend.common.exception.InvalidValueException
 import io.github.daegwonkim.backend.common.exception.NotFoundException
 import io.github.daegwonkim.backend.common.jwt.JwtTokenProvider
-import io.github.daegwonkim.backend.common.jwt.RefreshTokenService
+import io.github.daegwonkim.backend.repository.RefreshTokenRedisRepository
 import io.github.daegwonkim.backend.dto.TokenReissueResponse
 import io.github.daegwonkim.backend.dto.PhoneNoConfirmRequest
 import io.github.daegwonkim.backend.dto.TokenReissueRequest
@@ -22,74 +20,63 @@ import io.github.daegwonkim.backend.entity.User
 import io.github.daegwonkim.backend.common.event.dto.RefreshTokenDeleteEvent
 import io.github.daegwonkim.backend.common.event.dto.RefreshTokenSaveEvent
 import io.github.daegwonkim.backend.common.event.dto.VerifiedTokenDeleteEvent
+import io.github.daegwonkim.backend.repository.VerifiedTokenRedisRepository
 import io.github.daegwonkim.backend.repository.UserRepository
-import io.github.daegwonkim.backend.vo.NicknameWords
+import io.github.daegwonkim.backend.repository.VerificationCodeRedisRepository
+import io.github.daegwonkim.backend.util.NicknameGenerator
 import net.nurigo.sdk.message.model.Message
 import net.nurigo.sdk.message.request.SingleMessageSendingRequest
 import net.nurigo.sdk.message.service.DefaultMessageService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationEventPublisher
-import org.springframework.core.io.ClassPathResource
-import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.security.SecureRandom
 import java.util.UUID
-import java.util.concurrent.TimeUnit
-import kotlin.also
 
 @Service
 class AuthService(
     private val messageService: DefaultMessageService,
-    private val refreshTokenService: RefreshTokenService,
-    private val stringRedisTemplate: StringRedisTemplate,
+    private val refreshTokenRedisRepository: RefreshTokenRedisRepository,
+    private val verifiedTokenRedisRepository: VerifiedTokenRedisRepository,
+    private val verificationCodeRedisRepository: VerificationCodeRedisRepository,
     private val jwtTokenProvider: JwtTokenProvider,
     private val userRepository: UserRepository,
     private val eventPublisher: ApplicationEventPublisher,
+    private val nicknameGenerator: NicknameGenerator,
     @Value($$"${coolsms.from}")
-    private val smsFrom: String,
-    @Value($$"${verification-code.expiration}")
-    private val verificationCodeExpiration: Long,
-    @Value($$"${verified-token.expiration}")
-    private val verifiedTokenExpiration: Long
+    private val smsFrom: String
 ) {
-    private val mapper = jacksonObjectMapper()
-    private val words: NicknameWords
-
-    init {
-        val resource = ClassPathResource("data/nicknames.json")
-        words = mapper.readValue(resource.inputStream)
-    }
-
     companion object {
-        private const val VERIFICATION_CODE_KEY_PREFIX = "verificationCode:"
-        private const val VERIFIED_TOKEN_KEY_PREFIX = "verifiedToken:"
         private const val COOLSMS_SUCCESS_CODE = "2000"
         private const val VERIFICATION_CODE_LENGTH = 6
+        private const val MAX_NICKNAME_RETRY = 10
     }
 
     fun sendVerificationCode(request: VerificationCodeSendRequest) {
         val verificationCode = generateVerificationCode()
 
-        sendSms(request.phoneNo, verificationCode)
-            .takeIf { it }
-            ?.also { stringRedisTemplate.saveVerificationCode(request.phoneNo, verificationCode) }
-            ?: throw ExternalServiceException(ErrorCode.SMS_SEND_FAILED)
+        runCatching {
+            sendSms(request.phoneNo, verificationCode)
+        }.onSuccess { success ->
+            if (success) {
+                verificationCodeRedisRepository.save(request.phoneNo, verificationCode)
+            } else {
+                throw ExternalServiceException(ErrorCode.SMS_SEND_FAILED)
+            }
+        }.onFailure {
+            throw ExternalServiceException(ErrorCode.SMS_SEND_FAILED, it)
+        }
     }
 
     fun confirmVerificationCode(request: VerificationCodeConfirmRequest): VerificationCodeConfirmResponse {
-        val savedCode = stringRedisTemplate.getVerificationCode(request.phoneNo)
-            ?: throw NotFoundException(ErrorCode.VERIFICATION_CODE_NOT_FOUND)
+        validateVerificationCode(request.phoneNo, request.verificationCode)
 
-        savedCode.takeIf { it == request.verificationCode }
-            ?: throw NotFoundException(ErrorCode.VERIFICATION_CODE_MISMATCH)
+        verificationCodeRedisRepository.delete(request.phoneNo)
 
-        stringRedisTemplate.deleteVerificationCode(request.phoneNo)
-
-        val verifiedToken = UUID.randomUUID().toString().also { verifiedToken ->
-            stringRedisTemplate.saveVerifiedToken(request.phoneNo, verifiedToken)
-        }
+        val verifiedToken = UUID.randomUUID().toString()
+        verifiedTokenRedisRepository.save(request.phoneNo, verifiedToken)
 
         return VerificationCodeConfirmResponse(verifiedToken)
     }
@@ -102,17 +89,15 @@ class AuthService(
 
     @Transactional
     fun signup(request: SignupRequest): SignupResponse {
-        val savedToken = stringRedisTemplate.getVerifiedToken(request.phoneNo)
-            ?: throw NotFoundException(ErrorCode.VERIFIED_TOKEN_NOT_FOUND)
+        validateVerifiedToken(request.phoneNo, request.verifiedToken)
 
-        savedToken.takeIf { it == request.verifiedToken }
-            ?: throw NotFoundException(ErrorCode.VERIFIED_TOKEN_MISMATCH)
-
-        val user = userRepository.save(User(
-            phoneNo = request.phoneNo,
-            nickname = generateNickname()
-        ))
-        val userId = requireNotNull(user.id) { "User ID cannot be null" }
+        val user = userRepository.save(
+            User(
+                phoneNo = request.phoneNo,
+                nickname = generateUniqueNickname()
+            )
+        )
+        val userId = user.id!!
 
         val accessToken = jwtTokenProvider.generateAccessToken(userId)
         val refreshToken = jwtTokenProvider.generateRefreshToken(userId)
@@ -127,13 +112,10 @@ class AuthService(
     fun signin(request: SigninRequest): SigninResponse {
         val user = userRepository.findByPhoneNoAndIsWithdrawnFalse(request.phoneNo)
             ?: throw NotFoundException(ErrorCode.USER_NOT_FOUND)
-        val userId = requireNotNull(user.id) { "User ID cannot be null" }
 
-        val savedToken = stringRedisTemplate.getVerifiedToken(request.phoneNo)
-            ?: throw NotFoundException(ErrorCode.VERIFIED_TOKEN_NOT_FOUND)
+        validateVerifiedToken(request.phoneNo, request.verifiedToken)
 
-        savedToken.takeIf { it == request.verifiedToken }
-            ?: throw NotFoundException(ErrorCode.VERIFIED_TOKEN_MISMATCH)
+        val userId = user.id!!
 
         val accessToken = jwtTokenProvider.generateAccessToken(userId)
         val refreshToken = jwtTokenProvider.generateRefreshToken(userId)
@@ -146,18 +128,18 @@ class AuthService(
 
     @Transactional(readOnly = true)
     fun reissueToken(request: TokenReissueRequest): TokenReissueResponse {
-        require(jwtTokenProvider.validateToken(request.refreshToken)) {
+        if (!jwtTokenProvider.validateToken(request.refreshToken)) {
             throw InvalidValueException(ErrorCode.INVALID_REFRESH_TOKEN)
         }
 
         val userId = jwtTokenProvider.getUserIdFromToken(request.refreshToken)
-        val savedRefreshToken = refreshTokenService.getRefreshToken(userId)
+        val savedRefreshToken = refreshTokenRedisRepository.find(userId)
             ?: throw NotFoundException(ErrorCode.REFRESH_TOKEN_NOT_FOUND)
 
         userRepository.findByIdOrNull(userId)
             ?: throw NotFoundException(ErrorCode.USER_NOT_FOUND)
 
-        require(savedRefreshToken == request.refreshToken) {
+        if (savedRefreshToken != request.refreshToken) {
             throw NotFoundException(ErrorCode.REFRESH_TOKEN_MISMATCH)
         }
 
@@ -170,10 +152,34 @@ class AuthService(
         return TokenReissueResponse(newAccessToken, newRefreshToken)
     }
 
-    private fun generateNickname(): String {
-        val adj = words.adjectives.random()
-        val noun = words.nouns.random()
-        return "$adj $noun"
+    // Private helper methods
+
+    private fun validateVerificationCode(phoneNo: String, code: String) {
+        val savedCode = verificationCodeRedisRepository.find(phoneNo)
+            ?: throw NotFoundException(ErrorCode.VERIFICATION_CODE_NOT_FOUND)
+
+        if (savedCode != code) {
+            throw NotFoundException(ErrorCode.VERIFICATION_CODE_MISMATCH)
+        }
+    }
+
+    private fun validateVerifiedToken(phoneNo: String, token: String) {
+        val savedToken = verifiedTokenRedisRepository.find(phoneNo)
+            ?: throw NotFoundException(ErrorCode.VERIFIED_TOKEN_NOT_FOUND)
+
+        if (savedToken != token) {
+            throw NotFoundException(ErrorCode.VERIFIED_TOKEN_MISMATCH)
+        }
+    }
+
+    private fun generateUniqueNickname(): String {
+        repeat(MAX_NICKNAME_RETRY) {
+            val nickname = nicknameGenerator.generate()
+            if (!userRepository.existsByNickname(nickname)) {
+                return nickname
+            }
+        }
+        throw IllegalStateException("Failed to generate unique nickname after $MAX_NICKNAME_RETRY attempts")
     }
 
     private fun sendSms(phoneNo: String, code: String): Boolean {
@@ -194,39 +200,6 @@ class AuthService(
         SecureRandom().nextInt(10.pow(VERIFICATION_CODE_LENGTH))
             .let { "%0${VERIFICATION_CODE_LENGTH}d".format(it) }
 
-    private fun verificationCodeKey(phoneNo: String): String = "$VERIFICATION_CODE_KEY_PREFIX$phoneNo"
-    private fun verifiedTokenKey(phoneNo: String): String = "$VERIFIED_TOKEN_KEY_PREFIX$phoneNo"
-
     private fun Int.pow(exponent: Int): Int =
         (1..exponent).fold(1) { acc, _ -> acc * this }
-
-    /**
-     * Redis Extension Functions
-     */
-    private fun StringRedisTemplate.getVerificationCode(phoneNo: String): String? =
-        opsForValue().get(verificationCodeKey(phoneNo))
-
-    private fun StringRedisTemplate.saveVerificationCode(phoneNo: String, code: String) {
-        opsForValue().set(
-            verificationCodeKey(phoneNo),
-            code,
-            verificationCodeExpiration,
-            TimeUnit.MINUTES
-        )
-    }
-
-    private fun StringRedisTemplate.deleteVerificationCode(phoneNo: String) =
-        delete(verificationCodeKey(phoneNo))
-
-    private fun StringRedisTemplate.getVerifiedToken(phoneNo: String): String? =
-        opsForValue().get(verifiedTokenKey(phoneNo))
-
-    private fun StringRedisTemplate.saveVerifiedToken(phoneNo: String, token: String) {
-        opsForValue().set(
-            verifiedTokenKey(phoneNo),
-            token,
-            verifiedTokenExpiration,
-            TimeUnit.MINUTES
-        )
-    }
 }
