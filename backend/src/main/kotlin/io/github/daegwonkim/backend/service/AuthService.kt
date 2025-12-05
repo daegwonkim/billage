@@ -19,9 +19,9 @@ import io.github.daegwonkim.backend.dto.VerificationCodeConfirmRequest
 import io.github.daegwonkim.backend.dto.VerificationCodeConfirmResponse
 import io.github.daegwonkim.backend.dto.VerificationCodeSendRequest
 import io.github.daegwonkim.backend.entity.User
-import io.github.daegwonkim.backend.event.RefreshTokenDeleteEvent
-import io.github.daegwonkim.backend.event.RefreshTokenSaveEvent
-import io.github.daegwonkim.backend.event.VerifiedTokenDeleteEvent
+import io.github.daegwonkim.backend.common.event.dto.RefreshTokenDeleteEvent
+import io.github.daegwonkim.backend.common.event.dto.RefreshTokenSaveEvent
+import io.github.daegwonkim.backend.common.event.dto.VerifiedTokenDeleteEvent
 import io.github.daegwonkim.backend.repository.UserRepository
 import io.github.daegwonkim.backend.vo.NicknameWords
 import net.nurigo.sdk.message.model.Message

@@ -9,8 +9,8 @@ import io.github.daegwonkim.backend.dto.SignupRequest
 import io.github.daegwonkim.backend.dto.VerificationCodeConfirmRequest
 import io.github.daegwonkim.backend.dto.VerificationCodeSendRequest
 import io.github.daegwonkim.backend.entity.User
-import io.github.daegwonkim.backend.event.RefreshTokenSaveEvent
-import io.github.daegwonkim.backend.event.VerifiedTokenDeleteEvent
+import io.github.daegwonkim.backend.common.event.dto.RefreshTokenSaveEvent
+import io.github.daegwonkim.backend.common.event.dto.VerifiedTokenDeleteEvent
 import io.github.daegwonkim.backend.repository.UserRepository
 import io.github.daegwonkim.backend.service.AuthService
 import io.kotest.assertions.throwables.shouldThrow

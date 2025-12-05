@@ -1,6 +1,9 @@
-package io.github.daegwonkim.backend.event
+package io.github.daegwonkim.backend.common.event
 
 import io.github.daegwonkim.backend.common.jwt.RefreshTokenService
+import io.github.daegwonkim.backend.common.event.dto.RefreshTokenDeleteEvent
+import io.github.daegwonkim.backend.common.event.dto.RefreshTokenSaveEvent
+import io.github.daegwonkim.backend.common.event.dto.VerifiedTokenDeleteEvent
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Component
 import org.springframework.transaction.event.TransactionPhase
