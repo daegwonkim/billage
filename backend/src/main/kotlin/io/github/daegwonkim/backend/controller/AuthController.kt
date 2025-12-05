@@ -1,8 +1,12 @@
 package io.github.daegwonkim.backend.controller
 
+import io.github.daegwonkim.backend.dto.ReissueResponse
 import io.github.daegwonkim.backend.dto.PhoneNoConfirmRequest
+import io.github.daegwonkim.backend.dto.ReissueRequest
 import io.github.daegwonkim.backend.dto.SigninRequest
+import io.github.daegwonkim.backend.dto.SigninResponse
 import io.github.daegwonkim.backend.dto.SignupRequest
+import io.github.daegwonkim.backend.dto.SignupResponse
 import io.github.daegwonkim.backend.dto.VerificationCodeConfirmRequest
 import io.github.daegwonkim.backend.dto.VerificationCodeConfirmResponse
 import io.github.daegwonkim.backend.dto.VerificationCodeSendRequest
@@ -38,11 +42,16 @@ class AuthController(
 
     @Operation(summary = "회원가입", description = "새로운 계정을 등록합니다")
     @PostMapping("/signup")
-    fun signup(@Valid @RequestBody request: SignupRequest) =
+    fun signup(@Valid @RequestBody request: SignupRequest): SignupResponse =
         authService.signup(request)
 
     @Operation(summary = "로그인", description = "기존 계정으로 로그인합니다")
     @PostMapping("/signin")
-    fun signin(@Valid @RequestBody request: SigninRequest) =
+    fun signin(@Valid @RequestBody request: SigninRequest): SigninResponse =
         authService.signin(request)
+
+    @Operation(summary = "토큰 재발급", description = "AccessToken, RefreshToken을 재발급합니다")
+    @PostMapping("/reissue")
+    fun reissue(request: ReissueRequest): ReissueResponse =
+        authService.reissue(request)
 }

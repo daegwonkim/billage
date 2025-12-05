@@ -4,10 +4,13 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.github.daegwonkim.backend.common.exception.ErrorCode
 import io.github.daegwonkim.backend.common.exception.ExternalServiceException
+import io.github.daegwonkim.backend.common.exception.InvalidValueException
 import io.github.daegwonkim.backend.common.exception.NotFoundException
 import io.github.daegwonkim.backend.common.jwt.JwtTokenProvider
 import io.github.daegwonkim.backend.common.jwt.RefreshTokenService
+import io.github.daegwonkim.backend.dto.ReissueResponse
 import io.github.daegwonkim.backend.dto.PhoneNoConfirmRequest
+import io.github.daegwonkim.backend.dto.ReissueRequest
 import io.github.daegwonkim.backend.dto.SigninRequest
 import io.github.daegwonkim.backend.dto.SigninResponse
 import io.github.daegwonkim.backend.dto.SignupRequest
@@ -109,7 +112,7 @@ class AuthService(
 
         refreshTokenService.saveRefreshToken(userId, refreshToken)
 
-        return SignupResponse(accessToken)
+        return SignupResponse(accessToken, refreshToken)
     }
 
     fun signin(request: SigninRequest): SigninResponse {
@@ -130,7 +133,29 @@ class AuthService(
 
         refreshTokenService.saveRefreshToken(userId, refreshToken)
 
-        return SigninResponse(accessToken)
+        return SigninResponse(accessToken, refreshToken)
+    }
+
+    fun reissue(request: ReissueRequest): ReissueResponse {
+        require(jwtTokenProvider.validateToken(request.refreshToken)) {
+            throw InvalidValueException(ErrorCode.INVALID_REFRESH_TOKEN)
+        }
+
+        val userId = jwtTokenProvider.getUserIdFromToken(request.refreshToken)
+        val savedRefreshToken = refreshTokenService.getRefreshToken(userId)
+            ?: throw NotFoundException(ErrorCode.REFRESH_TOKEN_NOT_FOUND)
+
+        require(savedRefreshToken == request.refreshToken) {
+            throw NotFoundException(ErrorCode.REFRESH_TOKEN_MISMATCH)
+        }
+
+        val newAccessToken = jwtTokenProvider.generateAccessToken(userId)
+        val newRefreshToken = jwtTokenProvider.generateRefreshToken(userId)
+
+        refreshTokenService.deleteRefreshToken(userId)
+        refreshTokenService.saveRefreshToken(userId, newRefreshToken)
+
+        return ReissueResponse(newAccessToken, newRefreshToken)
     }
 
     private fun generateNickname(): String {

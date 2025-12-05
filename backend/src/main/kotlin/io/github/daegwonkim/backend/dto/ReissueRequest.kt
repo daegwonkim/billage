@@ -1,6 +1,5 @@
 package io.github.daegwonkim.backend.dto
 
-data class SignupResponse(
-    val accessToken: String,
+data class ReissueRequest(
     val refreshToken: String
 )
