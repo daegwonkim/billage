@@ -1,5 +1,5 @@
 package io.github.daegwonkim.backend.dto
 
-data class ReissueRequest(
+data class TokenReissueRequest(
     val refreshToken: String
 )

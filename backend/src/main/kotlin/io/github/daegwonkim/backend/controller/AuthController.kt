@@ -1,8 +1,8 @@
 package io.github.daegwonkim.backend.controller
 
-import io.github.daegwonkim.backend.dto.ReissueResponse
+import io.github.daegwonkim.backend.dto.TokenReissueResponse
 import io.github.daegwonkim.backend.dto.PhoneNoConfirmRequest
-import io.github.daegwonkim.backend.dto.ReissueRequest
+import io.github.daegwonkim.backend.dto.TokenReissueRequest
 import io.github.daegwonkim.backend.dto.SigninRequest
 import io.github.daegwonkim.backend.dto.SigninResponse
 import io.github.daegwonkim.backend.dto.SignupRequest
@@ -51,7 +51,7 @@ class AuthController(
         authService.signin(request)
 
     @Operation(summary = "토큰 재발급", description = "AccessToken, RefreshToken을 재발급합니다")
-    @PostMapping("/reissue")
-    fun reissue(request: ReissueRequest): ReissueResponse =
-        authService.reissue(request)
+    @PostMapping("/token/reissue")
+    fun reissueToken(request: TokenReissueRequest): TokenReissueResponse =
+        authService.reissueToken(request)
 }

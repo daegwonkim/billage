@@ -8,9 +8,9 @@ import io.github.daegwonkim.backend.common.exception.InvalidValueException
 import io.github.daegwonkim.backend.common.exception.NotFoundException
 import io.github.daegwonkim.backend.common.jwt.JwtTokenProvider
 import io.github.daegwonkim.backend.common.jwt.RefreshTokenService
-import io.github.daegwonkim.backend.dto.ReissueResponse
+import io.github.daegwonkim.backend.dto.TokenReissueResponse
 import io.github.daegwonkim.backend.dto.PhoneNoConfirmRequest
-import io.github.daegwonkim.backend.dto.ReissueRequest
+import io.github.daegwonkim.backend.dto.TokenReissueRequest
 import io.github.daegwonkim.backend.dto.SigninRequest
 import io.github.daegwonkim.backend.dto.SigninResponse
 import io.github.daegwonkim.backend.dto.SignupRequest
@@ -19,15 +19,21 @@ import io.github.daegwonkim.backend.dto.VerificationCodeConfirmRequest
 import io.github.daegwonkim.backend.dto.VerificationCodeConfirmResponse
 import io.github.daegwonkim.backend.dto.VerificationCodeSendRequest
 import io.github.daegwonkim.backend.entity.User
+import io.github.daegwonkim.backend.event.RefreshTokenDeleteEvent
+import io.github.daegwonkim.backend.event.RefreshTokenSaveEvent
+import io.github.daegwonkim.backend.event.VerifiedTokenDeleteEvent
 import io.github.daegwonkim.backend.repository.UserRepository
 import io.github.daegwonkim.backend.vo.NicknameWords
 import net.nurigo.sdk.message.model.Message
 import net.nurigo.sdk.message.request.SingleMessageSendingRequest
 import net.nurigo.sdk.message.service.DefaultMessageService
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.core.io.ClassPathResource
 import org.springframework.data.redis.core.StringRedisTemplate
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.security.SecureRandom
 import java.util.UUID
 import java.util.concurrent.TimeUnit
@@ -40,6 +46,7 @@ class AuthService(
     private val stringRedisTemplate: StringRedisTemplate,
     private val jwtTokenProvider: JwtTokenProvider,
     private val userRepository: UserRepository,
+    private val eventPublisher: ApplicationEventPublisher,
     @Value($$"${coolsms.from}")
     private val smsFrom: String,
     @Value($$"${verification-code.expiration}")
@@ -87,19 +94,19 @@ class AuthService(
         return VerificationCodeConfirmResponse(verifiedToken)
     }
 
+    @Transactional(readOnly = true)
     fun confirmPhoneNo(request: PhoneNoConfirmRequest) {
         userRepository.findByPhoneNoAndIsWithdrawnFalse(request.phoneNo)
             ?: throw NotFoundException(ErrorCode.USER_NOT_FOUND)
     }
 
+    @Transactional
     fun signup(request: SignupRequest): SignupResponse {
         val savedToken = stringRedisTemplate.getVerifiedToken(request.phoneNo)
             ?: throw NotFoundException(ErrorCode.VERIFIED_TOKEN_NOT_FOUND)
 
         savedToken.takeIf { it == request.verifiedToken }
             ?: throw NotFoundException(ErrorCode.VERIFIED_TOKEN_MISMATCH)
-
-        stringRedisTemplate.deleteVerifiedToken(request.phoneNo)
 
         val user = userRepository.save(User(
             phoneNo = request.phoneNo,
@@ -110,11 +117,13 @@ class AuthService(
         val accessToken = jwtTokenProvider.generateAccessToken(userId)
         val refreshToken = jwtTokenProvider.generateRefreshToken(userId)
 
-        refreshTokenService.saveRefreshToken(userId, refreshToken)
+        eventPublisher.publishEvent(RefreshTokenSaveEvent(userId, refreshToken))
+        eventPublisher.publishEvent(VerifiedTokenDeleteEvent(request.phoneNo))
 
         return SignupResponse(accessToken, refreshToken)
     }
 
+    @Transactional(readOnly = true)
     fun signin(request: SigninRequest): SigninResponse {
         val user = userRepository.findByPhoneNoAndIsWithdrawnFalse(request.phoneNo)
             ?: throw NotFoundException(ErrorCode.USER_NOT_FOUND)
@@ -126,17 +135,17 @@ class AuthService(
         savedToken.takeIf { it == request.verifiedToken }
             ?: throw NotFoundException(ErrorCode.VERIFIED_TOKEN_MISMATCH)
 
-        stringRedisTemplate.deleteVerifiedToken(request.phoneNo)
-
         val accessToken = jwtTokenProvider.generateAccessToken(userId)
         val refreshToken = jwtTokenProvider.generateRefreshToken(userId)
 
-        refreshTokenService.saveRefreshToken(userId, refreshToken)
+        eventPublisher.publishEvent(RefreshTokenSaveEvent(userId, refreshToken))
+        eventPublisher.publishEvent(VerifiedTokenDeleteEvent(request.phoneNo))
 
         return SigninResponse(accessToken, refreshToken)
     }
 
-    fun reissue(request: ReissueRequest): ReissueResponse {
+    @Transactional(readOnly = true)
+    fun reissueToken(request: TokenReissueRequest): TokenReissueResponse {
         require(jwtTokenProvider.validateToken(request.refreshToken)) {
             throw InvalidValueException(ErrorCode.INVALID_REFRESH_TOKEN)
         }
@@ -145,6 +154,9 @@ class AuthService(
         val savedRefreshToken = refreshTokenService.getRefreshToken(userId)
             ?: throw NotFoundException(ErrorCode.REFRESH_TOKEN_NOT_FOUND)
 
+        userRepository.findByIdOrNull(userId)
+            ?: throw NotFoundException(ErrorCode.USER_NOT_FOUND)
+
         require(savedRefreshToken == request.refreshToken) {
             throw NotFoundException(ErrorCode.REFRESH_TOKEN_MISMATCH)
         }
@@ -152,10 +164,10 @@ class AuthService(
         val newAccessToken = jwtTokenProvider.generateAccessToken(userId)
         val newRefreshToken = jwtTokenProvider.generateRefreshToken(userId)
 
-        refreshTokenService.deleteRefreshToken(userId)
-        refreshTokenService.saveRefreshToken(userId, newRefreshToken)
+        eventPublisher.publishEvent(RefreshTokenDeleteEvent(userId))
+        eventPublisher.publishEvent(RefreshTokenSaveEvent(userId, newRefreshToken))
 
-        return ReissueResponse(newAccessToken, newRefreshToken)
+        return TokenReissueResponse(newAccessToken, newRefreshToken)
     }
 
     private fun generateNickname(): String {
@@ -217,7 +229,4 @@ class AuthService(
             TimeUnit.MINUTES
         )
     }
-
-    private fun StringRedisTemplate.deleteVerifiedToken(phoneNo: String) =
-        delete(verifiedTokenKey(phoneNo))
 }
