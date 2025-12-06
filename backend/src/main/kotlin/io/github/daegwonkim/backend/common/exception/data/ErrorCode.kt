@@ -1,4 +1,4 @@
-package io.github.daegwonkim.backend.common.exception
+package io.github.daegwonkim.backend.common.exception.data
 
 import org.springframework.http.HttpStatus
 
@@ -24,6 +24,7 @@ enum class ErrorCode(
 
     // External Service - 외부 서비스 관련
     SMS_SEND_FAILED("E-001", "SMS 전송에 실패했습니다", HttpStatus.INTERNAL_SERVER_ERROR),
+    REDIS_CONNECTION_FAILED("E-002", "Redis 서버 연결에 실패했습니다", HttpStatus.INTERNAL_SERVER_ERROR),
 
     // Server - 서버 관련
     INTERNAL_SERVER_ERROR("S-001", "서버 내부 오류가 발생했습니다", HttpStatus.INTERNAL_SERVER_ERROR);

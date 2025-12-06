@@ -1,7 +1,11 @@
-package io.github.daegwonkim.backend.common.exception
+package io.github.daegwonkim.backend.common.exception.handler
 
+import io.github.daegwonkim.backend.common.exception.base.BusinessException
+import io.github.daegwonkim.backend.common.exception.data.ErrorCode
+import io.github.daegwonkim.backend.common.exception.data.ErrorResponse
+import io.github.daegwonkim.backend.common.exception.base.InfrastructureException
+import io.github.daegwonkim.backend.logger
 import jakarta.servlet.http.HttpServletRequest
-import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -10,16 +14,28 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 @RestControllerAdvice
 class GlobalExceptionHandler {
 
-    private val log = LoggerFactory.getLogger(javaClass)
-
     @ExceptionHandler(BusinessException::class)
     fun handleBusinessException(
         e: BusinessException,
         request: HttpServletRequest
     ): ResponseEntity<ErrorResponse> {
-        log.warn("BusinessException: {}", e.message)
+        logger.warn { "BusinessException: ${e.message}" }
 
-        val response = ErrorResponse.of(e.errorCode, request.requestURI)
+        val response = ErrorResponse.Companion.of(e.errorCode, request.requestURI)
+
+        return ResponseEntity
+            .status(e.errorCode.status)
+            .body(response)
+    }
+
+    @ExceptionHandler(InfrastructureException::class)
+    fun handleInfrastructureException(
+        e: InfrastructureException,
+        request: HttpServletRequest
+    ): ResponseEntity<ErrorResponse> {
+        logger.warn { "InfrastructureException: ${e.message}" }
+
+        val response = ErrorResponse.Companion.of(e.errorCode, request.requestURI)
 
         return ResponseEntity
             .status(e.errorCode.status)
@@ -31,7 +47,7 @@ class GlobalExceptionHandler {
         e: MethodArgumentNotValidException,
         request: HttpServletRequest
     ): ResponseEntity<ErrorResponse> {
-        log.warn("Validation failed: {}", e.message)
+        logger.warn { "Validation failed: ${e.message}" }
 
         val fieldErrors = e.bindingResult.fieldErrors.map { fieldError ->
             ErrorResponse.FieldError(
@@ -41,7 +57,7 @@ class GlobalExceptionHandler {
             )
         }
 
-        val response = ErrorResponse.of(
+        val response = ErrorResponse.Companion.of(
             ErrorCode.INVALID_INPUT_VALUE,
             request.requestURI,
             fieldErrors
@@ -57,9 +73,9 @@ class GlobalExceptionHandler {
         e: Exception,
         request: HttpServletRequest
     ): ResponseEntity<ErrorResponse> {
-        log.error("Unexpected error occurred", e)
+        logger.error { "Unexpected error occurred $e" }
 
-        val response = ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR, request.requestURI)
+        val response = ErrorResponse.Companion.of(ErrorCode.INTERNAL_SERVER_ERROR, request.requestURI)
 
         return ResponseEntity
             .internalServerError()

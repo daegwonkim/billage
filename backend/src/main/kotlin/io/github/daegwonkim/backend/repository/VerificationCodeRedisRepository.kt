@@ -18,10 +18,10 @@ class VerificationCodeRedisRepository(
     fun find(phoneNo: String): String? =
         stringRedisTemplate.opsForValue().get(verificationCodeKey(phoneNo))
 
-    fun save(phoneNo: String, code: String) {
+    fun save(phoneNo: String, verificationCode: String) {
         stringRedisTemplate.opsForValue().set(
             verificationCodeKey(phoneNo),
-            code,
+            verificationCode,
             verificationCodeExpiration,
             TimeUnit.MINUTES
         )

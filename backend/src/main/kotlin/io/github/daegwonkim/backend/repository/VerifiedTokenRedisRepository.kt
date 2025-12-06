@@ -18,10 +18,10 @@ class VerifiedTokenRedisRepository(
     fun find(phoneNo: String): String? =
         stringRedisTemplate.opsForValue().get(verifiedTokenKey(phoneNo))
 
-    fun save(phoneNo: String, token: String) {
+    fun save(phoneNo: String, verifiedToken: String) {
         stringRedisTemplate.opsForValue().set(
             verifiedTokenKey(phoneNo),
-            token,
+            verifiedToken,
             verifiedTokenExpiration,
             TimeUnit.MINUTES
         )

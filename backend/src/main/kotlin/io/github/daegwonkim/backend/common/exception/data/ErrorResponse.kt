@@ -1,4 +1,4 @@
-package io.github.daegwonkim.backend.common.exception
+package io.github.daegwonkim.backend.common.exception.data
 
 import java.time.LocalDateTime
 

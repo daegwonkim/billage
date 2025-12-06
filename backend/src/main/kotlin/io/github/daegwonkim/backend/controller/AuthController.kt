@@ -3,10 +3,10 @@ package io.github.daegwonkim.backend.controller
 import io.github.daegwonkim.backend.dto.TokenReissueResponse
 import io.github.daegwonkim.backend.dto.PhoneNoConfirmRequest
 import io.github.daegwonkim.backend.dto.TokenReissueRequest
-import io.github.daegwonkim.backend.dto.SigninRequest
-import io.github.daegwonkim.backend.dto.SigninResponse
-import io.github.daegwonkim.backend.dto.SignupRequest
-import io.github.daegwonkim.backend.dto.SignupResponse
+import io.github.daegwonkim.backend.dto.SignInRequest
+import io.github.daegwonkim.backend.dto.SignInResponse
+import io.github.daegwonkim.backend.dto.SignUpRequest
+import io.github.daegwonkim.backend.dto.SignUpResponse
 import io.github.daegwonkim.backend.dto.VerificationCodeConfirmRequest
 import io.github.daegwonkim.backend.dto.VerificationCodeConfirmResponse
 import io.github.daegwonkim.backend.dto.VerificationCodeSendRequest
@@ -41,14 +41,14 @@ class AuthController(
         authService.confirmPhoneNo(request)
 
     @Operation(summary = "회원가입", description = "새로운 계정을 등록합니다")
-    @PostMapping("/signup")
-    fun signup(@Valid @RequestBody request: SignupRequest): SignupResponse =
-        authService.signup(request)
+    @PostMapping("/sign-up")
+    fun signUp(@Valid @RequestBody request: SignUpRequest): SignUpResponse =
+        authService.signUp(request)
 
     @Operation(summary = "로그인", description = "기존 계정으로 로그인합니다")
-    @PostMapping("/signin")
-    fun signin(@Valid @RequestBody request: SigninRequest): SigninResponse =
-        authService.signin(request)
+    @PostMapping("/sign-in")
+    fun signIn(@Valid @RequestBody request: SignInRequest): SignInResponse =
+        authService.signIn(request)
 
     @Operation(summary = "토큰 재발급", description = "AccessToken, RefreshToken을 재발급합니다")
     @PostMapping("/token/reissue")

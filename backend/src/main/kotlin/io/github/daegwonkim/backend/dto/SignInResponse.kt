@@ -1,6 +1,6 @@
 package io.github.daegwonkim.backend.dto
 
-data class SigninResponse(
+data class SignInResponse(
     val accessToken: String,
     val refreshToken: String
 )

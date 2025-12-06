@@ -1,9 +1,9 @@
 package io.github.daegwonkim.backend.common.jwt
 
+import io.github.daegwonkim.backend.logger
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.util.Date
@@ -19,8 +19,6 @@ class JwtTokenProvider(
     @Value($$"${jwt.refresh-token-expiration}")
     private val refreshTokenExpiration: Long
 ) {
-    private val log = LoggerFactory.getLogger(javaClass)
-
     private val secretKey : SecretKey by lazy {
         Keys.hmacShaKeyFor(secret.toByteArray())
     }
@@ -40,7 +38,7 @@ class JwtTokenProvider(
             getClaims(token)
             true
         } catch (e: Exception) {
-            log.warn("Invalid JWT: ${e.message}")
+            logger.warn { "Invalid JWT: ${e.message}" }
             false
         }
     }

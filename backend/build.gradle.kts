@@ -39,6 +39,9 @@ dependencies {
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.5")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.5")
 
+    // logging
+    implementation("io.github.oshai:kotlin-logging-jvm:7.0.3")
+
 	testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-data-redis-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-validation-test")
