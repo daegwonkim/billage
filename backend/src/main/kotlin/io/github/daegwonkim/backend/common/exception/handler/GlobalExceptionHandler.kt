@@ -21,7 +21,7 @@ class GlobalExceptionHandler {
     ): ResponseEntity<ErrorResponse> {
         logger.warn { "BusinessException: ${e.message}" }
 
-        val response = ErrorResponse.Companion.of(e.errorCode, request.requestURI)
+        val response = ErrorResponse.of(e.errorCode, request.requestURI)
 
         return ResponseEntity
             .status(e.errorCode.status)
@@ -35,7 +35,7 @@ class GlobalExceptionHandler {
     ): ResponseEntity<ErrorResponse> {
         logger.warn { "InfrastructureException: ${e.message}" }
 
-        val response = ErrorResponse.Companion.of(e.errorCode, request.requestURI)
+        val response = ErrorResponse.of(e.errorCode, request.requestURI)
 
         return ResponseEntity
             .status(e.errorCode.status)
@@ -57,7 +57,7 @@ class GlobalExceptionHandler {
             )
         }
 
-        val response = ErrorResponse.Companion.of(
+        val response = ErrorResponse.of(
             ErrorCode.INVALID_INPUT_VALUE,
             request.requestURI,
             fieldErrors
@@ -75,7 +75,7 @@ class GlobalExceptionHandler {
     ): ResponseEntity<ErrorResponse> {
         logger.error { "Unexpected error occurred $e" }
 
-        val response = ErrorResponse.Companion.of(ErrorCode.INTERNAL_SERVER_ERROR, request.requestURI)
+        val response = ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR, request.requestURI)
 
         return ResponseEntity
             .internalServerError()

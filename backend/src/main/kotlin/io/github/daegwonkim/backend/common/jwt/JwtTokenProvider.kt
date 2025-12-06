@@ -14,9 +14,9 @@ import javax.crypto.SecretKey
 class JwtTokenProvider(
     @Value($$"${jwt.secret}")
     private val secret: String,
-    @Value($$"${jwt.access-token-expiration}")
+    @Value($$"${jwt.access-token-expiration.milliseconds}")
     private val accessTokenExpiration: Long,
-    @Value($$"${jwt.refresh-token-expiration}")
+    @Value($$"${jwt.refresh-token-expiration.milliseconds}")
     private val refreshTokenExpiration: Long
 ) {
     private val secretKey : SecretKey by lazy {
