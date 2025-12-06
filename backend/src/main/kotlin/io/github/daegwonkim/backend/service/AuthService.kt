@@ -98,7 +98,7 @@ class AuthService(
                 nickname = nicknameGenerator.generate()
             )
         )
-        val userId = user.id!!
+        val userId = requireNotNull(user.id) { "User ID should not be null" }
 
         val accessToken = jwtTokenProvider.generateAccessToken(userId = userId)
         val refreshToken = jwtTokenProvider.generateRefreshToken(userId = userId)
@@ -116,7 +116,7 @@ class AuthService(
 
         validateVerifiedToken(phoneNo = request.phoneNo, verifiedToken = request.verifiedToken)
 
-        val userId = user.id!!
+        val userId = requireNotNull(user.id) { "User ID should not be null" }
 
         val accessToken = jwtTokenProvider.generateAccessToken(userId = userId)
         val refreshToken = jwtTokenProvider.generateRefreshToken(userId = userId)
@@ -134,15 +134,11 @@ class AuthService(
         }
 
         val userId = jwtTokenProvider.getUserIdFromToken(token = request.refreshToken)
-        val savedRefreshToken = refreshTokenRedisRepository.find(userId = userId)
-            ?: throw NotFoundException(errorCode = ErrorCode.REFRESH_TOKEN_NOT_FOUND)
 
         userRepository.findByIdOrNull(id = userId)
             ?: throw NotFoundException(errorCode = ErrorCode.USER_NOT_FOUND)
 
-        if (savedRefreshToken != request.refreshToken) {
-            throw InvalidValueException(errorCode = ErrorCode.REFRESH_TOKEN_MISMATCH)
-        }
+        validateRefreshToken(userId = userId, refreshToken = request.refreshToken)
 
         val newAccessToken = jwtTokenProvider.generateAccessToken(userId = userId)
         val newRefreshToken = jwtTokenProvider.generateRefreshToken(userId = userId)
@@ -181,6 +177,21 @@ class AuthService(
             savedToken != verifiedToken -> {
                 logger.warn { "인증 토큰 불일치: phoneNo=$phoneNo" }
                 throw InvalidValueException(errorCode = ErrorCode.VERIFIED_TOKEN_MISMATCH)
+            }
+        }
+    }
+
+    private fun validateRefreshToken(userId: UUID, refreshToken: String) {
+        val savedRefreshToken = refreshTokenRedisRepository.find(userId = userId)
+
+        when {
+            savedRefreshToken == null -> {
+                logger.warn { "존재하지 않는 RefreshToken 조회 시도: userId=$userId" }
+                throw NotFoundException(errorCode = ErrorCode.REFRESH_TOKEN_NOT_FOUND)
+            }
+            savedRefreshToken != refreshToken -> {
+                logger.warn { "RefreshToken 불일치: userId=$userId" }
+                throw InvalidValueException(errorCode = ErrorCode.REFRESH_TOKEN_MISMATCH)
             }
         }
     }
