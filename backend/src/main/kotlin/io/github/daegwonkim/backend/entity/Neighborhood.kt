@@ -17,7 +17,7 @@ class Neighborhood(
     @Column(columnDefinition = "UUID")
     val id: UUID? = null,
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     val code: String,
 
     @Column(nullable = false)
