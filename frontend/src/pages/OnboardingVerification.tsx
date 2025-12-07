@@ -2,6 +2,8 @@ import {
   sendVerificationCode,
   confirmVerificationCode
 } from '@/api/domain/auth'
+import type { VerificationCodeConfirmRequest } from '@/api/dto/VerificationCodeConfirm'
+import type { VerificationCodeSendRequest } from '@/api/dto/VerificationCodeSend'
 import logo from '@/assets/main.png'
 import { useMutation } from '@tanstack/react-query'
 import { ChevronLeft, CircleAlert } from 'lucide-react'
@@ -20,17 +22,13 @@ export default function OnboardingVerification() {
   const verificationCodeInputRef = useRef<HTMLInputElement>(null)
 
   const sendVerificationCodeMutation = useMutation({
-    mutationFn: (phoneNo: string) => sendVerificationCode(phoneNo)
+    mutationFn: (request: VerificationCodeSendRequest) =>
+      sendVerificationCode(request)
   })
 
   const verificationCodeConfirmMutation = useMutation({
-    mutationFn: ({
-      phoneNo,
-      verificatioCode
-    }: {
-      phoneNo: string
-      verificatioCode: string
-    }) => confirmVerificationCode(phoneNo, verificatioCode),
+    mutationFn: (request: VerificationCodeConfirmRequest) =>
+      confirmVerificationCode(request),
     onSuccess: () => {
       setInvalidVerificationCode(false)
       navigate('/onboarding/neighborhood')
@@ -112,7 +110,7 @@ export default function OnboardingVerification() {
               onClick={() =>
                 verificationCodeConfirmMutation.mutate({
                   phoneNo: phoneNo,
-                  verificatioCode: verificationCode
+                  verificationCode: verificationCode
                 })
               }>
               확인
