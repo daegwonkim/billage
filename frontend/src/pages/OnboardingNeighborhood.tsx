@@ -1,4 +1,5 @@
-import { signup } from '@/api/onboarding'
+import { signUp } from '@/api/domain/auth'
+import type { SignUpRequest } from '@/api/dto/SignUp'
 import logo from '@/assets/main.png'
 import { BottomSheet } from '@/components/common/BottomSheet'
 import { BottomSheetItem } from '@/components/common/BottomSheetItem'
@@ -57,7 +58,7 @@ export default function OnboardingNeighborhood() {
   ]
 
   const signupMutation = useMutation({
-    mutationFn: (phone: string) => signup(phone),
+    mutationFn: (request: SignUpRequest) => signUp(request),
     onSuccess: () => navigate('/')
   })
 

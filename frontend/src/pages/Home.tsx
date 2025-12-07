@@ -3,9 +3,9 @@ import { Header } from '../components/common/Header'
 import { RentalItemCategories } from '../components/main/RentalItemCategories'
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useRef } from 'react'
-import { useRentalItemCategories, useRentalItems } from '@/hooks/rentalItem'
+import { useRentalItemCategories, useRentalItems } from '@/hooks/RentalItem'
 
-export function Main() {
+export function Home() {
   const navigate = useNavigate()
   const observerTarget = useRef<HTMLDivElement>(null)
 

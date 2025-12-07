@@ -1,4 +1,4 @@
-import { useSimilarRentalItems } from '@/hooks/rentalItem'
+import { useSimilarRentalItems } from '@/hooks/RentalItem'
 import { ChevronRight } from 'lucide-react'
 import { useRef, useState } from 'react'
 

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
-import { Main } from './pages/Main'
+import { Home } from './pages/Home'
 import { BottomNav } from './components/common/BottomNav'
 import type { NavTab } from './types'
 import { RentalItemDetail } from './pages/RentalItemDetail'
@@ -57,7 +57,7 @@ function AppContent() {
           />
           <Route
             path="/"
-            element={<Main />}
+            element={<Home />}
           />
           <Route
             path="/rental-items/:id"

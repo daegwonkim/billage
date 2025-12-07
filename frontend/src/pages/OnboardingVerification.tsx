@@ -1,4 +1,7 @@
-import { sendVerificationCode, verifyVerificationCode } from '@/api/onboarding'
+import {
+  sendVerificationCode,
+  confirmVerificationCode
+} from '@/api/domain/auth'
 import logo from '@/assets/main.png'
 import { useMutation } from '@tanstack/react-query'
 import { ChevronLeft, CircleAlert } from 'lucide-react'
@@ -9,36 +12,38 @@ export default function OnboardingVerification() {
   const navigate = useNavigate()
 
   const location = useLocation()
-  const phoneNumber = location.state?.phoneNumber || ''
+  const phoneNo = location.state?.phoneNo || ''
 
   const [verificationCode, setVerificationCode] = useState('')
-  const [hasShownSubmitButton, setHasShownSubmitButton] = useState(false)
   const [timeLeft, setTimeLeft] = useState(300)
-
   const [invalidVerificationCode, setInvalidVerificationCode] = useState(false)
+  const verificationCodeInputRef = useRef<HTMLInputElement>(null)
 
-  const verificationInputRef = useRef<HTMLInputElement>(null)
-
-  const sendVerificationMutation = useMutation({
-    mutationFn: (phone: string) => sendVerificationCode(phone)
+  const sendVerificationCodeMutation = useMutation({
+    mutationFn: (phoneNo: string) => sendVerificationCode(phoneNo)
   })
 
-  const verifyMutation = useMutation({
-    mutationFn: ({ phone, code }: { phone: string; code: string }) =>
-      verifyVerificationCode(phone, code),
+  const verificationCodeConfirmMutation = useMutation({
+    mutationFn: ({
+      phoneNo,
+      verificatioCode
+    }: {
+      phoneNo: string
+      verificatioCode: string
+    }) => confirmVerificationCode(phoneNo, verificatioCode),
     onSuccess: () => {
       setInvalidVerificationCode(false)
       navigate('/onboarding/neighborhood')
     },
     onError: () => {
       setInvalidVerificationCode(true)
-      verificationInputRef.current?.focus()
+      verificationCodeInputRef.current?.focus()
     }
   })
 
   useEffect(() => {
-    verificationInputRef.current?.focus()
-    sendVerificationMutation.mutate(phoneNumber)
+    verificationCodeInputRef.current?.focus()
+    sendVerificationCodeMutation.mutate(phoneNo)
   }, [])
 
   useEffect(() => {
@@ -51,14 +56,7 @@ export default function OnboardingVerification() {
     return () => clearInterval(timer)
   }, [timeLeft])
 
-  const shouldShowSubmitButton = verificationCode.trim().length >= 6
-
-  useEffect(() => {
-    if (shouldShowSubmitButton && !hasShownSubmitButton)
-      setHasShownSubmitButton(true)
-  }, [shouldShowSubmitButton])
-
-  const showSubmitButton = shouldShowSubmitButton || hasShownSubmitButton
+  const showSubmitButton = verificationCode.trim().length >= 6
 
   return (
     <div className="flex min-h-screen w-md flex-col items-center justify-center p-4">
@@ -79,7 +77,7 @@ export default function OnboardingVerification() {
             </label>
             <div className="relative w-full">
               <input
-                ref={verificationInputRef}
+                ref={verificationCodeInputRef}
                 className="h-12 w-full rounded-lg border border-gray-300 px-4 pr-16 transition-colors focus:border-red-400 focus:ring-2 focus:ring-red-100 focus:outline-none"
                 placeholder="인증번호 6자리"
                 value={verificationCode}
@@ -111,7 +109,12 @@ export default function OnboardingVerification() {
           {showSubmitButton && (
             <button
               className="animate-fade-in h-12 w-full transform rounded-xl bg-red-400 font-semibold text-white shadow-md transition-all duration-300 ease-out"
-              onClick={() => verifyMutation.mutate(phoneNumber)}>
+              onClick={() =>
+                verificationCodeConfirmMutation.mutate({
+                  phoneNo: phoneNo,
+                  verificatioCode: verificationCode
+                })
+              }>
               확인
             </button>
           )}

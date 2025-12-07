@@ -1,4 +1,4 @@
-import type { Seller } from './User'
+import type { User } from './UserRentalItemsQuery'
 
 export interface RentalItemsQueryResponse {
   content: RentalItemsCard[]
@@ -23,7 +23,7 @@ export interface RentalItemsCard {
 
 export interface RentalItemDetailResponse {
   id: string
-  seller: Seller
+  seller: User
   category: string
   name: string
   description: string
@@ -38,7 +38,7 @@ export interface RentalItemDetailResponse {
   createdAt: Date
 }
 
-export interface SimilarRentalItemResponse {
+export interface SimilarRentalItemsQueryResponse {
   rentalItems: SimilarRentalItem[]
 }
 

@@ -6,7 +6,7 @@ import { RentalItemDetailSellerItems } from '@/components/detail/RentalItemDetai
 import { RentalItemDetailSimilarItems } from '@/components/detail/RentalItemDetailSimilarItems'
 import { RentalItemDetailSeller } from '@/components/detail/RentalItemDetailSeller'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useRentalItemDetail } from '@/hooks/rentalItem'
+import { useRentalItemDetail } from '@/hooks/RentalItem'
 
 export function RentalItemDetail() {
   const { id } = useParams<{ id: string }>()

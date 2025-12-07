@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import type { RentalItemCategory } from '@/models/RentalItemCategory'
+import type { RentalItemCategory } from '@/api/dto/RentalItemCategoriesQuery'
 
 interface RentalItemCategoriesProps {
   rentalItemCategories: RentalItemCategory[]

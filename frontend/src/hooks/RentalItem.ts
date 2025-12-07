@@ -1,15 +1,15 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
-import type { RentalItemCategoryResponse } from '@/models/RentalItemCategory'
-import { getCategories, getRentalItems } from '@/api/main'
+import { getCategories, getRentalItems } from '@/api/domain/main'
+import { getRentalItem, getSimilarRentalItems } from '@/api/domain/detail'
+import type { RentalItemCategoriesQueryResponse } from '@/api/dto/RentalItemCategoriesQuery'
 import type {
   RentalItemDetailResponse,
   RentalItemsQueryResponse,
-  SimilarRentalItemResponse
-} from '@/models/RentalItem'
-import { getRentalItem, getSimilarRentalItems } from '@/api/detail'
+  SimilarRentalItemsQueryResponse
+} from '@/api/dto/RentalItemsQuery'
 
 export function useRentalItemCategories() {
-  return useQuery<RentalItemCategoryResponse>({
+  return useQuery<RentalItemCategoriesQueryResponse>({
     queryKey: ['rentalItemCategories'],
     queryFn: () => getCategories(),
     staleTime: 5 * 60 * 1000
@@ -41,7 +41,7 @@ export function useRentalItems() {
 }
 
 export function useSimilarRentalItems(rentalItemId: string) {
-  return useQuery<SimilarRentalItemResponse>({
+  return useQuery<SimilarRentalItemsQueryResponse>({
     queryKey: ['similarRentalItems', rentalItemId],
     queryFn: () => getSimilarRentalItems(rentalItemId),
     staleTime: 5 * 60 * 1000

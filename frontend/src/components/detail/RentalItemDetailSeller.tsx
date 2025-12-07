@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import type { RentalItemDetailResponse } from '@/models/RentalItem'
 import { MapPin } from 'lucide-react'
 import lowIcon from '@/assets/level/low.png'
 import fairIcon from '@/assets/level/fair.png'
@@ -7,6 +6,7 @@ import normalIcon from '@/assets/level/normal.png'
 import highIcon from '@/assets/level/high.png'
 import topIcon from '@/assets/level/top.png'
 import '@/css/BottomSheet.css'
+import type { RentalItemDetailResponse } from '@/api/dto/RentalItemsQuery'
 
 interface RentalItemDetailSellerProps {
   rentalItem: RentalItemDetailResponse

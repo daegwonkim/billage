@@ -1,84 +1,99 @@
 import logo from '@/assets/main.png'
-import { formatPhoneNumber } from '@/utils/utils'
+import { formatPhoneNo } from '@/utils/utils'
 import { ChevronLeft, CircleAlert } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import {
   sendVerificationCode,
-  signin,
-  verifyPhoneNumber,
-  verifyVerificationCode
-} from '@/api/onboarding'
+  signIn,
+  confirmPhoneNo,
+  confirmVerificationCode
+} from '@/api/domain/auth'
 import { useNavigate } from 'react-router-dom'
+import type { VerificationCodeConfirmRequest } from '@/api/dto/VerificationCodeConfirm'
+import type { VerificationCodeSendRequest } from '@/api/dto/VerificationCodeSend'
+import type { SignInRequest } from '@/api/dto/SignIn'
+import type { PhoneNoConfirmRequest } from '@/api/dto/PhoneNoConfirm'
 
 export default function OnboardingSignin() {
   const navigate = useNavigate()
 
-  const phoneInputRef = useRef<HTMLInputElement>(null)
-  const verificationInputRef = useRef<HTMLInputElement>(null)
+  const phoneNoInputRef = useRef<HTMLInputElement>(null)
+  const verificationCodeInputRef = useRef<HTMLInputElement>(null)
 
-  const [phoneNumber, setPhoneNumber] = useState('')
+  const [phoneNo, setPhoneNo] = useState('')
   const [verificationCode, setVerificationCode] = useState('')
   const [timeLeft, setTimeLeft] = useState(300)
-  const [step, setStep] = useState<'phone' | 'verification'>('phone')
+  const [step, setStep] = useState<'phoneNo' | 'verificationCode'>('phoneNo')
 
-  const [invalidPhoneNumber, setInvalidPhoneNumber] = useState(false)
+  const [invalidPhoneNo, setInvalidPhoneNo] = useState(false)
   const [invalidVerificationCode, setInvalidVerificationCode] = useState(false)
+  const [failedSignIn, setFailedSignIn] = useState(false)
 
-  const verifyPhoneNumberMutation = useMutation({
-    mutationFn: (phone: string) => verifyPhoneNumber(phone),
-    onSuccess: (data, phone) => {
-      sendVerificationMutation.mutate(phone)
-      setInvalidPhoneNumber(false)
-      setStep('verification')
+  const confirmPhoneNoMutation = useMutation({
+    mutationFn: (request: PhoneNoConfirmRequest) => confirmPhoneNo(request),
+    onSuccess: (_data, variables) => {
+      sendVerificationCodeMutation.mutate({
+        phoneNo: variables.phoneNo
+      })
+      setInvalidPhoneNo(false)
+      setStep('verificationCode')
       setTimeLeft(300)
     },
-    onError: () => setInvalidPhoneNumber(true)
+    onError: () => setInvalidPhoneNo(true)
   })
 
-  const sendVerificationMutation = useMutation({
-    mutationFn: (phone: string) => sendVerificationCode(phone)
+  const sendVerificationCodeMutation = useMutation({
+    mutationFn: (request: VerificationCodeSendRequest) =>
+      sendVerificationCode(request)
   })
 
-  const resendVerificationMutation = useMutation({
-    mutationFn: (phone: string) => sendVerificationCode(phone),
+  const resendVerificationCodeMutation = useMutation({
+    mutationFn: (request: VerificationCodeSendRequest) =>
+      sendVerificationCode(request),
     onSuccess: () => {
       setTimeLeft(300)
     }
   })
 
-  const signinMutation = useMutation({
-    mutationFn: (phone: string) => signin(phone),
-    onSuccess: () => navigate('/')
-  })
-
-  const verifyMutation = useMutation({
-    mutationFn: ({ phone, code }: { phone: string; code: string }) =>
-      verifyVerificationCode(phone, code),
+  const confirmVerificationCodeMutation = useMutation({
+    mutationFn: (request: VerificationCodeConfirmRequest) =>
+      confirmVerificationCode(request),
     onSuccess: (data, variables) => {
       setInvalidVerificationCode(false)
-      signinMutation.mutate(variables.phone)
+      signInMutation.mutate({
+        phoneNo: variables.phoneNo,
+        verifiedToken: data.verifiedToken
+      })
     },
     onError: () => {
       setInvalidVerificationCode(true)
-      verificationInputRef.current?.focus()
+      verificationCodeInputRef.current?.focus()
+    }
+  })
+
+  const signInMutation = useMutation({
+    mutationFn: (request: SignInRequest) => signIn(request),
+    onSuccess: () => navigate('/'),
+    onError: () => {
+      setFailedSignIn(true)
     }
   })
 
   useEffect(() => {
-    phoneInputRef.current?.focus()
+    phoneNoInputRef.current?.focus()
   }, [])
 
   useEffect(() => {
-    if (step === 'verification') {
+    if (step === 'verificationCode') {
       setTimeout(() => {
-        verificationInputRef.current?.focus()
+        verificationCodeInputRef.current?.focus()
       }, 100)
     }
   }, [step])
 
   useEffect(() => {
-    if (timeLeft <= 0 || step === 'phone') return
+    if (timeLeft <= 0 || step === 'phoneNo') return
 
     const timer = setInterval(() => {
       setTimeLeft(prev => prev - 1)
@@ -87,26 +102,30 @@ export default function OnboardingSignin() {
     return () => clearInterval(timer)
   }, [timeLeft, step])
 
-  const handleVerifyPhoneNumber = () => {
-    if (!phoneNumber) return
-    verifyPhoneNumberMutation.mutate(phoneNumber)
+  const handleConfirmPhoneNo = () => {
+    if (!phoneNo) return
+    confirmPhoneNoMutation.mutate({
+      phoneNo: phoneNo.replace(/-/g, '')
+    })
   }
 
   const handleResend = () => {
-    resendVerificationMutation.mutate(phoneNumber)
+    resendVerificationCodeMutation.mutate({
+      phoneNo: phoneNo.replace(/-/g, '')
+    })
   }
 
-  const handleVerifyVerificationCode = () => {
-    verifyMutation.mutate({
-      phone: phoneNumber,
-      code: verificationCode
+  const handleConfirmVerificationCode = () => {
+    confirmVerificationCodeMutation.mutate({
+      phoneNo: phoneNo.replace(/-/g, ''),
+      verificationCode: verificationCode
     })
   }
 
   const isLoading =
-    verifyPhoneNumberMutation.isPending ||
-    resendVerificationMutation.isPending ||
-    verifyMutation.isPending
+    confirmPhoneNoMutation.isPending ||
+    resendVerificationCodeMutation.isPending ||
+    confirmVerificationCodeMutation.isPending
 
   return (
     <div className="flex min-h-screen w-md flex-col items-center justify-center p-4">
@@ -118,7 +137,7 @@ export default function OnboardingSignin() {
         <div className="relative mb-6">
           <ChevronLeft
             className="absolute top-0 left-0 h-6 w-6 cursor-pointer text-gray-700 transition-colors hover:text-gray-900"
-            onClick={() => step === 'verification' && setStep('phone')}
+            onClick={() => step === 'verificationCode' && setStep('phoneNo')}
           />
           <div className="text-center font-bold">로그인</div>
         </div>
@@ -133,19 +152,19 @@ export default function OnboardingSignin() {
                 🇰🇷 +82
               </div>
               <input
-                ref={phoneInputRef}
+                ref={phoneNoInputRef}
                 className="h-12 w-full rounded-lg border border-gray-300 pr-4 pl-24 transition-colors focus:border-red-400 focus:ring-2 focus:ring-red-100 focus:outline-none"
                 placeholder="010-0000-0000"
                 type="tel"
-                value={phoneNumber}
-                disabled={step === 'verification'}
+                value={phoneNo}
+                disabled={step === 'verificationCode'}
                 onChange={e => {
-                  const formatted = formatPhoneNumber(e.target.value)
-                  setPhoneNumber(formatted)
+                  const formatted = formatPhoneNo(e.target.value)
+                  setPhoneNo(formatted)
                 }}
               />
             </div>
-            {invalidPhoneNumber && (
+            {invalidPhoneNo && (
               <div className="animate-fade-in flex gap-1 pt-2 text-sm text-red-500 duration-300 ease-out">
                 <CircleAlert size={18} />
                 <div>유효한 휴대폰 번호가 아니에요. 다시 확인해주세요.</div>
@@ -153,14 +172,14 @@ export default function OnboardingSignin() {
             )}
           </div>
 
-          {step === 'verification' && (
+          {step === 'verificationCode' && (
             <div className="animate-fade-in transform transition-all duration-300 ease-out">
               <label className="mb-2 block text-lg font-semibold text-gray-800">
                 인증번호를 입력해주세요
               </label>
               <div className="relative w-full">
                 <input
-                  ref={verificationInputRef}
+                  ref={verificationCodeInputRef}
                   className="h-12 w-full rounded-lg border border-gray-300 px-4 pr-16 transition-colors focus:border-red-400 focus:ring-2 focus:ring-red-100 focus:outline-none"
                   placeholder="인증번호 6자리"
                   value={verificationCode}
@@ -180,6 +199,12 @@ export default function OnboardingSignin() {
                   <div>인증번호 검증에 실패했어요.</div>
                 </div>
               )}
+              {failedSignIn && (
+                <div className="animate-fade-in flex gap-1 pt-2 text-sm text-red-500 duration-300 ease-out">
+                  <CircleAlert size={18} />
+                  <div>로그인에 실패했어요. 잠시 후 다시 시도해주세요.</div>
+                </div>
+              )}
               <div className="pt-4 text-center text-sm text-gray-500">
                 인증번호가 오지 않나요?{' '}
                 <span
@@ -195,14 +220,14 @@ export default function OnboardingSignin() {
             <button
               className="h-12 w-full rounded-xl bg-red-400 font-semibold text-white shadow-md transition-all disabled:opacity-50"
               onClick={
-                step === 'phone'
-                  ? handleVerifyPhoneNumber
-                  : handleVerifyVerificationCode
+                step === 'phoneNo'
+                  ? handleConfirmPhoneNo
+                  : handleConfirmVerificationCode
               }
               disabled={
                 isLoading ||
-                (step === 'phone' && phoneNumber.length != 13) ||
-                (step === 'verification' && verificationCode.length !== 6)
+                (step === 'phoneNo' && phoneNo.length != 13) ||
+                (step === 'verificationCode' && verificationCode.length !== 6)
               }>
               {isLoading ? '처리중...' : '다음'}
             </button>

@@ -2,7 +2,7 @@ import type {
   RentalItemDetailResponse,
   SimilarRentalItemResponse
 } from '@/models/RentalItem'
-import type { SellerRentalItemsResponse } from '@/models/User'
+import type { UserRentalItemsQueryResponse } from '@/api/dto/UserRentalItemsQuery'
 
 const API_BASE_URL = 'https://billage.onrender.com'
 
@@ -29,7 +29,7 @@ export async function getSimilarRentalItems(
 export async function getSellerRentalItems(
   sellerId: string,
   excludeRentalItemId: string
-): Promise<SellerRentalItemsResponse> {
+): Promise<UserRentalItemsQueryResponse> {
   const params = new URLSearchParams({
     excludeRentalItemId
   })

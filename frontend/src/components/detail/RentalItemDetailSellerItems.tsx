@@ -1,10 +1,10 @@
 import { useSellerRentalItems } from '@/hooks/User'
-import type { Seller } from '@/models/User'
+import type { User } from '@/api/dto/UserRentalItemsQuery'
 import { ChevronRight } from 'lucide-react'
 import { useRef, useState } from 'react'
 
 interface RentalItemDetailSellerItemsProps {
-  seller: Seller
+  seller: User
   rentalItemId: string
 }
 

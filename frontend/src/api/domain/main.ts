@@ -1,9 +1,9 @@
-import type { RentalItemCategoryResponse } from '@/models/RentalItemCategory'
-import type { RentalItemsQueryResponse } from '@/models/RentalItem'
+import type { RentalItemCategoriesQueryResponse } from '../dto/RentalItemCategoriesQuery'
+import type { RentalItemsQueryResponse } from '../dto/RentalItemsQuery'
 
 const API_BASE_URL = 'https://billage.onrender.com'
 
-export async function getCategories(): Promise<RentalItemCategoryResponse> {
+export async function getCategories(): Promise<RentalItemCategoriesQueryResponse> {
   const response = await fetch(`${API_BASE_URL}/api/rental-items/category`)
   if (!response.ok) throw new Error('Failed to fetch categories')
   return response.json()
