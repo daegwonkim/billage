@@ -42,8 +42,9 @@ dependencies {
     // logging
     implementation("io.github.oshai:kotlin-logging-jvm:7.0.3")
 
-    // JTS
+    // geo
     implementation("org.locationtech.jts:jts-core:1.19.0")
+    implementation("org.hibernate:hibernate-spatial:7.1.11.Final")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-data-redis-test")

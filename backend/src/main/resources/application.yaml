@@ -5,6 +5,7 @@ spring:
   datasource:
     url: ${DATASOURCE_URL}
   jpa:
+    database-platform: org.hibernate.spatial.dialect.postgis.PostgisPG10Dialect
     hibernate:
       ddl-auto: update
 
@@ -34,3 +35,7 @@ jwt:
   refresh-token-expiration:
     milliseconds: 604800000
     seconds: 604800
+
+kakao:
+  api-key: ${KAKAO_API_KEY}
+  geocoding-url: https://dapi.kakao.com

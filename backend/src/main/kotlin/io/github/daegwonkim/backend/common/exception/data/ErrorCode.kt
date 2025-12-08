@@ -22,9 +22,12 @@ enum class ErrorCode(
     // User - 사용자 관련
     USER_NOT_FOUND("U-001", "사용자를 찾을 수 없습니다", HttpStatus.NOT_FOUND),
 
+    // Neighborhood - 동네 관련
+    NEIGHBORHOOD_NOT_FOUND("N-001", "동네 정보를 찾을 수 없습니다", HttpStatus.NOT_FOUND),
+    NEIGHBORHOOD_MISMATCH("N-002", "입력한 위치 정보가 실제 위치와 일치하지 않습니다", HttpStatus.BAD_REQUEST),
+
     // External Service - 외부 서비스 관련
     SMS_SEND_FAILED("E-001", "SMS 전송에 실패했습니다", HttpStatus.INTERNAL_SERVER_ERROR),
-    REDIS_CONNECTION_FAILED("E-002", "Redis 서버 연결에 실패했습니다", HttpStatus.INTERNAL_SERVER_ERROR),
 
     // Server - 서버 관련
     INTERNAL_SERVER_ERROR("S-001", "서버 내부 오류가 발생했습니다", HttpStatus.INTERNAL_SERVER_ERROR);

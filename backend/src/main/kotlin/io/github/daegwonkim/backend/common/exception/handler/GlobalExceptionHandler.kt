@@ -19,7 +19,7 @@ class GlobalExceptionHandler {
         e: BusinessException,
         request: HttpServletRequest
     ): ResponseEntity<ErrorResponse> {
-        logger.warn { "BusinessException: ${e.message}" }
+        logger.warn(e) { "BusinessException: ${e.message}" }
 
         val response = ErrorResponse.of(e.errorCode, request.requestURI)
 
@@ -47,7 +47,7 @@ class GlobalExceptionHandler {
         e: MethodArgumentNotValidException,
         request: HttpServletRequest
     ): ResponseEntity<ErrorResponse> {
-        logger.warn { "Validation failed: ${e.message}" }
+        logger.warn(e) { "Validation failed: ${e.message}" }
 
         val fieldErrors = e.bindingResult.fieldErrors.map { fieldError ->
             ErrorResponse.FieldError(
@@ -73,7 +73,7 @@ class GlobalExceptionHandler {
         e: Exception,
         request: HttpServletRequest
     ): ResponseEntity<ErrorResponse> {
-        logger.error { "Unexpected error occurred $e" }
+        logger.error(e) { "Unexpected error occurred $e" }
 
         val response = ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR, request.requestURI)
 
