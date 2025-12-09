@@ -3,7 +3,8 @@ package io.github.daegwonkim.backend.service
 import io.github.daegwonkim.backend.common.exception.InvalidValueException
 import io.github.daegwonkim.backend.common.exception.NotFoundException
 import io.github.daegwonkim.backend.common.exception.data.ErrorCode
-import io.github.daegwonkim.backend.dto.neighborhood.NeighborhoodFindResponse
+import io.github.daegwonkim.backend.dto.neighborhood.LocateNeighborhoodResponse
+import io.github.daegwonkim.backend.dto.neighborhood.NearbyNeighborhoodsResponse
 import io.github.daegwonkim.backend.entity.UserNeighborhood
 import io.github.daegwonkim.backend.logger
 import io.github.daegwonkim.backend.repository.NeighborhoodRepository
@@ -19,13 +20,27 @@ class NeighborhoodService(
     private val userNeighborhoodRepository: UserNeighborhoodRepository,
     private val geometryFactory: GeometryFactory,
 ) {
-    fun locate(latitude: Double, longitude: Double): NeighborhoodFindResponse {
+    fun locate(latitude: Double, longitude: Double): LocateNeighborhoodResponse {
         val neighborhood = neighborhoodRepository.findByCoordinate(
             latitude = latitude,
             longitude = longitude
         ) ?: throw NotFoundException(ErrorCode.NEIGHBORHOOD_NOT_FOUND)
 
-        return NeighborhoodFindResponse(neighborhood.code)
+        return LocateNeighborhoodResponse(neighborhood.code)
+    }
+
+    fun nearby(latitude: Double, longitude: Double): NearbyNeighborhoodsResponse {
+        val neighborhoods = neighborhoodRepository.findNearbyNeighborhoods(
+            latitude = latitude,
+            longitude = longitude
+        ).map { neighborhood ->
+            NearbyNeighborhoodsResponse.Neighborhood(
+                name = "${neighborhood.sido} ${neighborhood.sigungu} ${neighborhood.eupmyeondong}",
+                code = neighborhood.code
+            )
+        }
+
+        return NearbyNeighborhoodsResponse(neighborhoods)
     }
 
     fun validateNeighborhood(latitude: Double, longitude: Double, inputCode: String) {

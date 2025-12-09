@@ -1,6 +1,7 @@
 package io.github.daegwonkim.backend.controller
 
-import io.github.daegwonkim.backend.dto.neighborhood.NeighborhoodFindResponse
+import io.github.daegwonkim.backend.dto.neighborhood.LocateNeighborhoodResponse
+import io.github.daegwonkim.backend.dto.neighborhood.NearbyNeighborhoodsResponse
 import io.github.daegwonkim.backend.service.NeighborhoodService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -16,5 +17,11 @@ class NeighborhoodController(
     fun locate(
         @RequestParam latitude: Double,
         @RequestParam longitude: Double
-    ): NeighborhoodFindResponse = neighborhoodService.locate(latitude, longitude)
+    ): LocateNeighborhoodResponse = neighborhoodService.locate(latitude, longitude)
+
+    @GetMapping("/nearby")
+    fun nearby(
+        @RequestParam latitude: Double,
+        @RequestParam longitude: Double
+    ): NearbyNeighborhoodsResponse = neighborhoodService.nearby(latitude, longitude)
 }

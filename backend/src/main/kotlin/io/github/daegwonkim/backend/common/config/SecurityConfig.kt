@@ -27,7 +27,7 @@ class SecurityConfig(
             .authorizeHttpRequests { auth ->
                 auth
                     .requestMatchers("/api/auth/**").permitAll()
-                    .requestMatchers("/api/neighborhoods/locate").permitAll()
+                    .requestMatchers("/api/neighborhoods/**").permitAll()
                     .anyRequest().authenticated()
             }
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)

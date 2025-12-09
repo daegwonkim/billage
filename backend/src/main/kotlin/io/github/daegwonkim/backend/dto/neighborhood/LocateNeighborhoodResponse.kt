@@ -1,5 +1,5 @@
 package io.github.daegwonkim.backend.dto.neighborhood
 
-data class NeighborhoodFindResponse(
+data class LocateNeighborhoodResponse(
     val code: String
 )
