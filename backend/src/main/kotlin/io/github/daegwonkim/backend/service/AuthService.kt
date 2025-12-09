@@ -20,21 +20,15 @@ import io.github.daegwonkim.backend.common.event.dto.VerifiedTokenDeleteEvent
 import io.github.daegwonkim.backend.common.exception.ExternalServiceException
 import io.github.daegwonkim.backend.common.exception.InvalidValueException
 import io.github.daegwonkim.backend.common.exception.NotFoundException
-import io.github.daegwonkim.backend.entity.UserNeighborhood
 import io.github.daegwonkim.backend.logger
-import io.github.daegwonkim.backend.repository.NeighborhoodRepository
-import io.github.daegwonkim.backend.repository.UserNeighborhoodRepository
 import io.github.daegwonkim.backend.repository.VerifiedTokenRedisRepository
 import io.github.daegwonkim.backend.repository.UserRepository
 import io.github.daegwonkim.backend.repository.VerificationCodeRedisRepository
-import io.github.daegwonkim.backend.util.KakaoMapService
 import io.github.daegwonkim.backend.util.NicknameGenerator
 import net.nurigo.sdk.message.model.Message
 import net.nurigo.sdk.message.request.SingleMessageSendingRequest
 import net.nurigo.sdk.message.response.SingleMessageSentResponse
 import net.nurigo.sdk.message.service.DefaultMessageService
-import org.locationtech.jts.geom.Coordinate
-import org.locationtech.jts.geom.GeometryFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.repository.findByIdOrNull
@@ -46,20 +40,17 @@ import java.util.UUID
 @Service
 class AuthService(
     private val messageService: DefaultMessageService,
-    private val kakaoMapService: KakaoMapService,
+    private val neighborhoodService: NeighborhoodService,
 
     private val refreshTokenRedisRepository: RefreshTokenRedisRepository,
     private val verifiedTokenRedisRepository: VerifiedTokenRedisRepository,
     private val verificationCodeRedisRepository: VerificationCodeRedisRepository,
 
     private val userRepository: UserRepository,
-    private val neighborhoodRepository: NeighborhoodRepository,
-    private val userNeighborhoodRepository: UserNeighborhoodRepository,
 
     private val jwtTokenProvider: JwtTokenProvider,
     private val eventPublisher: ApplicationEventPublisher,
     private val nicknameGenerator: NicknameGenerator,
-    private val geometryFactory: GeometryFactory,
 
     @Value($$"${coolsms.from}")
     private val smsFrom: String
@@ -106,7 +97,8 @@ class AuthService(
     @Transactional
     fun signUp(request: SignUpRequest): SignUpResponse {
         validateVerifiedToken(phoneNo = request.phoneNo, verifiedToken = request.verifiedToken)
-        validateNeighborhood(
+
+        neighborhoodService.validateNeighborhood(
             latitude = request.neighborhood.latitude,
             longitude = request.neighborhood.longitude,
             inputCode = request.neighborhood.code
@@ -120,18 +112,11 @@ class AuthService(
         )
         val userId = requireNotNull(user.id) { "User ID should not be null" }
 
-        val neighborhood = neighborhoodRepository.findByCode(request.neighborhood.code)
-            ?: throw NotFoundException(ErrorCode.NEIGHBORHOOD_NOT_FOUND)
-        val neighborhoodId = requireNotNull(neighborhood.id) { "Neighborhood ID should not be null" }
-
-        userNeighborhoodRepository.save(
-            UserNeighborhood(
-                userId = userId,
-                neighborhoodId = neighborhoodId,
-                location = geometryFactory.createPoint(
-                    Coordinate(request.neighborhood.longitude, request.neighborhood.latitude)
-                )
-            )
+        neighborhoodService.saveNeighborhood(
+            userId = userId,
+            latitude = request.neighborhood.latitude,
+            longitude = request.neighborhood.longitude,
+            code = request.neighborhood.code
         )
 
         val accessToken = jwtTokenProvider.generateAccessToken(userId = userId)
@@ -184,19 +169,6 @@ class AuthService(
     }
 
     // Private helper methods
-
-    private fun validateNeighborhood(latitude: Double, longitude: Double, inputCode: String) {
-        val address = kakaoMapService.coordToAddress(
-            latitude = latitude,
-            longitude = longitude
-        )
-        val code = address?.documents?.find { it.regionType == "B" }?.code
-
-        if (inputCode != code) {
-            logger.warn { "사용자 동네 정보 불일치: inputCode=${inputCode}, code=$code" }
-            throw InvalidValueException(ErrorCode.NEIGHBORHOOD_MISMATCH)
-        }
-    }
 
     private fun validateVerificationCode(phoneNo: String, verificationCode: String) {
         val savedCode = verificationCodeRedisRepository.find(phoneNo = phoneNo)

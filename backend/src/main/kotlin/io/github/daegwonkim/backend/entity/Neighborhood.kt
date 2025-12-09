@@ -6,7 +6,7 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
-import org.locationtech.jts.geom.Point
+import org.locationtech.jts.geom.MultiPolygon
 import java.util.UUID
 
 @Entity
@@ -29,6 +29,6 @@ class Neighborhood(
     @Column(nullable = false)
     val eupmyeondong: String,
 
-    @Column(columnDefinition = "geometry(Point, 4326)")
-    val location: Point
+    @Column(columnDefinition = "geometry(MultiPolygon, 4326)")
+    val location: MultiPolygon
 )
