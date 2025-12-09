@@ -1,12 +1,12 @@
 package io.github.daegwonkim.backend.controller
 
-import io.github.daegwonkim.backend.dto.PhoneNoConfirmRequest
-import io.github.daegwonkim.backend.dto.TokenReissueRequest
-import io.github.daegwonkim.backend.dto.SignInRequest
-import io.github.daegwonkim.backend.dto.SignUpRequest
-import io.github.daegwonkim.backend.dto.VerificationCodeConfirmRequest
-import io.github.daegwonkim.backend.dto.VerificationCodeConfirmResponse
-import io.github.daegwonkim.backend.dto.VerificationCodeSendRequest
+import io.github.daegwonkim.backend.dto.auth.PhoneNoConfirmRequest
+import io.github.daegwonkim.backend.dto.auth.TokenReissueRequest
+import io.github.daegwonkim.backend.dto.auth.SignInRequest
+import io.github.daegwonkim.backend.dto.auth.SignUpRequest
+import io.github.daegwonkim.backend.dto.auth.VerificationCodeConfirmRequest
+import io.github.daegwonkim.backend.dto.auth.VerificationCodeConfirmResponse
+import io.github.daegwonkim.backend.dto.auth.VerificationCodeSendRequest
 import io.github.daegwonkim.backend.service.AuthService
 import io.github.daegwonkim.backend.util.CookieUtil
 import io.swagger.v3.oas.annotations.Operation

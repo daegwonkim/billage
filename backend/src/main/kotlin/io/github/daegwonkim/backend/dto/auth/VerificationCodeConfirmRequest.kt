@@ -1,4 +1,4 @@
-package io.github.daegwonkim.backend.dto
+package io.github.daegwonkim.backend.dto.auth
 
 import io.github.daegwonkim.backend.common.validator.annotation.ValidPhoneNo
 import io.github.daegwonkim.backend.common.validator.annotation.ValidVerificationCode
