@@ -52,7 +52,7 @@ export default function OnboardingAuthentication() {
                 className="h-12 w-full rounded-xl bg-red-400 font-semibold text-white shadow-md transition-all"
                 onClick={() =>
                   navigate('/onboarding/verification', {
-                    state: { phoneNo: phoneNo }
+                    state: { phoneNo: phoneNo.replace(/-/g, '') }
                   })
                 }>
                 다음

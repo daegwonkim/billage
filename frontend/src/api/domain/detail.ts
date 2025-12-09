@@ -1,8 +1,8 @@
+import type { UserRentalItemsQueryResponse } from '@/api/dto/UserRentalItemsQuery'
 import type {
   RentalItemDetailResponse,
-  SimilarRentalItemResponse
-} from '@/models/RentalItem'
-import type { UserRentalItemsQueryResponse } from '@/api/dto/UserRentalItemsQuery'
+  SimilarRentalItemsQueryResponse
+} from '../dto/RentalItemsQuery'
 
 const API_BASE_URL = 'https://billage.onrender.com'
 
@@ -18,7 +18,7 @@ export async function getRentalItem(
 
 export async function getSimilarRentalItems(
   rentalItemId: string
-): Promise<SimilarRentalItemResponse> {
+): Promise<SimilarRentalItemsQueryResponse> {
   const response = await fetch(
     `${API_BASE_URL}/api/rental-items/${rentalItemId}/similar`
   )

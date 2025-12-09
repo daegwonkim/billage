@@ -29,9 +29,11 @@ export default function OnboardingVerification() {
   const verificationCodeConfirmMutation = useMutation({
     mutationFn: (request: VerificationCodeConfirmRequest) =>
       confirmVerificationCode(request),
-    onSuccess: () => {
+    onSuccess: data => {
       setInvalidVerificationCode(false)
-      navigate('/onboarding/neighborhood')
+      navigate('/onboarding/neighborhood', {
+        state: { phoneNo: phoneNo, verifiedToken: data.verifiedToken }
+      })
     },
     onError: () => {
       setInvalidVerificationCode(true)
@@ -41,7 +43,7 @@ export default function OnboardingVerification() {
 
   useEffect(() => {
     verificationCodeInputRef.current?.focus()
-    sendVerificationCodeMutation.mutate(phoneNo)
+    sendVerificationCodeMutation.mutate({ phoneNo: phoneNo })
   }, [])
 
   useEffect(() => {

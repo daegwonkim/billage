@@ -1,84 +1,109 @@
 import { signUp } from '@/api/domain/auth'
 import type { SignUpRequest } from '@/api/dto/SignUp'
 import logo from '@/assets/main.png'
-import { BottomSheet } from '@/components/common/BottomSheet'
-import { BottomSheetItem } from '@/components/common/BottomSheetItem'
+import {
+  useNearbyNeighborhoods,
+  useLocateNeighborhood
+} from '@/hooks/Neighborhood'
 import { useMutation } from '@tanstack/react-query'
 import { ChevronLeft, Crosshair } from 'lucide-react'
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 export default function OnboardingNeighborhood() {
   const navigate = useNavigate()
 
-  const [showCityDialog, setShowCityDialog] = useState(false)
-  const [showDistrictDialog, setShowDistrictDialog] = useState(false)
-  const [showTownDialog, setShowTownDialog] = useState(false)
+  const location = useLocation()
+  const phoneNo = location.state?.phoneNo || ''
+  const verifiedToken = location.state?.verifiedToken || ''
 
-  const [selectedCity, setSelectedCity] = useState('')
-  const [selectedDistrict, setSelectedDistrict] = useState('')
-  const [selectedTown, setSelectedTown] = useState('')
+  const [userLocation, setLocation] = useState<{
+    latitude: string
+    longitude: string
+  } | null>(null)
+  const [locationError, setLocationError] = useState<string | null>(null)
+  const [selectedNeighborhood, setSelectedNeighborhood] = useState('')
+  const [currentLocation, setCurrentLocation] = useState<{
+    latitude: string
+    longitude: string
+  } | null>(null)
 
-  // 샘플 데이터
-  const cities = [
-    '서울특별시',
-    '부산광역시',
-    '대구광역시',
-    '인천광역시',
-    '광주광역시',
-    '대전광역시',
-    '울산광역시',
-    '세종특별자치시',
-    '경기도',
-    '강원도'
-  ]
-  const districts = [
-    '강남구',
-    '강동구',
-    '강북구',
-    '강서구',
-    '관악구',
-    '광진구',
-    '구로구',
-    '금천구',
-    '노원구',
-    '도봉구'
-  ]
-  const towns = [
-    '역삼동',
-    '논현동',
-    '개포동',
-    '청담동',
-    '삼성동',
-    '대치동',
-    '신사동',
-    '압구정동',
-    '세곡동',
-    '자곡동'
-  ]
+  const {
+    data: nearbyNeighborhoodsData,
+    isLoading: nearbyNeighborhoodsLoading,
+    error: nearbyNeighborhoodsError
+  } = useNearbyNeighborhoods(
+    userLocation || { latitude: '', longitude: '' },
+    !!userLocation
+  )
 
-  const signupMutation = useMutation({
+  const { data: locateNeighborhoodData, isLoading: isLocating } =
+    useLocateNeighborhood(
+      currentLocation || { latitude: '', longitude: '' },
+      !!currentLocation
+    )
+
+  const signUpMutation = useMutation({
     mutationFn: (request: SignUpRequest) => signUp(request),
     onSuccess: () => navigate('/')
   })
 
-  const handleCitySelect = (city: string) => {
-    setSelectedCity(city)
-    setShowCityDialog(false)
-    setSelectedDistrict('') // 시/도 변경 시 하위 선택 초기화
-    setSelectedTown('')
+  const handleCurrentLocation = () => {
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          const lat = position.coords.latitude.toString()
+          const lng = position.coords.longitude.toString()
+
+          setCurrentLocation({
+            latitude: lat,
+            longitude: lng
+          })
+        },
+        error => {
+          console.error('위치 정보를 가져올 수 없습니다:', error)
+          setLocationError(error.message)
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 5000,
+          maximumAge: 0
+        }
+      )
+    } else {
+      setLocationError('브라우저가 위치 서비스를 지원하지 않습니다')
+    }
   }
 
-  const handleDistrictSelect = (district: string) => {
-    setSelectedDistrict(district)
-    setShowDistrictDialog(false)
-    setSelectedTown('') // 시/군/구 변경 시 읍/면/동 초기화
-  }
+  useEffect(() => {
+    if (locateNeighborhoodData?.code) {
+      setSelectedNeighborhood(locateNeighborhoodData.code)
+    }
+  }, [locateNeighborhoodData])
 
-  const handleTownSelect = (town: string) => {
-    setSelectedTown(town)
-    setShowTownDialog(false)
-  }
+  useEffect(() => {
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          setLocation({
+            latitude: position.coords.latitude.toString(),
+            longitude: position.coords.longitude.toString()
+          })
+        },
+        error => {
+          console.error('위치 정보를 가져올 수 없습니다:', error)
+          setLocationError(error.message)
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 5000,
+          maximumAge: 0
+        }
+      )
+    } else {
+      setLocationError('브라우저가 위치 서비스를 지원하지 않습니다')
+    }
+  }, [])
 
   return (
     <div className="flex min-h-screen w-md flex-col items-center justify-center p-4">
@@ -92,58 +117,58 @@ export default function OnboardingNeighborhood() {
           <div className="text-center font-bold">동네인증</div>
         </div>
 
-        <button className="mb-8 flex h-9 w-full items-center justify-center gap-2 rounded-xl bg-red-400 font-semibold text-white shadow-md transition-colors">
+        <button
+          className="mb-8 flex h-9 w-full items-center justify-center gap-2 rounded-xl bg-red-400 font-semibold text-white shadow-md transition-colors hover:bg-red-500 disabled:cursor-not-allowed disabled:bg-gray-300"
+          onClick={handleCurrentLocation}
+          disabled={isLocating}>
           <Crosshair className="h-5 w-5 text-white" />
-          <div className="text-sm">현재 위치로 찾기</div>
+          <div className="text-sm">
+            {isLocating ? '위치 확인 중...' : '현재 위치로 찾기'}
+          </div>
         </button>
 
-        <div className="space-y-6">
-          <div className="animate-fade-in transform transition-all duration-300 ease-out">
-            <label className="mb-2 block text-lg font-semibold text-gray-800">
-              시・도를 선택해주세요
-            </label>
-            <input
-              className="h-12 w-full cursor-pointer rounded-lg border border-gray-300 px-4 transition-colors focus:border-red-400 focus:ring-2 focus:ring-red-100 focus:outline-none"
-              placeholder="시・도"
-              value={selectedCity}
-              onFocus={() => setShowCityDialog(true)}
-              readOnly
-            />
+        <div className="space-y-5">
+          <div className="px-3 text-sm font-bold">근처 동네</div>
+
+          <div className="max-h-100 overflow-y-auto">
+            {nearbyNeighborhoodsData?.neighborhoods &&
+            nearbyNeighborhoodsData.neighborhoods.length > 0 ? (
+              nearbyNeighborhoodsData.neighborhoods.map(
+                (neighborhood, index) => (
+                  <div
+                    key={index}
+                    className={`cursor-pointer px-3 py-3 text-sm transition-colors hover:bg-gray-50 ${
+                      selectedNeighborhood === neighborhood.code
+                        ? 'bg-red-50 font-semibold text-red-500'
+                        : ''
+                    }`}
+                    onClick={() => setSelectedNeighborhood(neighborhood.code)}>
+                    {neighborhood.name}
+                  </div>
+                )
+              )
+            ) : (
+              <div className="py-4 text-center text-sm text-gray-500">
+                근처 동네가 없습니다
+              </div>
+            )}
           </div>
 
-          {selectedCity && (
-            <div className="animate-fade-in transform transition-all duration-300 ease-out">
-              <label className="mb-2 block text-lg font-semibold text-gray-800">
-                시・군・구를 선택해주세요
-              </label>
-              <input
-                className="h-12 w-full cursor-pointer rounded-lg border border-gray-300 px-4 transition-colors focus:border-red-400 focus:ring-2 focus:ring-red-100 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-50"
-                placeholder="시・군・구"
-                value={selectedDistrict}
-                onFocus={() => setShowDistrictDialog(true)}
-                readOnly
-              />
-            </div>
-          )}
-
-          {selectedDistrict && (
-            <div className="animate-fade-in transform transition-all duration-300 ease-out">
-              <label className="mb-2 block text-lg font-semibold text-gray-800">
-                읍・면・동을 선택해주세요
-              </label>
-              <input
-                className="h-12 w-full cursor-pointer rounded-lg border border-gray-300 px-4 transition-colors focus:border-red-400 focus:ring-2 focus:ring-red-100 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-50"
-                placeholder="읍・면・동"
-                value={selectedTown}
-                onFocus={() => setShowTownDialog(true)}
-                readOnly
-              />
-            </div>
-          )}
-
-          {selectedCity && selectedDistrict && selectedTown && (
+          {selectedNeighborhood && (
             <div className="animate-fade-in transform space-y-3 pt-4 transition-all duration-300 ease-out">
-              <button className="h-12 w-full rounded-xl bg-red-400 font-semibold text-white shadow-md transition-all disabled:cursor-not-allowed disabled:bg-gray-300">
+              <button
+                className="h-12 w-full rounded-xl bg-red-400 font-semibold text-white shadow-md transition-all hover:bg-red-500 disabled:cursor-not-allowed disabled:bg-gray-300"
+                onClick={() =>
+                  signUpMutation.mutate({
+                    phoneNo: phoneNo,
+                    verifiedToken: verifiedToken,
+                    neighborhood: {
+                      latitude: userLocation?.latitude,
+                      longitude: userLocation?.longitude,
+                      code: selectedNeighborhood
+                    }
+                  })
+                }>
                 인증하기
               </button>
               <div className="cursor-pointer text-center text-sm text-gray-600 underline hover:text-gray-800">
@@ -153,57 +178,6 @@ export default function OnboardingNeighborhood() {
           )}
         </div>
       </div>
-
-      {/* 시/도 선택 다이얼로그 */}
-      <BottomSheet
-        isOpen={showCityDialog}
-        onClose={() => setShowCityDialog(false)}
-        title="시・도 선택">
-        <div className="px-2 py-2">
-          {cities.map(city => (
-            <BottomSheetItem
-              key={city}
-              label={city}
-              selected={selectedCity === city}
-              onClick={() => handleCitySelect(city)}
-            />
-          ))}
-        </div>
-      </BottomSheet>
-
-      {/* 시/군/구 선택 다이얼로그 */}
-      <BottomSheet
-        isOpen={showDistrictDialog}
-        onClose={() => setShowDistrictDialog(false)}
-        title="시・군・구 선택">
-        <div className="px-2 py-2">
-          {districts.map(district => (
-            <BottomSheetItem
-              key={district}
-              label={district}
-              selected={selectedDistrict === district}
-              onClick={() => handleDistrictSelect(district)}
-            />
-          ))}
-        </div>
-      </BottomSheet>
-
-      {/* 읍/면/동 선택 다이얼로그 */}
-      <BottomSheet
-        isOpen={showTownDialog}
-        onClose={() => setShowTownDialog(false)}
-        title="읍・면・동 선택">
-        <div className="px-2 py-2">
-          {towns.map(town => (
-            <BottomSheetItem
-              key={town}
-              label={town}
-              selected={selectedTown === town}
-              onClick={() => handleTownSelect(town)}
-            />
-          ))}
-        </div>
-      </BottomSheet>
     </div>
   )
 }
