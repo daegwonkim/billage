@@ -1,12 +1,13 @@
 import { signUp } from '@/api/domain/auth'
 import type { SignUpRequest } from '@/api/dto/SignUp'
 import logo from '@/assets/main.png'
+import neighborhood from '@/assets/neighborhood.png'
 import {
   useNearbyNeighborhoods,
   useLocateNeighborhood
 } from '@/hooks/Neighborhood'
 import { useMutation } from '@tanstack/react-query'
-import { ChevronLeft, Crosshair } from 'lucide-react'
+import { ChevronLeft, Crosshair, AlertCircle, Loader2, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
@@ -21,12 +22,14 @@ export default function OnboardingNeighborhood() {
     latitude: string
     longitude: string
   } | null>(null)
-  const [locationError, setLocationError] = useState<string | null>(null)
+  const [locationError, setLocationError] = useState<boolean | null>(null)
+  const [locationErrorMessage, setLocationErrorMessage] = useState('')
   const [selectedNeighborhood, setSelectedNeighborhood] = useState('')
   const [currentLocation, setCurrentLocation] = useState<{
     latitude: string
     longitude: string
   } | null>(null)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   const {
     data: nearbyNeighborhoodsData,
@@ -59,10 +62,24 @@ export default function OnboardingNeighborhood() {
             latitude: lat,
             longitude: lng
           })
+          setLocationError(false)
         },
         error => {
-          console.error('위치 정보를 가져올 수 없습니다:', error)
-          setLocationError(error.message)
+          setLocationError(true)
+
+          if (error.code == error.PERMISSION_DENIED) {
+            setLocationErrorMessage(
+              '브라우저 설정에서 위치 권한을 허용해주세요.'
+            )
+          } else if (error.code == error.POSITION_UNAVAILABLE) {
+            setLocationErrorMessage(
+              '현재 위치 정보를 가져올 수 없습니다. 잠시 후 다시 시도해주세요.'
+            )
+          } else if (error.code == error.TIMEOUT) {
+            setLocationErrorMessage(
+              '시간 초과로 위치 정보를 가져오는 데 실패했습니다.'
+            )
+          }
         },
         {
           enableHighAccuracy: true,
@@ -71,7 +88,8 @@ export default function OnboardingNeighborhood() {
         }
       )
     } else {
-      setLocationError('브라우저가 위치 서비스를 지원하지 않습니다')
+      setLocationError(true)
+      setLocationErrorMessage('브라우저가 위치 서비스를 지원하지 않습니다.')
     }
   }
 
@@ -89,10 +107,24 @@ export default function OnboardingNeighborhood() {
             latitude: position.coords.latitude.toString(),
             longitude: position.coords.longitude.toString()
           })
+          setLocationError(false)
         },
         error => {
-          console.error('위치 정보를 가져올 수 없습니다:', error)
-          setLocationError(error.message)
+          setLocationError(true)
+
+          if (error.code == error.PERMISSION_DENIED) {
+            setLocationErrorMessage(
+              '브라우저 설정에서 위치 권한을 허용해주세요.'
+            )
+          } else if (error.code == error.POSITION_UNAVAILABLE) {
+            setLocationErrorMessage(
+              '현재 위치 정보를 가져올 수 없습니다. 잠시 후 다시 시도해주세요.'
+            )
+          } else if (error.code == error.TIMEOUT) {
+            setLocationErrorMessage(
+              '시간 초과로 위치 정보를 가져오는 데 실패했습니다.'
+            )
+          }
         },
         {
           enableHighAccuracy: true,
@@ -101,7 +133,8 @@ export default function OnboardingNeighborhood() {
         }
       )
     } else {
-      setLocationError('브라우저가 위치 서비스를 지원하지 않습니다')
+      setLocationError(true)
+      setLocationErrorMessage('브라우저가 위치 서비스를 지원하지 않습니다.')
     }
   }, [])
 
@@ -113,9 +146,24 @@ export default function OnboardingNeighborhood() {
       />
       <div className="w-full max-w-lg rounded-2xl border border-gray-200 bg-white px-8 py-8 shadow-xl">
         <div className="relative mb-6">
-          <ChevronLeft className="absolute top-0 left-0 h-6 w-6 cursor-pointer text-gray-700 transition-colors hover:text-gray-900" />
+          <ChevronLeft
+            className="absolute top-0 left-0 h-6 w-6 cursor-pointer text-gray-700 transition-colors hover:text-gray-900"
+            onClick={() => navigate(-1)}
+          />
           <div className="text-center font-bold">동네인증</div>
         </div>
+
+        {locationError && (
+          <div className="mb-6 flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-4">
+            <AlertCircle className="mt-0.5 h-5 w-5 text-red-800" />
+            <div className="flex-1">
+              <div className="mb-1 text-sm font-semibold text-red-800">
+                위치 정보를 가져올 수 없습니다
+              </div>
+              <div className="text-xs text-red-700">{locationErrorMessage}</div>
+            </div>
+          </div>
+        )}
 
         <button
           className="mb-8 flex h-9 w-full items-center justify-center gap-2 rounded-xl bg-red-400 font-semibold text-white shadow-md transition-colors hover:bg-red-500 disabled:cursor-not-allowed disabled:bg-gray-300"
@@ -131,8 +179,24 @@ export default function OnboardingNeighborhood() {
           <div className="px-3 text-sm font-bold">근처 동네</div>
 
           <div className="max-h-100 overflow-y-auto">
-            {nearbyNeighborhoodsData?.neighborhoods &&
-            nearbyNeighborhoodsData.neighborhoods.length > 0 ? (
+            {nearbyNeighborhoodsLoading ? (
+              <div className="flex flex-col items-center justify-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin text-red-400" />
+              </div>
+            ) : nearbyNeighborhoodsError ? (
+              <div className="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-4">
+                <AlertCircle className="mt-0.5 h-5 w-5 text-orange-800" />
+                <div className="flex-1">
+                  <div className="mb-1 text-sm font-semibold text-red-800">
+                    동네 목록을 불러올 수 없습니다
+                  </div>
+                  <div className="text-xs text-red-700">
+                    네트워크 연결을 확인하거나 잠시 후 다시 시도해주세요.
+                  </div>
+                </div>
+              </div>
+            ) : nearbyNeighborhoodsData?.neighborhoods &&
+              nearbyNeighborhoodsData.neighborhoods.length > 0 ? (
               nearbyNeighborhoodsData.neighborhoods.map(
                 (neighborhood, index) => (
                   <div
@@ -149,13 +213,13 @@ export default function OnboardingNeighborhood() {
               )
             ) : (
               <div className="py-4 text-center text-sm text-gray-500">
-                근처 동네가 없습니다
+                조회된 근처 동네가 없습니다
               </div>
             )}
           </div>
 
           {selectedNeighborhood && (
-            <div className="animate-fade-in transform space-y-3 pt-4 transition-all duration-300 ease-out">
+            <div className="animate-fade-in transform space-y-3 pt-4 text-center transition-all duration-300 ease-out">
               <button
                 className="h-12 w-full rounded-xl bg-red-400 font-semibold text-white shadow-md transition-all hover:bg-red-500 disabled:cursor-not-allowed disabled:bg-gray-300"
                 onClick={() =>
@@ -171,13 +235,60 @@ export default function OnboardingNeighborhood() {
                 }>
                 인증하기
               </button>
-              <div className="cursor-pointer text-center text-sm text-gray-600 underline hover:text-gray-800">
+
+              <div
+                className="inline-block cursor-pointer text-sm text-gray-600 underline hover:text-gray-800"
+                onClick={() => setIsDialogOpen(true)}>
                 동네인증이란?
               </div>
             </div>
           )}
         </div>
       </div>
+
+      {/* 다이얼로그 */}
+      {isDialogOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div
+            className="relative mx-4 w-full max-w-md rounded-2xl bg-white p-7 shadow-2xl transition-all"
+            onClick={e => e.stopPropagation()}>
+            <button
+              className="absolute top-4 right-4 p-2 text-gray-400 transition"
+              onClick={() => setIsDialogOpen(false)}>
+              <X className="h-5 w-5" />
+            </button>
+
+            <h2 className="mb-5 flex items-center gap-2 text-xl font-semibold tracking-tight text-gray-900">
+              <img
+                className="mb-2 w-12 drop-shadow-lg"
+                src={neighborhood}
+                alt="동네 아이콘"
+              />
+              <span>동네인증이란?</span>
+            </h2>
+
+            <div className="space-y-4 text-[15px] leading-relaxed text-gray-600">
+              <p>
+                동네 인증은 회원님의 현재 위치를 기반으로 거주 지역을 확인하는
+                기능입니다.
+              </p>
+              <p>
+                인증된 동네를 기준으로 주변 이웃들과 소통하고, 지역 기반 중고
+                거래 및 정보를 공유할 수 있습니다.
+              </p>
+              <p>
+                위치 정보는 동네 인증 목적으로만 사용되며, 안전하게 보호됩니다.
+              </p>
+            </div>
+
+            <button
+              className="mt-7 h-11 w-full rounded-xl bg-red-400 font-semibold text-white shadow-sm transition-colors hover:bg-red-500"
+              onClick={() => setIsDialogOpen(false)}>
+              확인
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
