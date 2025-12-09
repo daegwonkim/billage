@@ -41,6 +41,11 @@ export default function OnboardingVerification() {
     }
   })
 
+  const handleResend = () => {
+    sendVerificationCodeMutation.mutate({ phoneNo: phoneNo })
+    setTimeLeft(300)
+  }
+
   useEffect(() => {
     verificationCodeInputRef.current?.focus()
     sendVerificationCodeMutation.mutate({ phoneNo: phoneNo })
@@ -101,7 +106,9 @@ export default function OnboardingVerification() {
 
           <div className="text-center text-sm text-gray-500">
             인증번호가 오지 않나요?{' '}
-            <span className="cursor-pointer font-semibold text-red-400 underline">
+            <span
+              className="cursor-pointer font-semibold text-red-400 underline"
+              onClick={handleResend}>
               재전송
             </span>
           </div>
