@@ -20,6 +20,7 @@ import io.github.daegwonkim.backend.common.event.dto.VerifiedTokenDeleteEvent
 import io.github.daegwonkim.backend.common.exception.ExternalServiceException
 import io.github.daegwonkim.backend.common.exception.InvalidValueException
 import io.github.daegwonkim.backend.common.exception.NotFoundException
+import io.github.daegwonkim.backend.dto.auth.PhoneNoConfirmResponse
 import io.github.daegwonkim.backend.logger
 import io.github.daegwonkim.backend.repository.VerifiedTokenRedisRepository
 import io.github.daegwonkim.backend.repository.UserRepository
@@ -89,9 +90,9 @@ class AuthService(
     }
 
     @Transactional(readOnly = true)
-    fun confirmPhoneNo(request: PhoneNoConfirmRequest) {
-        userRepository.findByPhoneNoAndIsWithdrawnFalse(phoneNo = request.phoneNo)
-            ?: throw NotFoundException(errorCode = ErrorCode.USER_NOT_FOUND)
+    fun confirmPhoneNo(request: PhoneNoConfirmRequest): PhoneNoConfirmResponse {
+        val exists = userRepository.existsByPhoneNoAndIsWithdrawnFalse(phoneNo = request.phoneNo)
+        return PhoneNoConfirmResponse(exists)
     }
 
     @Transactional

@@ -6,4 +6,5 @@ import java.util.UUID
 
 interface UserRepository : JpaRepository<User, UUID> {
     fun findByPhoneNoAndIsWithdrawnFalse(phoneNo: String): User?
+    fun existsByPhoneNoAndIsWithdrawnFalse(phoneNo: String): Boolean
 }

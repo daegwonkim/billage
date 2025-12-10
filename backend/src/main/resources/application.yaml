@@ -4,6 +4,9 @@ spring:
 
   datasource:
     url: ${DATASOURCE_URL}
+    hikari:
+      data-source-properties:
+        prepareThreshold: 0
   jpa:
     database-platform: org.hibernate.spatial.dialect.postgis.PostgisPG10Dialect
     hibernate:
@@ -25,7 +28,7 @@ verification-code:
   expiration: 5
 
 verified-token:
-  expiration: 1
+  expiration: 5
 
 jwt:
   secret: ${SECRET}

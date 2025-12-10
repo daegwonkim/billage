@@ -32,10 +32,10 @@ interface NeighborhoodRepository : JpaRepository<Neighborhood, UUID> {
             WHERE ST_DWithin(
                 centroid::geography,
                 ST_SetSRID(ST_MakePoint(:longitude, :latitude), 4326)::geography,
-                5000
+                2500
             )
-            ORDER BY sido, sigungu, eupmyeondong
-            LIMIT 10;
+            ORDER BY centroid <-> ST_SetSRID(ST_MakePoint(:longitude, :latitude), 4326)
+            LIMIT 15;
         """,
         nativeQuery = true
     )
