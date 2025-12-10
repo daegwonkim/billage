@@ -23,7 +23,8 @@ export default function OnboardingVerification() {
 
   const sendVerificationCodeMutation = useMutation({
     mutationFn: (request: VerificationCodeSendRequest) =>
-      sendVerificationCode(request)
+      sendVerificationCode(request),
+    onSuccess: () => setTimeLeft(300)
   })
 
   const verificationCodeConfirmMutation = useMutation({
@@ -43,7 +44,6 @@ export default function OnboardingVerification() {
 
   const handleResend = () => {
     sendVerificationCodeMutation.mutate({ phoneNo: phoneNo })
-    setTimeLeft(300)
   }
 
   useEffect(() => {
