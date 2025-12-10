@@ -2,12 +2,14 @@ import {
   sendVerificationCode,
   confirmVerificationCode
 } from '@/api/domain/auth'
+import { ApiError, ErrorMessageMap } from '@/api/domain/error'
 import type { VerificationCodeConfirmRequest } from '@/api/dto/VerificationCodeConfirm'
 import type { VerificationCodeSendRequest } from '@/api/dto/VerificationCodeSend'
 import logo from '@/assets/main.png'
 import { useMutation } from '@tanstack/react-query'
 import { ChevronLeft, CircleAlert } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
+import toast, { Toaster } from 'react-hot-toast'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 export default function OnboardingVerification() {
@@ -24,7 +26,13 @@ export default function OnboardingVerification() {
   const sendVerificationCodeMutation = useMutation({
     mutationFn: (request: VerificationCodeSendRequest) =>
       sendVerificationCode(request),
-    onSuccess: () => setTimeLeft(300)
+    onSuccess: () => setTimeLeft(300),
+    onError: (error: ApiError) => {
+      toast.error(
+        ErrorMessageMap[error.code] ??
+          '서버와의 연결에 실패했습니다. 잠시 후 다시 시도해주세요.'
+      )
+    }
   })
 
   const verificationCodeConfirmMutation = useMutation({
@@ -65,13 +73,20 @@ export default function OnboardingVerification() {
 
   return (
     <div className="flex min-h-screen w-md flex-col items-center justify-center p-4">
+      <Toaster
+        position="top-center"
+        toastOptions={{ className: 'text-sm' }}
+      />
       <img
         className="mb-6 w-25 drop-shadow-lg"
         src={logo}
       />
       <div className="w-full max-w-lg rounded-2xl border border-gray-200 bg-white px-8 py-8 shadow-xl">
         <div className="relative mb-6">
-          <ChevronLeft className="absolute top-0 left-0 h-6 w-6 cursor-pointer text-gray-700 transition-colors hover:text-gray-900" />
+          <ChevronLeft
+            className="absolute top-0 left-0 h-6 w-6 cursor-pointer text-gray-700 transition-colors hover:text-gray-900"
+            onClick={() => navigate(-1)}
+          />
           <div className="text-center font-bold">본인인증</div>
         </div>
 

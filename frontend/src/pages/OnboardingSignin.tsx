@@ -14,6 +14,8 @@ import type { VerificationCodeConfirmRequest } from '@/api/dto/VerificationCodeC
 import type { VerificationCodeSendRequest } from '@/api/dto/VerificationCodeSend'
 import type { SignInRequest } from '@/api/dto/SignIn'
 import type { PhoneNoConfirmRequest } from '@/api/dto/PhoneNoConfirm'
+import { ErrorMessageMap, type ApiError } from '@/api/domain/error'
+import toast from 'react-hot-toast'
 
 export default function OnboardingSignin() {
   const navigate = useNavigate()
@@ -32,20 +34,29 @@ export default function OnboardingSignin() {
 
   const confirmPhoneNoMutation = useMutation({
     mutationFn: (request: PhoneNoConfirmRequest) => confirmPhoneNo(request),
-    onSuccess: (_data, variables) => {
-      sendVerificationCodeMutation.mutate({
-        phoneNo: variables.phoneNo
-      })
-      setInvalidPhoneNo(false)
-      setStep('verificationCode')
-      setTimeLeft(300)
-    },
-    onError: () => setInvalidPhoneNo(true)
+    onSuccess: (data, variables) => {
+      if (!data.exists) {
+        setInvalidPhoneNo(true)
+      } else {
+        sendVerificationCodeMutation.mutate({
+          phoneNo: variables.phoneNo
+        })
+        setInvalidPhoneNo(false)
+        setStep('verificationCode')
+        setTimeLeft(300)
+      }
+    }
   })
 
   const sendVerificationCodeMutation = useMutation({
     mutationFn: (request: VerificationCodeSendRequest) =>
-      sendVerificationCode(request)
+      sendVerificationCode(request),
+    onError: (error: ApiError) => {
+      toast.error(
+        ErrorMessageMap[error.code] ??
+          '서버와의 연결에 실패했습니다. 잠시 후 다시 시도해주세요.'
+      )
+    }
   })
 
   const resendVerificationCodeMutation = useMutation({
@@ -53,6 +64,12 @@ export default function OnboardingSignin() {
       sendVerificationCode(request),
     onSuccess: () => {
       setTimeLeft(300)
+    },
+    onError: (error: ApiError) => {
+      toast.error(
+        ErrorMessageMap[error.code] ??
+          '서버와의 연결에 실패했습니다. 잠시 후 다시 시도해주세요.'
+      )
     }
   })
 
@@ -137,7 +154,7 @@ export default function OnboardingSignin() {
         <div className="relative mb-6">
           <ChevronLeft
             className="absolute top-0 left-0 h-6 w-6 cursor-pointer text-gray-700 transition-colors hover:text-gray-900"
-            onClick={() => step === 'verificationCode' && setStep('phoneNo')}
+            onClick={() => navigate(-1)}
           />
           <div className="text-center font-bold">로그인</div>
         </div>

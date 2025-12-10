@@ -1,4 +1,7 @@
-import type { PhoneNoConfirmRequest } from '../dto/PhoneNoConfirm'
+import type {
+  PhoneNoConfirmRequest,
+  PhoneNoConfirmResponse
+} from '../dto/PhoneNoConfirm'
 import type { SignInRequest } from '../dto/SignIn'
 import type { SignUpRequest } from '../dto/SignUp'
 import type {
@@ -24,7 +27,16 @@ export async function sendVerificationCode(
       body: JSON.stringify(request)
     }
   )
-  if (!response.ok) throw new Error('Failed to send verification code')
+  if (!response.ok) {
+    const errorData: ApiErrorResponse = await response.json()
+    throw new ApiError(
+      errorData.code,
+      errorData.message,
+      response.status,
+      errorData.path,
+      errorData.errors
+    )
+  }
 }
 
 export async function confirmVerificationCode(
@@ -78,7 +90,7 @@ export async function signIn(request: SignInRequest): Promise<void> {
 
 export async function confirmPhoneNo(
   request: PhoneNoConfirmRequest
-): Promise<void> {
+): Promise<PhoneNoConfirmResponse> {
   const response = await fetch(`${API_BASE_URL}/api/auth/phone-no/confirm`, {
     method: 'POST',
     headers: {
@@ -87,6 +99,8 @@ export async function confirmPhoneNo(
     body: JSON.stringify(request)
   })
   if (!response.ok) throw new Error('Failed to verify phone no')
+
+  return response.json()
 }
 
 export async function confirmNeighborhood(

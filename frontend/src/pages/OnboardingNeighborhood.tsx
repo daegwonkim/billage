@@ -8,7 +8,7 @@ import {
   useLocateNeighborhood
 } from '@/hooks/Neighborhood'
 import { useMutation } from '@tanstack/react-query'
-import { ChevronLeft, Crosshair, Loader2, X } from 'lucide-react'
+import { Crosshair, Loader2, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import toast, { Toaster } from 'react-hot-toast'
 import { useLocation, useNavigate } from 'react-router-dom'
@@ -129,17 +129,16 @@ export default function OnboardingNeighborhood() {
 
   return (
     <div className="flex min-h-screen w-md flex-col items-center justify-center p-4">
-      <Toaster position="top-center" />
+      <Toaster
+        position="top-center"
+        toastOptions={{ className: 'text-sm' }}
+      />
       <img
         className="mb-6 w-25 drop-shadow-lg"
         src={logo}
       />
       <div className="w-full max-w-lg rounded-2xl border border-gray-200 bg-white px-8 py-8 shadow-xl">
         <div className="relative mb-6">
-          <ChevronLeft
-            className="absolute top-0 left-0 h-6 w-6 cursor-pointer text-gray-700 transition-colors hover:text-gray-900"
-            onClick={() => navigate(-1)}
-          />
           <div className="text-center font-bold">동네인증</div>
         </div>
 
