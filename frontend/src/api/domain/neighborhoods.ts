@@ -3,6 +3,7 @@ import type {
   NearbyNeighborhoodsQueryRequest,
   NearbyNeighborhoodsQueryResponse
 } from '../dto/NearbyNeighborhoodsQuery'
+import { ApiError, type ApiErrorResponse } from './error'
 
 // const API_BASE_URL = 'https://billage.onrender.com'
 const API_BASE_URL = 'http://localhost:8080'
@@ -20,7 +21,16 @@ export async function nearbyNeighborhoods(
       method: 'GET'
     }
   )
-  if (!response.ok) throw new Error('Failed to query nearby neighborhoods')
+  if (!response.ok) {
+    const errorData: ApiErrorResponse = await response.json()
+    throw new ApiError(
+      errorData.code,
+      errorData.message,
+      response.status,
+      errorData.path,
+      errorData.errors
+    )
+  }
 
   return response.json()
 }

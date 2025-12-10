@@ -6,6 +6,7 @@ import type {
   VerificationCodeConfirmResponse
 } from '../dto/VerificationCodeConfirm'
 import type { VerificationCodeSendRequest } from '../dto/VerificationCodeSend'
+import { ApiError, type ApiErrorResponse } from './error'
 
 // const API_BASE_URL = 'https://billage.onrender.com'
 const API_BASE_URL = 'http://localhost:8080'
@@ -52,7 +53,16 @@ export async function signUp(request: SignUpRequest): Promise<void> {
     },
     body: JSON.stringify(request)
   })
-  if (!response.ok) throw new Error('Failed to sign up')
+  if (!response.ok) {
+    const errorData: ApiErrorResponse = await response.json()
+    throw new ApiError(
+      errorData.code,
+      errorData.message,
+      response.status,
+      errorData.path,
+      errorData.errors
+    )
+  }
 }
 
 export async function signIn(request: SignInRequest): Promise<void> {

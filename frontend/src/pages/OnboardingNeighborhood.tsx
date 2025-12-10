@@ -1,4 +1,5 @@
 import { signUp } from '@/api/domain/auth'
+import { ApiError, ErrorMessageMap } from '@/api/domain/error'
 import type { SignUpRequest } from '@/api/dto/SignUp'
 import logo from '@/assets/main.png'
 import neighborhood from '@/assets/neighborhood.png'
@@ -7,8 +8,9 @@ import {
   useLocateNeighborhood
 } from '@/hooks/Neighborhood'
 import { useMutation } from '@tanstack/react-query'
-import { ChevronLeft, Crosshair, AlertCircle, Loader2, X } from 'lucide-react'
+import { ChevronLeft, Crosshair, Loader2, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import toast, { Toaster } from 'react-hot-toast'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 export default function OnboardingNeighborhood() {
@@ -22,8 +24,6 @@ export default function OnboardingNeighborhood() {
     latitude: string
     longitude: string
   } | null>(null)
-  const [locationError, setLocationError] = useState<boolean | null>(null)
-  const [locationErrorMessage, setLocationErrorMessage] = useState('')
   const [selectedNeighborhood, setSelectedNeighborhood] = useState('')
   const [currentLocation, setCurrentLocation] = useState<{
     latitude: string
@@ -48,7 +48,12 @@ export default function OnboardingNeighborhood() {
 
   const signUpMutation = useMutation({
     mutationFn: (request: SignUpRequest) => signUp(request),
-    onSuccess: () => navigate('/')
+    onSuccess: () => navigate('/'),
+    onError: (error: ApiError) => {
+      toast.error(
+        ErrorMessageMap[error.code] ?? '알 수 없는 오류가 발생했습니다'
+      )
+    }
   })
 
   const handleCurrentLocation = () => {
@@ -62,23 +67,16 @@ export default function OnboardingNeighborhood() {
             latitude: lat,
             longitude: lng
           })
-          setLocationError(false)
         },
         error => {
-          setLocationError(true)
-
           if (error.code == error.PERMISSION_DENIED) {
-            setLocationErrorMessage(
-              '브라우저 설정에서 위치 권한을 허용해주세요.'
-            )
+            toast.error('브라우저 설정에서 위치 권한을 허용해주세요.')
           } else if (error.code == error.POSITION_UNAVAILABLE) {
-            setLocationErrorMessage(
+            toast.error(
               '현재 위치 정보를 가져올 수 없습니다. 잠시 후 다시 시도해주세요.'
             )
           } else if (error.code == error.TIMEOUT) {
-            setLocationErrorMessage(
-              '시간 초과로 위치 정보를 가져오는 데 실패했습니다.'
-            )
+            toast.error('시간 초과로 위치 정보를 가져오는 데 실패했습니다.')
           }
         },
         {
@@ -88,8 +86,7 @@ export default function OnboardingNeighborhood() {
         }
       )
     } else {
-      setLocationError(true)
-      setLocationErrorMessage('브라우저가 위치 서비스를 지원하지 않습니다.')
+      toast.error('브라우저가 위치 서비스를 지원하지 않습니다.')
     }
   }
 
@@ -107,23 +104,16 @@ export default function OnboardingNeighborhood() {
             latitude: position.coords.latitude.toString(),
             longitude: position.coords.longitude.toString()
           })
-          setLocationError(false)
         },
         error => {
-          setLocationError(true)
-
           if (error.code == error.PERMISSION_DENIED) {
-            setLocationErrorMessage(
-              '브라우저 설정에서 위치 권한을 허용해주세요.'
-            )
+            toast.error('브라우저 설정에서 위치 권한을 허용해주세요.')
           } else if (error.code == error.POSITION_UNAVAILABLE) {
-            setLocationErrorMessage(
+            toast.error(
               '현재 위치 정보를 가져올 수 없습니다. 잠시 후 다시 시도해주세요.'
             )
           } else if (error.code == error.TIMEOUT) {
-            setLocationErrorMessage(
-              '시간 초과로 위치 정보를 가져오는 데 실패했습니다.'
-            )
+            toast.error('시간 초과로 위치 정보를 가져오는 데 실패했습니다.')
           }
         },
         {
@@ -133,13 +123,13 @@ export default function OnboardingNeighborhood() {
         }
       )
     } else {
-      setLocationError(true)
-      setLocationErrorMessage('브라우저가 위치 서비스를 지원하지 않습니다.')
+      toast.error('브라우저가 위치 서비스를 지원하지 않습니다.')
     }
   }, [])
 
   return (
     <div className="flex min-h-screen w-md flex-col items-center justify-center p-4">
+      <Toaster position="top-center" />
       <img
         className="mb-6 w-25 drop-shadow-lg"
         src={logo}
@@ -152,18 +142,6 @@ export default function OnboardingNeighborhood() {
           />
           <div className="text-center font-bold">동네인증</div>
         </div>
-
-        {locationError && (
-          <div className="mb-6 flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-4">
-            <AlertCircle className="mt-0.5 h-5 w-5 text-red-800" />
-            <div className="flex-1">
-              <div className="mb-1 text-sm font-semibold text-red-800">
-                위치 정보를 가져올 수 없습니다
-              </div>
-              <div className="text-xs text-red-700">{locationErrorMessage}</div>
-            </div>
-          </div>
-        )}
 
         <button
           className="mb-8 flex h-9 w-full items-center justify-center gap-2 rounded-xl bg-red-400 font-semibold text-white shadow-md transition-colors hover:bg-red-500 disabled:cursor-not-allowed disabled:bg-gray-300"
@@ -182,18 +160,6 @@ export default function OnboardingNeighborhood() {
             {nearbyNeighborhoodsLoading ? (
               <div className="flex flex-col items-center justify-center py-12">
                 <Loader2 className="h-8 w-8 animate-spin text-red-400" />
-              </div>
-            ) : nearbyNeighborhoodsError ? (
-              <div className="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-4">
-                <AlertCircle className="mt-0.5 h-5 w-5 text-orange-800" />
-                <div className="flex-1">
-                  <div className="mb-1 text-sm font-semibold text-red-800">
-                    동네 목록을 불러올 수 없습니다
-                  </div>
-                  <div className="text-xs text-red-700">
-                    네트워크 연결을 확인하거나 잠시 후 다시 시도해주세요.
-                  </div>
-                </div>
               </div>
             ) : nearbyNeighborhoodsData?.neighborhoods &&
               nearbyNeighborhoodsData.neighborhoods.length > 0 ? (
