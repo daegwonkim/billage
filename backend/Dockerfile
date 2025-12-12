@@ -14,9 +14,11 @@ COPY api/build.gradle.kts api/
 
 RUN ./gradlew dependencies --no-daemon || true
 
-COPY . .
+COPY domain ./domain
+COPY infra ./infra
+COPY api ./api
 
-RUN ./gradlew :api:clean :api:bootJar --no-daemon -x test -x generateJooq
+RUN ./gradlew :api:clean :api:build --no-daemon -x test -x generateJooq
 
 # 2. 실행 스테이지
 FROM eclipse-temurin:17-jre-alpine
