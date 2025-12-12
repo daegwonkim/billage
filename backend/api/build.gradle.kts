@@ -2,11 +2,7 @@ group = "io.github.daegwonkim"
 version = "0.0.1-SNAPSHOT"
 
 springBoot {
-    mainClass.set("io.github.daegwonkim.backend.BackendApplicationKt")
-}
-
-tasks.withType<org.springframework.boot.gradle.tasks.bundling.BootJar> {
-    mainClass.set("io.github.daegwonkim.backend.BackendApplicationKt")
+    mainClass.set("io.github.daegwonkim.backend.BackendApplication")
 }
 
 repositories {
@@ -19,6 +15,8 @@ dependencies {
 
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-security")
+
+    runtimeOnly("org.postgresql:postgresql")
 
     // jsonwebtoken
     implementation("io.jsonwebtoken:jjwt-api:0.12.5")

@@ -9,6 +9,7 @@ COPY settings.gradle.kts ./
 COPY build.gradle.kts ./
 
 COPY domain/build.gradle.kts domain/
+COPY infra/build.gradle.kts infra/
 COPY api/build.gradle.kts api/
 
 RUN ./gradlew dependencies --no-daemon || true
