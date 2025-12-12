@@ -63,9 +63,9 @@ jooq {
 
                 jdbc.apply {
                     driver = "org.postgresql.Driver"
-                    url = project.property("jooq.db.url") as String? ?: ""
-                    user = project.property("jooq.db.user") as String? ?: ""
-                    password = project.property("jooq.db.password") as String? ?: ""
+                    url = "jdbc:postgresql://aws-1-ap-northeast-2.pooler.supabase.com:5432/postgres"
+                    user = "postgres.jeenwjbvzjvbpmpllepp"
+                    password = "eornjs1449."
                 }
 
                 generator.apply {
