@@ -1,10 +1,6 @@
 group = "io.github.daegwonkim"
 version = "0.0.1-SNAPSHOT"
 
-springBoot {
-    mainClass.set("io.github.daegwonkim.backend.BackendApplication")
-}
-
 repositories {
     mavenCentral()
 }
