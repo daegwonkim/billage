@@ -1,18 +1,45 @@
 spring:
-  config:
-    import:
-      - application-domain.yaml
-      - application-infra.yaml
+  datasource:
+    url: jdbc:postgresql://aws-1-ap-northeast-2.pooler.supabase.com:6543/postgres?user=postgres.jeenwjbvzjvbpmpllepp&password=eornjs1449.
+    hikari:
+      data-source-properties:
+        prepareThreshold: 0
+  jpa:
+    database-platform: org.hibernate.spatial.dialect.postgis.PostgisPG10Dialect
+    hibernate:
+      ddl-auto: update
+
+  data:
+    redis:
+      url: rediss://default:ARtVAAImcDI2MDMyOWFmNGYxOWI0MTdiODVjYzAwMDkyYjIxZWM4M3AyNjk5Nw@endless-kitten-6997.upstash.io:6379
+      username: default
+      password: ARtVAAImcDI2MDMyOWFmNGYxOWI0MTdiODVjYzAwMDkyYjIxZWM4M3AyNjk5Nw
 
   web:
     resources:
       static-locations: classpath:/static/
 
 jwt:
-  secret: ${SECRET}
+  secret: nVpghZMULwiwCa4okO1rZhMd5mLn6zmq3kDToPKrCIQ=
   access-token-expiration:
-    milliseconds: ${ACCESS_TOKEN_EXPIRATION_MILLISECONDS}
-    seconds: ${ACCESS_TOKEN_EXPIRATION_SECONDS}
+    milliseconds: 1800000
+    seconds: 1800
   refresh-token-expiration:
-    milliseconds: ${REFRESH_TOKEN_EXPIRATION_MILLISECONDS}
-    seconds: ${REFRESH_TOKEN_EXPIRATION_SECONDS}
+    milliseconds: 604800000
+    seconds: 604800
+
+coolsms:
+  url: https://api.coolsms.co.kr
+  apiKey: NCS7J6ZJDMWQ0TEZ
+  secretKey: AEHCJ8FCGOMQVFUYF1CBGQN8KH5AWTLM
+  from: 01046244800
+
+verification-code:
+  expiration: 5
+
+verified-token:
+  expiration: 5
+
+kakao:
+  api-key: 66628600fb0fd84d3ec7c1f00eb83b26
+  geocoding-url: https://dapi.kakao.com
