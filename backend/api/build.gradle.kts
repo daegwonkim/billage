@@ -27,3 +27,12 @@ tasks.test {
 kotlin {
     jvmToolchain(17)
 }
+
+tasks.processResources {
+    from(project(":domain").file("src/main/resources")) {
+        include("application-domain.yml")
+    }
+    from(project(":infra").file("src/main/resources")) {
+        include("application-infra.yml")
+    }
+}

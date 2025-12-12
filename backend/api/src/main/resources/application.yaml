@@ -1,8 +1,8 @@
 spring:
-  profiles:
-    include:
-      - domain
-      - infra
+  config:
+    import:
+      - classpath:application-domain.yaml
+      - classpath:application-intra.yaml
 
   web:
     resources:
