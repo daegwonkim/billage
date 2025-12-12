@@ -8,9 +8,15 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing
 val logger = KotlinLogging.logger { }
 
 @EnableJpaAuditing
-@SpringBootApplication
-class BackendKotlinApplication
+@SpringBootApplication(
+    scanBasePackages = [
+        "io.github.daegwonkim.backend.api",
+        "io.github.daegwonkim.backend.domain",
+        "io.github.daegwonkim.backend.infra"
+    ]
+)
+class BackendApplication
 
 fun main(args: Array<String>) {
-	runApplication<BackendKotlinApplication>(*args)
+	runApplication<BackendApplication>(*args)
 }

@@ -1,6 +1,14 @@
 group = "io.github.daegwonkim"
 version = "0.0.1-SNAPSHOT"
 
+tasks.named<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
+    enabled = false
+}
+
+tasks.named<Jar>("jar") {
+    enabled = true
+}
+
 repositories {
     mavenCentral()
 }

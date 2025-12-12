@@ -1,6 +1,14 @@
 group = "io.github.daegwonkim"
 version = "0.0.1-SNAPSHOT"
 
+springBoot {
+    mainClass.set("io.github.daegwonkim.backend.BackendApplicationKt")
+}
+
+tasks.withType<org.springframework.boot.gradle.tasks.bundling.BootJar> {
+    mainClass.set("io.github.daegwonkim.backend.BackendApplicationKt")
+}
+
 repositories {
     mavenCentral()
 }
