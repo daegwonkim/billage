@@ -33,8 +33,6 @@ subprojects {
         implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
         implementation("org.jetbrains.kotlin:kotlin-reflect")
 
-        implementation("org.postgresql:postgresql")
-
         // logging
         implementation("io.github.oshai:kotlin-logging-jvm:7.0.3")
 
