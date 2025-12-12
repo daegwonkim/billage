@@ -1,0 +1,15 @@
+coolsms:
+  url: https://api.coolsms.co.kr
+  apiKey: ${COOLSMS_API_KEY}
+  secretKey: ${COOLSMS_SECRET_KEY}
+  from: ${COOLSMS_FROM}
+
+verification-code:
+  expiration: ${VERIFICATION_CODE_EXPIRATION}
+
+verified-token:
+  expiration: ${VERIFIED_TOKEN_EXPIRATION}
+
+kakao:
+  api-key: ${KAKAO_API_KEY}
+  geocoding-url: https://dapi.kakao.com

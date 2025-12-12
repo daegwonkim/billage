@@ -1,0 +1,18 @@
+spring:
+  config:
+    import:
+      - classpath:/application-domain.yaml
+      - classpath:/application-infra.yaml
+
+  web:
+    resources:
+      static-locations: classpath:/static/
+
+jwt:
+  secret: ${SECRET}
+  access-token-expiration:
+    milliseconds: ${ACCESS_TOKEN_EXPIRATION_MILLISECONDS}
+    seconds: ${ACCESS_TOKEN_EXPIRATION_SECONDS}
+  refresh-token-expiration:
+    milliseconds: ${REFRESH_TOKEN_EXPIRATION_MILLISECONDS}
+    seconds: ${REFRESH_TOKEN_EXPIRATION_SECONDS}

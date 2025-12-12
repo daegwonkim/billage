@@ -3,7 +3,6 @@ plugins {
 	kotlin("plugin.spring") version "2.2.21"
 	id("org.springframework.boot") version "4.0.0"
 	id("io.spring.dependency-management") version "1.1.7"
-	kotlin("plugin.jpa") version "2.2.21"
 }
 
 group = "io.github.daegwonkim"
@@ -20,64 +19,44 @@ repositories {
 	mavenCentral()
 }
 
-dependencies {
-	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-	implementation("org.springframework.boot:spring-boot-starter-data-redis")
-	implementation("org.springframework.boot:spring-boot-starter-validation")
-	implementation("org.springframework.boot:spring-boot-starter-webmvc")
-    implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6")
-	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-	implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("org.postgresql:postgresql")
+subprojects {
+    apply(plugin = "kotlin")
+    apply(plugin = "org.jetbrains.kotlin.jvm")
+    apply(plugin = "org.jetbrains.kotlin.plugin.spring")
+    apply(plugin = "org.springframework.boot")
+    apply(plugin = "io.spring.dependency-management")
 
-    // coolsms
-    implementation("net.nurigo:sdk:4.3.0")
+    dependencies {
+        implementation("org.springframework.boot:spring-boot-starter-webmvc")
+        implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 
-    // jsonwebtoken
-    implementation("io.jsonwebtoken:jjwt-api:0.12.5")
-    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.5")
-    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.5")
+        implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6")
+        implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+        implementation("org.jetbrains.kotlin:kotlin-reflect")
 
-    // logging
-    implementation("io.github.oshai:kotlin-logging-jvm:7.0.3")
+        // logging
+        implementation("io.github.oshai:kotlin-logging-jvm:7.0.3")
 
-    // geo
-    implementation("org.locationtech.jts:jts-core:1.19.0")
-    implementation("org.hibernate:hibernate-spatial:7.1.11.Final")
+        // test
+        testImplementation("org.springframework.boot:spring-boot-starter-validation-test")
+        testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
+        testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+        testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
-	testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
-	testImplementation("org.springframework.boot:spring-boot-starter-data-redis-test")
-	testImplementation("org.springframework.boot:spring-boot-starter-validation-test")
-	testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
-	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+        // kotest
+        testImplementation("io.kotest:kotest-assertions-core:6.0.7")
+        testImplementation("io.kotest:kotest-runner-junit5:6.0.7")
+        testImplementation("io.kotest:kotest-extensions-spring:6.0.7")
 
-    // kotest
-    testImplementation("io.kotest:kotest-assertions-core:6.0.7")
-    testImplementation("io.kotest:kotest-runner-junit5:6.0.7")
-    testImplementation("io.kotest:kotest-extensions-spring:6.0.7")
+        // mockk
+        testImplementation("io.mockk:mockk:1.13.8")
+    }
 
-    // mockk
-    testImplementation("io.mockk:mockk:1.13.8")
-}
-
-kotlin {
-	compilerOptions {
-		freeCompilerArgs.addAll("-Xjsr305=strict", "-Xannotation-default-target=param-property")
-	}
-}
-
-allOpen {
-	annotation("jakarta.persistence.Entity")
-	annotation("jakarta.persistence.MappedSuperclass")
-	annotation("jakarta.persistence.Embeddable")
-}
-
-noArg {
-    annotation("jakarta.persistence.Entity")
-    annotation("jakarta.persistence.MappedSuperclass")
-    annotation("jakarta.persistence.Embeddable")
+    kotlin {
+        compilerOptions {
+            freeCompilerArgs.addAll("-Xjsr305=strict", "-Xannotation-default-target=param-property")
+        }
+    }
 }
 
 tasks.withType<Test> {

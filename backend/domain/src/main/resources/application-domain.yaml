@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: {DATASOURCE_URL}
+    hikari:
+      data-source-properties:
+        prepareThreshold: 0
+  jpa:
+    database-platform: org.hibernate.spatial.dialect.postgis.PostgisPG10Dialect
+    hibernate:
+      ddl-auto: update
+
+  data:
+    redis:
+      url: {UPSTASH_REDIS_URL}
+      username: {UPSTASH_REDIS_USERNAME}
+      password: {UPSTASH_REDIS_TOKEN}
