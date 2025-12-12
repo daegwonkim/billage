@@ -28,11 +28,15 @@ kotlin {
     jvmToolchain(17)
 }
 
+val moduleConfigs = listOf("domain", "infra")
+
+val copyTasks = moduleConfigs.map { moduleName ->
+    tasks.register<Copy>("copy${moduleName}Config") {
+        from(project(":$moduleName").file("src/main/resources/application-${moduleName}.yml"))
+        into(layout.buildDirectory.dir("resources/main"))
+    }
+}
+
 tasks.processResources {
-    from(project(":domain").file("src/main/resources")) {
-        include("application-domain.yaml")
-    }
-    from(project(":infra").file("src/main/resources")) {
-        include("application-infra.yaml")
-    }
+    dependsOn(copyTasks)
 }
