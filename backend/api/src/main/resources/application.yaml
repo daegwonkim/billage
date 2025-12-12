@@ -2,7 +2,7 @@ spring:
   config:
     import:
       - classpath:application-domain.yaml
-      - classpath:application-intra.yaml
+      - classpath:application-infra.yaml
 
   web:
     resources:
