@@ -30,9 +30,9 @@ kotlin {
 
 tasks.processResources {
     from(project(":domain").file("src/main/resources")) {
-        include("application-domain.yml")
+        include("application-domain.yaml")
     }
     from(project(":infra").file("src/main/resources")) {
-        include("application-infra.yml")
+        include("application-infra.yaml")
     }
 }
