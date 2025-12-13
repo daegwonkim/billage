@@ -9,11 +9,11 @@ COPY api/build.gradle api/
 COPY domain/build.gradle domain/
 COPY infra/build.gradle infra/
 
-RUN gradle build -x test --no-daemon || true
+RUN ./gradlew build -x test -x generateJooq --no-daemon || true
 
 COPY . .
 
-RUN gradle :api:bootJar -x test --no-daemon
+RUN ./gradlew :api:bootJar -x test -x generateJooq --no-daemon
 
 # ===============================
 # 2. Runtime stage
