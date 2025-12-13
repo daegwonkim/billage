@@ -10,10 +10,13 @@ import io.github.daegwonkim.backend.jooq.generated.Tables.RENTAL_RECORDS
 import io.github.daegwonkim.backend.jooq.generated.Tables.USER_NEIGHBORHOODS
 import io.github.daegwonkim.backend.repository.dto.SearchedRentalItem
 import org.jooq.DSLContext
+import org.jooq.Field
+import org.jooq.impl.DSL
 import org.jooq.impl.DSL.concat
 import org.jooq.impl.DSL.lower
 import org.jooq.impl.DSL.noCondition
 import org.jooq.impl.DSL.value
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
@@ -21,7 +24,9 @@ import org.springframework.stereotype.Repository
 
 @Repository
 class RentalItemJooqRepository(
-    private val dslContext: DSLContext
+    private val dslContext: DSLContext,
+    @Value($$"${supabase.url}")
+    private val supabaseUrl: String
 ) {
     fun searchRentalItems(
         category: RentalItemCategory?,
@@ -60,12 +65,12 @@ class RentalItemJooqRepository(
     }
 
     private fun thumbnailUrlSubquery() =
-        dslContext.select(RENTAL_ITEM_IMAGES.URL)
+        dslContext.select(buildSupabaseStorageUrl(name = RENTAL_ITEM_IMAGES.NAME))
             .from(RENTAL_ITEM_IMAGES)
             .where(RENTAL_ITEM_IMAGES.RENTAL_ITEM_ID.eq(RENTAL_ITEMS.ID))
             .orderBy(RENTAL_ITEM_IMAGES.SEQUENCE.asc())
             .limit(1)
-            .asField<String>("thumbnail_url")
+            .asField<String>("thumbnailUrl")
 
     private fun rentalCountSubquery() =
         dslContext.selectCount()
@@ -106,4 +111,7 @@ class RentalItemJooqRepository(
             }
             if (sort.isAscending) field.asc() else field.desc()
         } ?: RENTAL_ITEMS.CREATED_AT.desc()
+
+    private fun buildSupabaseStorageUrl(name: Field<String>) =
+        concat(DSL.value("$supabaseUrl/storage/v1/object/public/rental-item"), name)
 }

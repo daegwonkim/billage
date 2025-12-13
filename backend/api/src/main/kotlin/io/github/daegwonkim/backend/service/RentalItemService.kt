@@ -93,20 +93,18 @@ class RentalItemService(
                 pricePerWeek = request.pricePerWeek
             )
         )
-        val newRentalItemId = requireNotNull(newRentalItem.id) { "RentalItem ID should not be null" }
 
         images.mapIndexed { index, file ->
-            val filePath = supabaseStorageService.uploadFile(file = file, bucket = rentalItemBucket)
-            val url = supabaseStorageService.getPublicUrl(filePath = filePath)
+            val fileName = supabaseStorageService.uploadFile(file = file, bucket = rentalItemBucket)
             rentalItemImageRepository.save(
                 RentalItemImage(
-                    rentalItemId = newRentalItemId,
-                    url = url,
+                    rentalItemId = newRentalItem.id!!,
+                    name = fileName,
                     sequence = index
                 )
             )
         }
 
-        return RentalItemRegisterResponse(newRentalItemId)
+        return RentalItemRegisterResponse(id = newRentalItem.id!!)
     }
 }

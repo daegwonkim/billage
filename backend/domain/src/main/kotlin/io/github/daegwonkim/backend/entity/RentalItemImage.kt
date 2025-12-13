@@ -20,7 +20,7 @@ class RentalItemImage(
     var rentalItemId: UUID,
 
     @Column(nullable = false)
-    var url: String,
+    var name: String,
 
     @Column(nullable = false)
     var sequence: Int

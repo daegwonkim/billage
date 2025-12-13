@@ -19,7 +19,7 @@ public class RentalItemImages implements Serializable {
     private UUID id;
     private UUID rentalItemId;
     private Integer sequence;
-    private String url;
+    private String name;
 
     public RentalItemImages() {}
 
@@ -27,19 +27,19 @@ public class RentalItemImages implements Serializable {
         this.id = value.id;
         this.rentalItemId = value.rentalItemId;
         this.sequence = value.sequence;
-        this.url = value.url;
+        this.name = value.name;
     }
 
     public RentalItemImages(
         UUID id,
         UUID rentalItemId,
         Integer sequence,
-        String url
+        String name
     ) {
         this.id = id;
         this.rentalItemId = rentalItemId;
         this.sequence = sequence;
-        this.url = url;
+        this.name = name;
     }
 
     /**
@@ -88,17 +88,17 @@ public class RentalItemImages implements Serializable {
     }
 
     /**
-     * Getter for <code>public.rental_item_images.url</code>.
+     * Getter for <code>public.rental_item_images.name</code>.
      */
-    public String getUrl() {
-        return this.url;
+    public String getName() {
+        return this.name;
     }
 
     /**
-     * Setter for <code>public.rental_item_images.url</code>.
+     * Setter for <code>public.rental_item_images.name</code>.
      */
-    public RentalItemImages setUrl(String url) {
-        this.url = url;
+    public RentalItemImages setName(String name) {
+        this.name = name;
         return this;
     }
 
@@ -129,11 +129,11 @@ public class RentalItemImages implements Serializable {
         }
         else if (!this.sequence.equals(other.sequence))
             return false;
-        if (this.url == null) {
-            if (other.url != null)
+        if (this.name == null) {
+            if (other.name != null)
                 return false;
         }
-        else if (!this.url.equals(other.url))
+        else if (!this.name.equals(other.name))
             return false;
         return true;
     }
@@ -145,7 +145,7 @@ public class RentalItemImages implements Serializable {
         result = prime * result + ((this.id == null) ? 0 : this.id.hashCode());
         result = prime * result + ((this.rentalItemId == null) ? 0 : this.rentalItemId.hashCode());
         result = prime * result + ((this.sequence == null) ? 0 : this.sequence.hashCode());
-        result = prime * result + ((this.url == null) ? 0 : this.url.hashCode());
+        result = prime * result + ((this.name == null) ? 0 : this.name.hashCode());
         return result;
     }
 
@@ -156,7 +156,7 @@ public class RentalItemImages implements Serializable {
         sb.append(id);
         sb.append(", ").append(rentalItemId);
         sb.append(", ").append(sequence);
-        sb.append(", ").append(url);
+        sb.append(", ").append(name);
 
         sb.append(")");
         return sb.toString();

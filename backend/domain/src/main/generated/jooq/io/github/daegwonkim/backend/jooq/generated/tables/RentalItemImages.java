@@ -66,9 +66,9 @@ public class RentalItemImages extends TableImpl<RentalItemImagesRecord> {
     public final TableField<RentalItemImagesRecord, Integer> SEQUENCE = createField(DSL.name("sequence"), SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
-     * The column <code>public.rental_item_images.url</code>.
+     * The column <code>public.rental_item_images.name</code>.
      */
-    public final TableField<RentalItemImagesRecord, String> URL = createField(DSL.name("url"), SQLDataType.VARCHAR(255).nullable(false), this, "");
+    public final TableField<RentalItemImagesRecord, String> NAME = createField(DSL.name("name"), SQLDataType.VARCHAR(255).nullable(false), this, "");
 
     private RentalItemImages(Name alias, Table<RentalItemImagesRecord> aliased) {
         this(alias, aliased, (Field<?>[]) null, null);

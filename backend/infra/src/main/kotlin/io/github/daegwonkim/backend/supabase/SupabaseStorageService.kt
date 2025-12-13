@@ -21,27 +21,32 @@ class SupabaseStorageService(
         .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer $supabaseApiKey")
         .build()
 
-    fun getPublicUrl(filePath: String): String {
-        return "$supabaseUrl/storage/v1/object/public/$filePath"
+    fun getPublicUrl(fileName: String, bucket: String): String {
+        return "$supabaseUrl/storage/v1/object/public/$bucket/$fileName"
     }
 
     fun uploadFile(file: MultipartFile, bucket: String): String {
         val fileName = "${UUID.randomUUID()}-${file.originalFilename}"
-        val filePath = "$bucket/$fileName"
 
         restClient.post()
-            .uri("/storage/v1/object/$filePath")
+            .uri("/storage/v1/object/$bucket/$fileName")
             .contentType(MediaType.parseMediaType(file.contentType ?: "application/octet-stream"))
             .body(file.bytes)
             .retrieve()
             .body(String::class.java)
 
-        return filePath
+        return fileName
     }
 
-    fun uploadFiles(files: List<MultipartFile>, bucket: String): List<String> {
-        return files.map { file ->
-            uploadFile(file, bucket)
+    fun deleteFile(fileName: String, bucket: String): Boolean {
+        return try {
+            restClient.delete()
+                .uri("/storage/v1/object/$bucket/$fileName")
+                .retrieve()
+                .body(String::class.java)
+            true
+        } catch (e: Exception) {
+            false
         }
     }
 }
