@@ -36,25 +36,10 @@ public class RentalItemImagesRecord extends UpdatableRecordImpl<RentalItemImages
     }
 
     /**
-     * Setter for <code>public.rental_item_images.image_url</code>.
-     */
-    public RentalItemImagesRecord setImageUrl(String value) {
-        set(1, value);
-        return this;
-    }
-
-    /**
-     * Getter for <code>public.rental_item_images.image_url</code>.
-     */
-    public String getImageUrl() {
-        return (String) get(1);
-    }
-
-    /**
      * Setter for <code>public.rental_item_images.rental_item_id</code>.
      */
     public RentalItemImagesRecord setRentalItemId(UUID value) {
-        set(2, value);
+        set(1, value);
         return this;
     }
 
@@ -62,14 +47,14 @@ public class RentalItemImagesRecord extends UpdatableRecordImpl<RentalItemImages
      * Getter for <code>public.rental_item_images.rental_item_id</code>.
      */
     public UUID getRentalItemId() {
-        return (UUID) get(2);
+        return (UUID) get(1);
     }
 
     /**
      * Setter for <code>public.rental_item_images.sequence</code>.
      */
     public RentalItemImagesRecord setSequence(Integer value) {
-        set(3, value);
+        set(2, value);
         return this;
     }
 
@@ -77,7 +62,22 @@ public class RentalItemImagesRecord extends UpdatableRecordImpl<RentalItemImages
      * Getter for <code>public.rental_item_images.sequence</code>.
      */
     public Integer getSequence() {
-        return (Integer) get(3);
+        return (Integer) get(2);
+    }
+
+    /**
+     * Setter for <code>public.rental_item_images.url</code>.
+     */
+    public RentalItemImagesRecord setUrl(String value) {
+        set(3, value);
+        return this;
+    }
+
+    /**
+     * Getter for <code>public.rental_item_images.url</code>.
+     */
+    public String getUrl() {
+        return (String) get(3);
     }
 
     // -------------------------------------------------------------------------
@@ -103,13 +103,13 @@ public class RentalItemImagesRecord extends UpdatableRecordImpl<RentalItemImages
     /**
      * Create a detached, initialised RentalItemImagesRecord
      */
-    public RentalItemImagesRecord(UUID id, String imageUrl, UUID rentalItemId, Integer sequence) {
+    public RentalItemImagesRecord(UUID id, UUID rentalItemId, Integer sequence, String url) {
         super(RentalItemImages.RENTAL_ITEM_IMAGES);
 
         setId(id);
-        setImageUrl(imageUrl);
         setRentalItemId(rentalItemId);
         setSequence(sequence);
+        setUrl(url);
         resetChangedOnNotNull();
     }
 
@@ -121,9 +121,9 @@ public class RentalItemImagesRecord extends UpdatableRecordImpl<RentalItemImages
 
         if (value != null) {
             setId(value.getId());
-            setImageUrl(value.getImageUrl());
             setRentalItemId(value.getRentalItemId());
             setSequence(value.getSequence());
+            setUrl(value.getUrl());
             resetChangedOnNotNull();
         }
     }

@@ -17,29 +17,29 @@ public class RentalItemImages implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private UUID id;
-    private String imageUrl;
     private UUID rentalItemId;
     private Integer sequence;
+    private String url;
 
     public RentalItemImages() {}
 
     public RentalItemImages(RentalItemImages value) {
         this.id = value.id;
-        this.imageUrl = value.imageUrl;
         this.rentalItemId = value.rentalItemId;
         this.sequence = value.sequence;
+        this.url = value.url;
     }
 
     public RentalItemImages(
         UUID id,
-        String imageUrl,
         UUID rentalItemId,
-        Integer sequence
+        Integer sequence,
+        String url
     ) {
         this.id = id;
-        this.imageUrl = imageUrl;
         this.rentalItemId = rentalItemId;
         this.sequence = sequence;
+        this.url = url;
     }
 
     /**
@@ -54,21 +54,6 @@ public class RentalItemImages implements Serializable {
      */
     public RentalItemImages setId(UUID id) {
         this.id = id;
-        return this;
-    }
-
-    /**
-     * Getter for <code>public.rental_item_images.image_url</code>.
-     */
-    public String getImageUrl() {
-        return this.imageUrl;
-    }
-
-    /**
-     * Setter for <code>public.rental_item_images.image_url</code>.
-     */
-    public RentalItemImages setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
         return this;
     }
 
@@ -102,6 +87,21 @@ public class RentalItemImages implements Serializable {
         return this;
     }
 
+    /**
+     * Getter for <code>public.rental_item_images.url</code>.
+     */
+    public String getUrl() {
+        return this.url;
+    }
+
+    /**
+     * Setter for <code>public.rental_item_images.url</code>.
+     */
+    public RentalItemImages setUrl(String url) {
+        this.url = url;
+        return this;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -117,12 +117,6 @@ public class RentalItemImages implements Serializable {
         }
         else if (!this.id.equals(other.id))
             return false;
-        if (this.imageUrl == null) {
-            if (other.imageUrl != null)
-                return false;
-        }
-        else if (!this.imageUrl.equals(other.imageUrl))
-            return false;
         if (this.rentalItemId == null) {
             if (other.rentalItemId != null)
                 return false;
@@ -135,6 +129,12 @@ public class RentalItemImages implements Serializable {
         }
         else if (!this.sequence.equals(other.sequence))
             return false;
+        if (this.url == null) {
+            if (other.url != null)
+                return false;
+        }
+        else if (!this.url.equals(other.url))
+            return false;
         return true;
     }
 
@@ -143,9 +143,9 @@ public class RentalItemImages implements Serializable {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((this.id == null) ? 0 : this.id.hashCode());
-        result = prime * result + ((this.imageUrl == null) ? 0 : this.imageUrl.hashCode());
         result = prime * result + ((this.rentalItemId == null) ? 0 : this.rentalItemId.hashCode());
         result = prime * result + ((this.sequence == null) ? 0 : this.sequence.hashCode());
+        result = prime * result + ((this.url == null) ? 0 : this.url.hashCode());
         return result;
     }
 
@@ -154,9 +154,9 @@ public class RentalItemImages implements Serializable {
         StringBuilder sb = new StringBuilder("RentalItemImages (");
 
         sb.append(id);
-        sb.append(", ").append(imageUrl);
         sb.append(", ").append(rentalItemId);
         sb.append(", ").append(sequence);
+        sb.append(", ").append(url);
 
         sb.append(")");
         return sb.toString();

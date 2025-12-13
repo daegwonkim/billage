@@ -97,11 +97,11 @@ class RentalItemService(
 
         images.mapIndexed { index, file ->
             val filePath = supabaseStorageService.uploadFile(file = file, bucket = rentalItemBucket)
-            val imageUrl = supabaseStorageService.getPublicUrl(filePath = filePath)
+            val url = supabaseStorageService.getPublicUrl(filePath = filePath)
             rentalItemImageRepository.save(
                 RentalItemImage(
                     rentalItemId = newRentalItemId,
-                    imageUrl = imageUrl,
+                    url = url,
                     sequence = index
                 )
             )

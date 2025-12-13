@@ -56,11 +56,6 @@ public class RentalItemImages extends TableImpl<RentalItemImagesRecord> {
     public final TableField<RentalItemImagesRecord, UUID> ID = createField(DSL.name("id"), SQLDataType.UUID.nullable(false), this, "");
 
     /**
-     * The column <code>public.rental_item_images.image_url</code>.
-     */
-    public final TableField<RentalItemImagesRecord, String> IMAGE_URL = createField(DSL.name("image_url"), SQLDataType.VARCHAR(255).nullable(false), this, "");
-
-    /**
      * The column <code>public.rental_item_images.rental_item_id</code>.
      */
     public final TableField<RentalItemImagesRecord, UUID> RENTAL_ITEM_ID = createField(DSL.name("rental_item_id"), SQLDataType.UUID.nullable(false), this, "");
@@ -69,6 +64,11 @@ public class RentalItemImages extends TableImpl<RentalItemImagesRecord> {
      * The column <code>public.rental_item_images.sequence</code>.
      */
     public final TableField<RentalItemImagesRecord, Integer> SEQUENCE = createField(DSL.name("sequence"), SQLDataType.INTEGER.nullable(false), this, "");
+
+    /**
+     * The column <code>public.rental_item_images.url</code>.
+     */
+    public final TableField<RentalItemImagesRecord, String> URL = createField(DSL.name("url"), SQLDataType.VARCHAR(255).nullable(false), this, "");
 
     private RentalItemImages(Name alias, Table<RentalItemImagesRecord> aliased) {
         this(alias, aliased, (Field<?>[]) null, null);
