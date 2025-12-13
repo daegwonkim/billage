@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: {DATASOURCE_URL}
+    url: ${DATASOURCE_URL}
     hikari:
       data-source-properties:
         prepareThreshold: 0
@@ -11,6 +11,6 @@ spring:
 
   data:
     redis:
-      url: {UPSTASH_REDIS_URL}
-      username: {UPSTASH_REDIS_USERNAME}
-      password: {UPSTASH_REDIS_TOKEN}
+      url: ${UPSTASH_REDIS_URL}
+      username: default
+      password: ${UPSTASH_REDIS_TOKEN}
