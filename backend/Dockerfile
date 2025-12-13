@@ -1,32 +1,27 @@
-# 1. 빌드 스테이지
+# ===============================
+# 1. Build stage
+# ===============================
 FROM gradle:8.5-jdk17 AS builder
-
 WORKDIR /app
 
-COPY gradlew ./
-COPY gradle ./gradle
-COPY settings.gradle.kts ./
-COPY build.gradle.kts ./
+COPY build.gradle settings.gradle ./
+COPY api/build.gradle api/
+COPY domain/build.gradle domain/
+COPY infra/build.gradle infra/
 
-COPY domain/build.gradle.kts domain/
-COPY infra/build.gradle.kts infra/
-COPY api/build.gradle.kts api/
+RUN gradle build -x test --no-daemon || true
 
-RUN ./gradlew dependencies --no-daemon || true
+COPY . .
 
-COPY domain ./domain
-COPY infra ./infra
-COPY api ./api
+RUN gradle :api:bootJar -x test --no-daemon
 
-RUN ./gradlew clean build --no-daemon -x test -x generateJooq
-
-# 2. 실행 스테이지
+# ===============================
+# 2. Runtime stage
+# ===============================
 FROM eclipse-temurin:17-jre-alpine
-
 WORKDIR /app
 
 COPY --from=builder /app/api/build/libs/*.jar app.jar
 
 EXPOSE 8080
-
 ENTRYPOINT ["java", "-jar", "app.jar"]

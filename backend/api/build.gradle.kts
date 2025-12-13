@@ -1,6 +1,14 @@
 group = "io.github.daegwonkim"
 version = "0.0.1-SNAPSHOT"
 
+tasks.bootJar {
+    enabled = true
+}
+
+tasks.jar {
+    enabled = false
+}
+
 repositories {
     mavenCentral()
 }
