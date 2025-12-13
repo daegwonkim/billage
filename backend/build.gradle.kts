@@ -65,3 +65,16 @@ subprojects {
 tasks.withType<Test> {
 	useJUnitPlatform()
 }
+
+val moduleConfigs = listOf("domain", "infra")
+
+val copyTasks = moduleConfigs.map { moduleName ->
+    tasks.register<Copy>("copy${moduleName}Config") {
+        from(project(":$moduleName").file("src/main/resources/application-${moduleName}.yaml"))
+        into(layout.buildDirectory.dir("resources/main"))
+    }
+}
+
+tasks.processResources {
+    dependsOn(copyTasks)
+}
