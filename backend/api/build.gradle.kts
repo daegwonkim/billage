@@ -27,16 +27,3 @@ tasks.test {
 kotlin {
     jvmToolchain(17)
 }
-
-val moduleConfigs = listOf("domain", "infra")
-
-val copyTasks = moduleConfigs.map { moduleName ->
-    tasks.register<Copy>("copy${moduleName}Config") {
-        from(project(":$moduleName").file("src/main/resources/application-${moduleName}.yml"))
-        into(layout.buildDirectory.dir("resources/main"))
-    }
-}
-
-tasks.processResources {
-    dependsOn(copyTasks)
-}

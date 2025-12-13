@@ -15,6 +15,10 @@ java {
 	}
 }
 
+springBoot {
+    mainClass.set("io.github.daegwonkim.backend.BackendApplicationKt")
+}
+
 repositories {
 	mavenCentral()
 }
