@@ -65,6 +65,11 @@ public class RentalItemImages extends TableImpl<RentalItemImagesRecord> {
      */
     public final TableField<RentalItemImagesRecord, UUID> RENTAL_ITEM_ID = createField(DSL.name("rental_item_id"), SQLDataType.UUID.nullable(false), this, "");
 
+    /**
+     * The column <code>public.rental_item_images.sequence</code>.
+     */
+    public final TableField<RentalItemImagesRecord, Integer> SEQUENCE = createField(DSL.name("sequence"), SQLDataType.INTEGER.nullable(false), this, "");
+
     private RentalItemImages(Name alias, Table<RentalItemImagesRecord> aliased) {
         this(alias, aliased, (Field<?>[]) null, null);
     }

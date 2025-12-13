@@ -21,4 +21,7 @@ class RentalItemImage(
 
     @Column(name = "image_url", nullable = false)
     var imageUrl: String,
+
+    @Column(nullable = false)
+    var sequence: Int
 )

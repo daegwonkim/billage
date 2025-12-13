@@ -1,5 +1,6 @@
 package io.github.daegwonkim.backend.controller
 
+import io.github.daegwonkim.backend.dto.rental_item.SearchRentalItemsResponse
 import io.github.daegwonkim.backend.enumerate.RentalItemCategory
 import io.github.daegwonkim.backend.enumerate.RentalItemSortBy
 import io.github.daegwonkim.backend.enumerate.SortDirection
@@ -15,14 +16,21 @@ class RentalItemController(
     private val rentalItemService: RentalItemService
 ) {
     @GetMapping("/search")
-    fun getRentalItems(
+    fun searchRentalItems(
         @RequestParam(required = false) category: RentalItemCategory?,
         @RequestParam(required = false) keyword: String?,
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "20") size: Int,
         @RequestParam(defaultValue = "CREATED_AT") sortBy: RentalItemSortBy,
         @RequestParam(defaultValue = "DESC") sortDirection: SortDirection
-    ) {
-
+    ): SearchRentalItemsResponse {
+        return rentalItemService.searchRentalItems(
+            category = category,
+            keyword = keyword,
+            page = page,
+            size = size,
+            sortBy = sortBy,
+            sortDirection = sortDirection
+        )
     }
 }
