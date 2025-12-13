@@ -48,7 +48,7 @@ class RentalItemController(
     @Operation(summary = "대여 상품 등록", description = "새로운 대여 상품을 등록합니다")
     fun register(
         @AuthenticationPrincipal userId: UUID,
-        @RequestPart("body") request: RentalItemRegisterRequest,
+        @RequestPart("rental_item") request: RentalItemRegisterRequest,
         @RequestPart("images") images: List<MultipartFile>
     ): RentalItemRegisterResponse {
         return rentalItemService.register(userId = userId, request = request, images = images)
