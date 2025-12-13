@@ -4,10 +4,10 @@
 FROM gradle:8.5-jdk17 AS builder
 WORKDIR /app
 
-COPY build.gradle settings.gradle ./
-COPY api/build.gradle api/
-COPY domain/build.gradle domain/
-COPY infra/build.gradle infra/
+COPY build.gradle.kts settings.gradle.kts ./
+COPY api/build.gradle.kts api/
+COPY domain/build.gradle.kts domain/
+COPY infra/build.gradle.kts infra/
 
 RUN ./gradlew build -x test -x generateJooq --no-daemon || true
 
