@@ -49,4 +49,10 @@ class SupabaseStorageService(
             false
         }
     }
+
+    fun deleteFiles(fileNames: List<String>, bucket: String): Boolean {
+        return fileNames.all { fileName ->
+            deleteFile(fileName = fileName, bucket = bucket)
+        }
+    }
 }

@@ -26,6 +26,9 @@ enum class ErrorCode(
     NEIGHBORHOOD_NOT_FOUND("N-001", "동네 정보를 찾을 수 없습니다", HttpStatus.NOT_FOUND),
     NEIGHBORHOOD_MISMATCH("N-002", "입력한 위치 정보가 실제 위치와 일치하지 않습니다", HttpStatus.BAD_REQUEST),
 
+    // Rental Item - 대여 상품 관련
+    RENTAL_ITEM_NOT_FOUND("R-001", "대여 상품을 찾을 수 없습니다", HttpStatus.NOT_FOUND),
+
     // External Service - 외부 서비스 관련
     SMS_SEND_FAILED("E-001", "SMS 전송에 실패했습니다", HttpStatus.INTERNAL_SERVER_ERROR),
 

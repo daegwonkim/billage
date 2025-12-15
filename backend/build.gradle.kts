@@ -16,7 +16,7 @@ java {
 }
 
 springBoot {
-    mainClass.set("io.github.daegwonkim.backend.BackendApplicationKt")
+    mainClass.set("io.github.daegwonkim.backend.ApiApplicationKt")
 }
 
 repositories {

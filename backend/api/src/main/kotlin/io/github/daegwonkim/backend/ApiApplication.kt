@@ -9,8 +9,8 @@ val logger = KotlinLogging.logger { }
 
 @EnableJpaAuditing
 @SpringBootApplication
-class BackendApplication
+class ApiApplication
 
 fun main(args: Array<String>) {
-	runApplication<BackendApplication>(*args)
+	runApplication<ApiApplication>(*args)
 }

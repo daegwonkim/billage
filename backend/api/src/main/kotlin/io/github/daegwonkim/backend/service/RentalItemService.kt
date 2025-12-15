@@ -1,14 +1,18 @@
 package io.github.daegwonkim.backend.service
 
 import io.github.daegwonkim.backend.dto.rental_item.GetCategoriesResponse
+import io.github.daegwonkim.backend.dto.rental_item.RentalItemGetForModifyResponse
+import io.github.daegwonkim.backend.dto.rental_item.RentalItemModifyRequest
+import io.github.daegwonkim.backend.dto.rental_item.RentalItemModifyResponse
 import io.github.daegwonkim.backend.dto.rental_item.RentalItemRegisterRequest
 import io.github.daegwonkim.backend.dto.rental_item.RentalItemRegisterResponse
 import io.github.daegwonkim.backend.dto.rental_item.SearchRentalItemsResponse
 import io.github.daegwonkim.backend.entity.RentalItem
-import io.github.daegwonkim.backend.entity.RentalItemImage
 import io.github.daegwonkim.backend.enumerate.RentalItemCategory
 import io.github.daegwonkim.backend.enumerate.RentalItemSortBy
 import io.github.daegwonkim.backend.enumerate.SortDirection
+import io.github.daegwonkim.backend.exception.NotFoundException
+import io.github.daegwonkim.backend.exception.data.ErrorCode
 import io.github.daegwonkim.backend.repository.RentalItemImageRepository
 import io.github.daegwonkim.backend.repository.RentalItemJooqRepository
 import io.github.daegwonkim.backend.repository.RentalItemRepository
@@ -94,17 +98,46 @@ class RentalItemService(
             )
         )
 
-        images.mapIndexed { index, file ->
-            val fileName = supabaseStorageService.uploadFile(file = file, bucket = rentalItemBucket)
-            rentalItemImageRepository.save(
-                RentalItemImage(
-                    rentalItemId = newRentalItem.id!!,
-                    name = fileName,
-                    sequence = index
-                )
+        return RentalItemRegisterResponse(id = newRentalItem.id!!)
+    }
+
+    fun getForModify(id: UUID): RentalItemGetForModifyResponse {
+        val rentalItem = rentalItemRepository.findById(id)
+            .orElseThrow { NotFoundException(errorCode = ErrorCode.RENTAL_ITEM_NOT_FOUND) }
+
+        val rentalItemImages = rentalItemImageRepository.findAllByRentalItemId(rentalItemId = rentalItem.id!!)
+        val images = rentalItemImages.map { image ->
+            RentalItemGetForModifyResponse.RentalItemImage(
+                name = image.name,
+                url = supabaseStorageService.getPublicUrl(fileName = image.name, bucket = rentalItemBucket),
+                sequence = image.sequence
             )
         }
 
-        return RentalItemRegisterResponse(id = newRentalItem.id!!)
+        return RentalItemGetForModifyResponse(
+            id = rentalItem.id!!,
+            title = rentalItem.title,
+            description = rentalItem.description,
+            category = rentalItem.category,
+            pricePerDay = rentalItem.pricePerDay,
+            pricePerWeek = rentalItem.pricePerWeek,
+            images = images
+        )
+    }
+
+    @Transactional
+    fun modify(
+        request: RentalItemModifyRequest
+    ): RentalItemModifyResponse {
+        val rentalItem = rentalItemRepository.findById(request.id)
+            .orElseThrow { NotFoundException(ErrorCode.RENTAL_ITEM_NOT_FOUND) }
+
+        rentalItem.title = request.title
+        rentalItem.description = request.description
+        rentalItem.category = request.category
+        rentalItem.pricePerDay = request.pricePerDay
+        rentalItem.pricePerWeek = request.pricePerWeek
+
+        return RentalItemModifyResponse(request.id)
     }
 }
