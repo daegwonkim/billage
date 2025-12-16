@@ -11,6 +11,7 @@ import OnboardingAuthentication from './pages/OnboardingAuthentication'
 import OnboardingVerification from './pages/OnboardingVerification'
 import OnboardingSignin from './pages/OnboardingSignin'
 import { ProtectedOnboardingRoute } from './ProtectedOnboardingRoute'
+import RentalItemRegister from './pages/RentalItemRegister'
 
 const queryClient = new QueryClient()
 
@@ -25,7 +26,7 @@ function AppContent() {
 
   return (
     <div
-      className="bg-red-50"
+      className="bg-gray-50"
       style={{
         display: 'flex',
         justifyContent: 'center'
@@ -76,6 +77,10 @@ function AppContent() {
           <Route
             path="/rental-items/:id"
             element={<RentalItemDetail />}
+          />
+          <Route
+            path="/rental-items/register"
+            element={<RentalItemRegister />}
           />
         </Routes>
         {showBottomNav && (
