@@ -1,6 +1,8 @@
 package io.github.daegwonkim.backend.controller
 
 import io.github.daegwonkim.backend.dto.rental_item.RentalItemGetForModifyResponse
+import io.github.daegwonkim.backend.dto.rental_item.RentalItemModifyRequest
+import io.github.daegwonkim.backend.dto.rental_item.RentalItemModifyResponse
 import io.github.daegwonkim.backend.dto.rental_item.RentalItemRegisterRequest
 import io.github.daegwonkim.backend.dto.rental_item.RentalItemRegisterResponse
 import io.github.daegwonkim.backend.dto.rental_item.SearchRentalItemsResponse
@@ -9,16 +11,15 @@ import io.github.daegwonkim.backend.enumerate.RentalItemSortBy
 import io.github.daegwonkim.backend.enumerate.SortDirection
 import io.github.daegwonkim.backend.service.RentalItemService
 import io.swagger.v3.oas.annotations.Operation
-import org.springframework.http.MediaType
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.multipart.MultipartFile
 import java.util.UUID
 
 @RestController
@@ -26,8 +27,8 @@ import java.util.UUID
 class RentalItemController(
     private val rentalItemService: RentalItemService
 ) {
-    @GetMapping("/search")
     @Operation(summary = "대여 상품 목록 조회", description = "조건에 맞는 대여 상품을 모두 조회합니다")
+    @GetMapping("/search")
     fun search(
         @RequestParam(required = false) category: RentalItemCategory?,
         @RequestParam(required = false) keyword: String?,
@@ -46,19 +47,27 @@ class RentalItemController(
         )
     }
 
-    @PostMapping("/register", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     @Operation(summary = "대여 상품 등록", description = "새로운 대여 상품을 등록합니다")
+    @PostMapping("/register")
     fun register(
         @AuthenticationPrincipal userId: UUID,
-        @RequestPart("rental_item") request: RentalItemRegisterRequest,
-        @RequestPart("images") images: List<MultipartFile>
+        @RequestBody request: RentalItemRegisterRequest
     ): RentalItemRegisterResponse {
-        return rentalItemService.register(userId = userId, request = request, images = images)
+        return rentalItemService.register(userId = userId, request = request)
     }
 
-    @GetMapping("/modify/{id}")
     @Operation(summary = "수정 전 데이터 조회", description = "대여 상품 수정 전 데이터를 조회합니다")
+    @GetMapping("/modify/{id}")
     fun getForModify(@PathVariable("id") id: UUID): RentalItemGetForModifyResponse {
         return rentalItemService.getForModify(id)
+    }
+
+    @Operation(summary = "상품 정보 수정", description = "기존의 대여 상품 정보를 수정합니다")
+    @PutMapping("/{id}")
+    fun modify(
+        @PathVariable("id") id: UUID,
+        @RequestBody modifiedInfo: RentalItemModifyRequest
+    ): RentalItemModifyResponse {
+        return rentalItemService.modify(id = id, modifiedInfo = modifiedInfo)
     }
 }

@@ -6,5 +6,5 @@ import java.util.UUID
 
 interface RentalItemImageRepository : JpaRepository<RentalItemImage, UUID> {
     fun findAllByRentalItemId(rentalItemId: UUID): List<RentalItemImage>
-    fun deleteAllByName(names: List<String>)
+    fun deleteAllByKeyIn(keys: List<String>)
 }

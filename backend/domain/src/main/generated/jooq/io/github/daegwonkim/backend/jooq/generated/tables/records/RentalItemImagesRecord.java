@@ -80,6 +80,21 @@ public class RentalItemImagesRecord extends UpdatableRecordImpl<RentalItemImages
         return (String) get(3);
     }
 
+    /**
+     * Setter for <code>public.rental_item_images.key</code>.
+     */
+    public RentalItemImagesRecord setKey(String value) {
+        set(4, value);
+        return this;
+    }
+
+    /**
+     * Getter for <code>public.rental_item_images.key</code>.
+     */
+    public String getKey() {
+        return (String) get(4);
+    }
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -103,13 +118,14 @@ public class RentalItemImagesRecord extends UpdatableRecordImpl<RentalItemImages
     /**
      * Create a detached, initialised RentalItemImagesRecord
      */
-    public RentalItemImagesRecord(UUID id, UUID rentalItemId, Integer sequence, String name) {
+    public RentalItemImagesRecord(UUID id, UUID rentalItemId, Integer sequence, String name, String key) {
         super(RentalItemImages.RENTAL_ITEM_IMAGES);
 
         setId(id);
         setRentalItemId(rentalItemId);
         setSequence(sequence);
         setName(name);
+        setKey(key);
         resetChangedOnNotNull();
     }
 
@@ -124,6 +140,7 @@ public class RentalItemImagesRecord extends UpdatableRecordImpl<RentalItemImages
             setRentalItemId(value.getRentalItemId());
             setSequence(value.getSequence());
             setName(value.getName());
+            setKey(value.getKey());
             resetChangedOnNotNull();
         }
     }

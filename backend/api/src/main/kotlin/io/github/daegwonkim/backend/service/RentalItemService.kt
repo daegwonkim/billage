@@ -8,21 +8,23 @@ import io.github.daegwonkim.backend.dto.rental_item.RentalItemRegisterRequest
 import io.github.daegwonkim.backend.dto.rental_item.RentalItemRegisterResponse
 import io.github.daegwonkim.backend.dto.rental_item.SearchRentalItemsResponse
 import io.github.daegwonkim.backend.entity.RentalItem
+import io.github.daegwonkim.backend.entity.RentalItemImage
 import io.github.daegwonkim.backend.enumerate.RentalItemCategory
 import io.github.daegwonkim.backend.enumerate.RentalItemSortBy
 import io.github.daegwonkim.backend.enumerate.SortDirection
+import io.github.daegwonkim.backend.event.dto.StorageFileDeleteEvent
 import io.github.daegwonkim.backend.exception.NotFoundException
 import io.github.daegwonkim.backend.exception.data.ErrorCode
 import io.github.daegwonkim.backend.repository.RentalItemImageRepository
 import io.github.daegwonkim.backend.repository.RentalItemJooqRepository
 import io.github.daegwonkim.backend.repository.RentalItemRepository
-import io.github.daegwonkim.backend.supabase.SupabaseStorageService
+import io.github.daegwonkim.backend.supabase.SupabaseStorageClient
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.multipart.MultipartFile
 import java.util.UUID
 
 @Service
@@ -31,7 +33,8 @@ class RentalItemService(
     private val rentalItemImageRepository: RentalItemImageRepository,
     private val rentalItemJooqRepository: RentalItemJooqRepository,
 
-    private val supabaseStorageService: SupabaseStorageService,
+    private val supabaseStorageClient: SupabaseStorageClient,
+    private val eventPublisher: ApplicationEventPublisher,
 
     @Value($$"${supabase.storage.bucket.rental-item}")
     private val rentalItemBucket: String
@@ -84,8 +87,7 @@ class RentalItemService(
     @Transactional
     fun register(
         userId: UUID,
-        request: RentalItemRegisterRequest,
-        images: List<MultipartFile>
+        request: RentalItemRegisterRequest
     ): RentalItemRegisterResponse {
         val newRentalItem = rentalItemRepository.save(
             RentalItem(
@@ -98,6 +100,15 @@ class RentalItemService(
             )
         )
 
+        val rentalItemImages = request.imageKeys.mapIndexed { index, key ->
+            RentalItemImage(
+                rentalItemId = newRentalItem.id!!,
+                key = key,
+                sequence = index
+            )
+        }
+        rentalItemImageRepository.saveAll(rentalItemImages)
+
         return RentalItemRegisterResponse(id = newRentalItem.id!!)
     }
 
@@ -108,8 +119,7 @@ class RentalItemService(
         val rentalItemImages = rentalItemImageRepository.findAllByRentalItemId(rentalItemId = rentalItem.id!!)
         val images = rentalItemImages.map { image ->
             RentalItemGetForModifyResponse.RentalItemImage(
-                name = image.name,
-                url = supabaseStorageService.getPublicUrl(fileName = image.name, bucket = rentalItemBucket),
+                url = supabaseStorageClient.getPublicUrl(bucket = rentalItemBucket, fileKey = image.key),
                 sequence = image.sequence
             )
         }
@@ -127,17 +137,37 @@ class RentalItemService(
 
     @Transactional
     fun modify(
-        request: RentalItemModifyRequest
+        id: UUID,
+        modifiedInfo: RentalItemModifyRequest
     ): RentalItemModifyResponse {
-        val rentalItem = rentalItemRepository.findById(request.id)
+        val rentalItem = rentalItemRepository.findById(id)
             .orElseThrow { NotFoundException(ErrorCode.RENTAL_ITEM_NOT_FOUND) }
 
-        rentalItem.title = request.title
-        rentalItem.description = request.description
-        rentalItem.category = request.category
-        rentalItem.pricePerDay = request.pricePerDay
-        rentalItem.pricePerWeek = request.pricePerWeek
+        rentalItem.title = modifiedInfo.title
+        rentalItem.description = modifiedInfo.description
+        rentalItem.category = modifiedInfo.category
+        rentalItem.pricePerDay = modifiedInfo.pricePerDay
+        rentalItem.pricePerWeek = modifiedInfo.pricePerWeek
 
-        return RentalItemModifyResponse(request.id)
+        if (modifiedInfo.deleteImageKeys.isNotEmpty()) {
+            rentalItemImageRepository.deleteAllByKeyIn(modifiedInfo.deleteImageKeys)
+
+            modifiedInfo.deleteImageKeys.forEach { key ->
+                eventPublisher.publishEvent(StorageFileDeleteEvent(bucket = rentalItemBucket, fileKey = key))
+            }
+        }
+
+        if (modifiedInfo.newImageKeys.isNotEmpty()) {
+            val newRentalItemImages = modifiedInfo.newImageKeys.mapIndexed { index, key ->
+                RentalItemImage(
+                    rentalItemId = id,
+                    key = key,
+                    sequence = index
+                )
+            }
+            rentalItemImageRepository.saveAll(newRentalItemImages)
+        }
+
+        return RentalItemModifyResponse(id)
     }
 }

@@ -20,6 +20,7 @@ public class RentalItemImages implements Serializable {
     private UUID rentalItemId;
     private Integer sequence;
     private String name;
+    private String key;
 
     public RentalItemImages() {}
 
@@ -28,18 +29,21 @@ public class RentalItemImages implements Serializable {
         this.rentalItemId = value.rentalItemId;
         this.sequence = value.sequence;
         this.name = value.name;
+        this.key = value.key;
     }
 
     public RentalItemImages(
         UUID id,
         UUID rentalItemId,
         Integer sequence,
-        String name
+        String name,
+        String key
     ) {
         this.id = id;
         this.rentalItemId = rentalItemId;
         this.sequence = sequence;
         this.name = name;
+        this.key = key;
     }
 
     /**
@@ -102,6 +106,21 @@ public class RentalItemImages implements Serializable {
         return this;
     }
 
+    /**
+     * Getter for <code>public.rental_item_images.key</code>.
+     */
+    public String getKey() {
+        return this.key;
+    }
+
+    /**
+     * Setter for <code>public.rental_item_images.key</code>.
+     */
+    public RentalItemImages setKey(String key) {
+        this.key = key;
+        return this;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -135,6 +154,12 @@ public class RentalItemImages implements Serializable {
         }
         else if (!this.name.equals(other.name))
             return false;
+        if (this.key == null) {
+            if (other.key != null)
+                return false;
+        }
+        else if (!this.key.equals(other.key))
+            return false;
         return true;
     }
 
@@ -146,6 +171,7 @@ public class RentalItemImages implements Serializable {
         result = prime * result + ((this.rentalItemId == null) ? 0 : this.rentalItemId.hashCode());
         result = prime * result + ((this.sequence == null) ? 0 : this.sequence.hashCode());
         result = prime * result + ((this.name == null) ? 0 : this.name.hashCode());
+        result = prime * result + ((this.key == null) ? 0 : this.key.hashCode());
         return result;
     }
 
@@ -157,6 +183,7 @@ public class RentalItemImages implements Serializable {
         sb.append(", ").append(rentalItemId);
         sb.append(", ").append(sequence);
         sb.append(", ").append(name);
+        sb.append(", ").append(key);
 
         sb.append(")");
         return sb.toString();
