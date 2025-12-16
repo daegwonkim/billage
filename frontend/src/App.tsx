@@ -10,6 +10,7 @@ import OnboardingNeighborhood from './pages/OnboardingNeighborhood'
 import OnboardingAuthentication from './pages/OnboardingAuthentication'
 import OnboardingVerification from './pages/OnboardingVerification'
 import OnboardingSignin from './pages/OnboardingSignin'
+import { ProtectedOnboardingRoute } from './ProtectedOnboardingRoute'
 
 const queryClient = new QueryClient()
 
@@ -35,6 +36,7 @@ function AppContent() {
           position: 'relative'
         }}>
         <Routes>
+          {/* 보호되지 않은 온보딩 시작 페이지들 */}
           <Route
             path="/onboarding"
             element={<OnboardingStart />}
@@ -44,17 +46,29 @@ function AppContent() {
             element={<OnboardingAuthentication />}
           />
           <Route
-            path="/onboarding/verification"
-            element={<OnboardingVerification />}
-          />
-          <Route
-            path="/onboarding/neighborhood"
-            element={<OnboardingNeighborhood />}
-          />
-          <Route
             path="/onboarding/signin"
             element={<OnboardingSignin />}
           />
+
+          {/* 보호된 온보딩 페이지들 */}
+          <Route
+            path="/onboarding/verification"
+            element={
+              <ProtectedOnboardingRoute requiredStep="verification">
+                <OnboardingVerification />
+              </ProtectedOnboardingRoute>
+            }
+          />
+          <Route
+            path="/onboarding/neighborhood"
+            element={
+              <ProtectedOnboardingRoute requiredStep="neighborhood">
+                <OnboardingNeighborhood />
+              </ProtectedOnboardingRoute>
+            }
+          />
+
+          {/* 일반 페이지들 */}
           <Route
             path="/"
             element={<Home />}

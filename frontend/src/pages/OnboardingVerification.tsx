@@ -6,6 +6,7 @@ import { ApiError, ErrorMessageMap } from '@/api/domain/error'
 import type { VerificationCodeConfirmRequest } from '@/api/dto/VerificationCodeConfirm'
 import type { VerificationCodeSendRequest } from '@/api/dto/VerificationCodeSend'
 import logo from '@/assets/main.png'
+import { useOnboardingStatus } from '@/hooks/useOnboardingStatus'
 import { useMutation } from '@tanstack/react-query'
 import { ChevronLeft, CircleAlert } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
@@ -14,6 +15,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 
 export default function OnboardingVerification() {
   const navigate = useNavigate()
+  const { updateStatus } = useOnboardingStatus()
 
   const location = useLocation()
   const phoneNo = location.state?.phoneNo || ''
@@ -39,6 +41,7 @@ export default function OnboardingVerification() {
     mutationFn: (request: VerificationCodeConfirmRequest) =>
       confirmVerificationCode(request),
     onSuccess: data => {
+      updateStatus({ isVerified: true })
       setInvalidVerificationCode(false)
       navigate('/onboarding/neighborhood', {
         state: { phoneNo: phoneNo, verifiedToken: data.verifiedToken }

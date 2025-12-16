@@ -7,6 +7,7 @@ import {
   useNearbyNeighborhoods,
   useLocateNeighborhood
 } from '@/hooks/Neighborhood'
+import { useOnboardingStatus } from '@/hooks/useOnboardingStatus'
 import { useMutation } from '@tanstack/react-query'
 import { Crosshair, Loader2, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -15,6 +16,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 
 export default function OnboardingNeighborhood() {
   const navigate = useNavigate()
+  const { updateStatus } = useOnboardingStatus()
 
   const location = useLocation()
   const phoneNo = location.state?.phoneNo || ''
@@ -48,7 +50,10 @@ export default function OnboardingNeighborhood() {
 
   const signUpMutation = useMutation({
     mutationFn: (request: SignUpRequest) => signUp(request),
-    onSuccess: () => navigate('/'),
+    onSuccess: () => {
+      updateStatus({ hasNeighborhood: true })
+      navigate('/')
+    },
     onError: (error: ApiError) => {
       toast.error(
         ErrorMessageMap[error.code] ?? '알 수 없는 오류가 발생했습니다'
