@@ -2,8 +2,10 @@ import React, { useRef, useState } from 'react'
 import { X, Plus, Camera, CircleAlert, Loader2 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
+import toast, { Toaster } from 'react-hot-toast'
 
 interface FormData {
+  category: string
   title: string
   description: string
   pricePerDay: string
@@ -23,8 +25,10 @@ interface ImageData {
 export default function RentalItemRegister() {
   const navigate = useNavigate()
 
+  const [isOpen, setIsOpen] = useState(false)
   const [images, setImages] = useState<ImageData[]>([])
   const [formData, setFormData] = useState<FormData>({
+    category: '',
     title: '',
     description: '',
     pricePerDay: '',
@@ -33,11 +37,26 @@ export default function RentalItemRegister() {
     enablePricePerWeek: true
   })
 
+  const categories = [
+    '전자기기',
+    '가구/인테리어',
+    '스포츠/레저',
+    '의류/잡화',
+    '도서/음반',
+    '카메라/촬영장비',
+    '캠핑/아웃도어',
+    '공구/장비',
+    '악기',
+    '기타'
+  ]
+
+  const categoryRef = useRef<HTMLSelectElement>(null)
   const titleRef = useRef<HTMLInputElement>(null)
   const descriptionRef = useRef<HTMLTextAreaElement>(null)
   const pricePerDayRef = useRef<HTMLInputElement>(null)
   const pricePerWeekRef = useRef<HTMLInputElement>(null)
 
+  const [categoryError, setCategoryError] = useState<boolean>(false)
   const [titleError, setTitleError] = useState<boolean>(false)
   const [descriptionError, setDescriptionError] = useState<boolean>(false)
   const [pricePerDayError, setPricePerDayError] = useState<boolean>(false)
@@ -171,25 +190,35 @@ export default function RentalItemRegister() {
       setTitleError(false)
     }
 
+    if (!formData.category) {
+      categoryRef.current?.focus()
+      setCategoryError(true)
+      hasError = true
+    } else {
+      setCategoryError(false)
+    }
+
     // 업로드 중인 이미지가 있는지 확인
     const isAnyImageUploading = images.some(img => img.isUploading)
     if (isAnyImageUploading) {
-      alert('이미지 업로드가 진행 중입니다. 잠시만 기다려주세요.')
+      toast.error('이미지 업로드가 진행 중입니다. 잠시만 기다려주세요.')
       return
     }
 
     if (!hasError) {
       const imageUrls = images.map(img => img.fileName).filter(Boolean)
 
-      console.log('제출 데이터:', {
-        ...formData,
-        images: imageUrls
-      })
+      toast.success('등록 완료!')
     }
   }
 
   return (
     <div className="min-h-screen w-md bg-gray-50">
+      <Toaster
+        position="bottom-center"
+        toastOptions={{ className: 'text-sm' }}
+      />
+
       {/* Header */}
       <div className="sticky top-0 z-10 bg-black">
         <div className="relative mx-auto flex max-w-2xl items-center px-4 py-4">
@@ -269,6 +298,75 @@ export default function RentalItemRegister() {
           </div>
         </div>
 
+        {/* Category */}
+        <div className="mb-2 p-4">
+          <label className="mb-2 block font-medium text-gray-700">
+            카테고리
+          </label>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setIsOpen(!isOpen)}
+              className={`flex w-full items-center justify-between rounded-xl border-2 bg-white px-3 py-2 text-left font-medium transition-all duration-200 focus:outline-none ${
+                categoryError
+                  ? 'border-red-500 focus:border-red-500'
+                  : 'border-gray-300 focus:border-black'
+              } ${!formData.category ? 'text-gray-400' : 'text-gray-800'}`}>
+              <span>{formData.category || '카테고리를 선택해주세요.'}</span>
+              <svg
+                className={`h-5 w-5 transition-transform duration-200 ${
+                  isOpen ? 'rotate-180' : ''
+                } ${categoryError ? 'text-red-400' : 'text-gray-400'}`}
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor">
+                <path
+                  fillRule="evenodd"
+                  d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
+
+            {isOpen && (
+              <>
+                <div
+                  className="fixed inset-0 z-10"
+                  onClick={() => setIsOpen(false)}
+                />
+                <div className="absolute z-20 mt-1 w-full overflow-hidden rounded-xl border-2 border-gray-200 bg-white shadow-lg">
+                  <div className="max-h-60 overflow-y-auto">
+                    {categories.map((category, index) => (
+                      <button
+                        key={category}
+                        type="button"
+                        onClick={() => {
+                          setFormData(prev => ({ ...prev, category }))
+                          setCategoryError(false)
+                          setIsOpen(false)
+                        }}
+                        className={`w-full px-4 py-3 text-left text-sm font-medium transition-colors hover:bg-gray-50 ${
+                          formData.category === category
+                            ? 'bg-gray-50'
+                            : 'text-gray-800'
+                        } ${index !== categories.length - 1 ? 'border-b border-gray-100' : ''}`}>
+                        {category}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+
+          {categoryError && (
+            <div className="mt-2 flex items-center gap-1.5 text-sm text-red-500">
+              <CircleAlert size={16} />
+              <span>카테고리는 필수 선택 사항입니다.</span>
+            </div>
+          )}
+        </div>
+
         {/* Title */}
         <div className="mb-2 p-4">
           <label className="mb-2 block font-medium">제목</label>
@@ -281,7 +379,7 @@ export default function RentalItemRegister() {
               setTitleError(false)
             }}
             placeholder="제목을 입력해주세요."
-            className={`w-full rounded-lg border px-3 py-2 focus:outline-none ${
+            className={`w-full rounded-lg border-2 bg-white px-3 py-2 focus:outline-none ${
               titleError
                 ? 'border-red-500 focus:border-red-500'
                 : 'border-gray-300 focus:border-black'
@@ -307,7 +405,7 @@ export default function RentalItemRegister() {
             }}
             placeholder="신뢰할 수 있는 거래를 위해 자세한 설명을 적어주세요. 판매 금지 물품은 게시가 제한될 수 있어요."
             rows={6}
-            className={`w-full resize-none rounded-lg border px-3 py-2 focus:outline-none ${
+            className={`w-full resize-none rounded-lg border-2 bg-white px-3 py-2 focus:outline-none ${
               descriptionError
                 ? 'border-red-500 focus:border-red-500'
                 : 'border-gray-300 focus:border-black'
@@ -363,7 +461,7 @@ export default function RentalItemRegister() {
                 }}
                 placeholder="0"
                 disabled={!formData.enablePricePerDay}
-                className={`w-full resize-none rounded-lg border px-3 py-2 text-right focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-100 ${
+                className={`w-full resize-none rounded-lg border-2 bg-white px-3 py-2 text-right focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-100 ${
                   pricePerDayError
                     ? 'border-red-500 focus:border-red-500'
                     : 'border-gray-300 focus:border-black'
@@ -417,7 +515,7 @@ export default function RentalItemRegister() {
                 }}
                 placeholder="0"
                 disabled={!formData.enablePricePerWeek}
-                className={`w-full resize-none rounded-lg border px-3 py-2 text-right focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-100 ${
+                className={`w-full resize-none rounded-lg border-2 bg-white px-3 py-2 text-right focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-100 ${
                   pricePerWeekError
                     ? 'border-red-500 focus:border-red-500'
                     : 'border-gray-300 focus:border-black'
