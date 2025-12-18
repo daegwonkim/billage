@@ -6,7 +6,7 @@ data class RentalItemRegisterRequest(
     val title: String,
     val description: String,
     val category: RentalItemCategory,
-    val pricePerDay: Int,
-    val pricePerWeek: Int,
+    val pricePerDay: Int?,
+    val pricePerWeek: Int?,
     val imageKeys: List<String>
 )

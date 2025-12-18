@@ -33,8 +33,8 @@ class RentalItem(
     var description: String,
 
     @Column(name = "price_per_day")
-    var pricePerDay: Int,
+    var pricePerDay: Int?,
 
     @Column(name = "price_per_week")
-    var pricePerWeek: Int,
+    var pricePerWeek: Int?,
 ) : BaseEntity()

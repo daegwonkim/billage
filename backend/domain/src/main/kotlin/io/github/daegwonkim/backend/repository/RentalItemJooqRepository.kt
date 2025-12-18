@@ -65,7 +65,7 @@ class RentalItemJooqRepository(
     }
 
     private fun thumbnailUrlSubquery() =
-        dslContext.select(buildSupabaseStorageUrl(name = RENTAL_ITEM_IMAGES.NAME))
+        dslContext.select(buildSupabaseStorageUrl(name = RENTAL_ITEM_IMAGES.KEY))
             .from(RENTAL_ITEM_IMAGES)
             .where(RENTAL_ITEM_IMAGES.RENTAL_ITEM_ID.eq(RENTAL_ITEMS.ID))
             .orderBy(RENTAL_ITEM_IMAGES.SEQUENCE.asc())
