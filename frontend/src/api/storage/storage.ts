@@ -10,13 +10,16 @@ const API_BASE_URL = 'http://localhost:8080'
 export async function generateSignedUrl(
   request: GenerateSignedUrlRequest
 ): Promise<GenerateSignedUrlResponse> {
-  const response = await fetch(`${API_BASE_URL}/api/storage/signed-url`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(request)
-  })
+  const response = await fetch(
+    `${API_BASE_URL}/api/storage/upload/signed-url`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(request)
+    }
+  )
 
   if (!response.ok) throw new Error('Failed to fetch signed url')
   return response.json()
