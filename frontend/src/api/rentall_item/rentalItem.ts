@@ -67,7 +67,7 @@ export async function getSellerRentalItems(
 export async function register(
   request: RentalItemRegisterRequest
 ): Promise<RentalItemRegisterResponse> {
-  const response = await fetch(`${API_BASE_URL}/api/rental-items/register`, {
+  const response = await fetch(`${API_BASE_URL}/api/rental-items`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
