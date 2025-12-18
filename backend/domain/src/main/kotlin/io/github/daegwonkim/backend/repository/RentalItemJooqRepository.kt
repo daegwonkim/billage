@@ -8,7 +8,7 @@ import io.github.daegwonkim.backend.jooq.generated.Tables.RENTAL_ITEM_IMAGES
 import io.github.daegwonkim.backend.jooq.generated.Tables.RENTAL_ITEM_LIKE_RECORDS
 import io.github.daegwonkim.backend.jooq.generated.Tables.RENTAL_RECORDS
 import io.github.daegwonkim.backend.jooq.generated.Tables.USER_NEIGHBORHOODS
-import io.github.daegwonkim.backend.repository.dto.SearchedRentalItem
+import io.github.daegwonkim.backend.repository.dto.GetRentalItemsItem
 import org.jooq.DSLContext
 import org.jooq.Field
 import org.jooq.impl.DSL
@@ -28,11 +28,11 @@ class RentalItemJooqRepository(
     @Value($$"${supabase.url}")
     private val supabaseUrl: String
 ) {
-    fun searchRentalItems(
+    fun getRentalItems(
         category: RentalItemCategory?,
         keyword: String?,
         pageable: Pageable
-    ): Page<SearchedRentalItem> {
+    ): Page<GetRentalItemsItem> {
         val baseQuery = dslContext.select(
             RENTAL_ITEMS.ID,
             RENTAL_ITEMS.TITLE,
@@ -46,20 +46,20 @@ class RentalItemJooqRepository(
             .from(RENTAL_ITEMS)
             .leftJoin(USER_NEIGHBORHOODS).on(USER_NEIGHBORHOODS.USER_ID.eq(RENTAL_ITEMS.USER_ID))
             .leftJoin(NEIGHBORHOODS).on(NEIGHBORHOODS.ID.eq(USER_NEIGHBORHOODS.NEIGHBORHOOD_ID))
-            .where(buildSearchRentalItemsCondition(category = category, keyword = keyword))
+            .where(buildGetRentalItemsCondition(category = category, keyword = keyword))
             .orderBy(buildSortOrder(pageable = pageable))
 
         val totalCount = dslContext.selectCount()
             .from(RENTAL_ITEMS)
             .leftJoin(USER_NEIGHBORHOODS).on(USER_NEIGHBORHOODS.USER_ID.eq(RENTAL_ITEMS.USER_ID))
             .leftJoin(NEIGHBORHOODS).on(NEIGHBORHOODS.ID.eq(USER_NEIGHBORHOODS.NEIGHBORHOOD_ID))
-            .where(buildSearchRentalItemsCondition(category = category, keyword = keyword))
+            .where(buildGetRentalItemsCondition(category = category, keyword = keyword))
             .fetchOne(0, Long::class.java) ?: 0L
 
         val results = baseQuery
             .limit(pageable.pageSize)
             .offset(pageable.offset)
-            .fetchInto(SearchedRentalItem::class.java)
+            .fetchInto(GetRentalItemsItem::class.java)
 
         return PageImpl(results, pageable, totalCount)
     }
@@ -92,7 +92,7 @@ class RentalItemJooqRepository(
             NEIGHBORHOODS.EUPMYEONDONG,
         ).`as`("address")
 
-    private fun buildSearchRentalItemsCondition(category: RentalItemCategory?, keyword: String?) =
+    private fun buildGetRentalItemsCondition(category: RentalItemCategory?, keyword: String?) =
         listOfNotNull(
             category?.let { RENTAL_ITEMS.CATEGORY.eq(it.name) },
             keyword?.takeIf { it.isNotBlank() }?.let {

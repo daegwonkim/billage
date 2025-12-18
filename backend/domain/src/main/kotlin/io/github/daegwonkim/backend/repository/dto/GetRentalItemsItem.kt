@@ -3,7 +3,7 @@ package io.github.daegwonkim.backend.repository.dto
 import java.time.LocalDateTime
 import java.util.UUID
 
-data class SearchedRentalItem(
+data class GetRentalItemsItem(
     val id: UUID,
     val title: String,
     val thumbnailUrl: String,

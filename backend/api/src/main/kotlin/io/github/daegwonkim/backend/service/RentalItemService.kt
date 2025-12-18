@@ -5,7 +5,7 @@ import io.github.daegwonkim.backend.dto.rental_item.RentalItemModifyRequest
 import io.github.daegwonkim.backend.dto.rental_item.RentalItemModifyResponse
 import io.github.daegwonkim.backend.dto.rental_item.RentalItemRegisterRequest
 import io.github.daegwonkim.backend.dto.rental_item.RentalItemRegisterResponse
-import io.github.daegwonkim.backend.dto.rental_item.SearchRentalItemsResponse
+import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemsResponse
 import io.github.daegwonkim.backend.entity.RentalItem
 import io.github.daegwonkim.backend.entity.RentalItemImage
 import io.github.daegwonkim.backend.enumerate.RentalItemCategory
@@ -38,14 +38,14 @@ class RentalItemService(
     @Value($$"${supabase.storage.bucket.rental-item}")
     private val rentalItemBucket: String
 ) {
-    fun search(
+    fun getRentalItems(
         category: RentalItemCategory?,
         keyword: String?,
         page: Int,
         size: Int,
         sortBy: RentalItemSortBy,
         sortDirection: SortDirection
-    ): SearchRentalItemsResponse {
+    ): GetRentalItemsResponse {
         val sort = when (sortDirection) {
             SortDirection.ASC -> Sort.by(Sort.Direction.ASC, sortBy.name)
             SortDirection.DESC -> Sort.by(Sort.Direction.DESC, sortBy.name)
@@ -53,13 +53,13 @@ class RentalItemService(
 
         val pageable = PageRequest.of(page, size, sort)
 
-        val result = rentalItemJooqRepository.searchRentalItems(
+        val result = rentalItemJooqRepository.getRentalItems(
             category = category,
             keyword = keyword,
             pageable = pageable
         )
 
-        return SearchRentalItemsResponse(
+        return GetRentalItemsResponse(
             content = result.content,
             currentPage = result.number,
             size = result.size,

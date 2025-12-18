@@ -28,16 +28,16 @@ class RentalItemController(
     private val rentalItemService: RentalItemService
 ) {
     @Operation(summary = "대여 상품 목록 조회", description = "조건에 맞는 대여 상품을 모두 조회합니다")
-    @GetMapping("/search")
-    fun search(
+    @GetMapping
+    fun getRentalItems(
         @RequestParam(required = false) category: RentalItemCategory?,
         @RequestParam(required = false) keyword: String?,
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "20") size: Int,
         @RequestParam(defaultValue = "CREATED_AT") sortBy: RentalItemSortBy,
         @RequestParam(defaultValue = "DESC") sortDirection: SortDirection
-    ): SearchRentalItemsResponse {
-        return rentalItemService.search(
+    ): GetRentalItemsResponse {
+        return rentalItemService.getRentalItems(
             category = category,
             keyword = keyword,
             page = page,
