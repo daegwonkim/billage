@@ -7,7 +7,7 @@ data class GetRentalItemItem(
     val id: UUID,
     val sellerId: UUID,
     val sellerNickname: String,
-    val sellerProfileImageUrl: String?,
+    val sellerProfileImageKey: String?,
     val address: String,
     val category: String,
     val title: String,

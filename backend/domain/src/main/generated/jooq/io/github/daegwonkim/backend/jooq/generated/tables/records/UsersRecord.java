@@ -112,17 +112,17 @@ public class UsersRecord extends UpdatableRecordImpl<UsersRecord> {
     }
 
     /**
-     * Setter for <code>public.users.profile_image_url</code>.
+     * Setter for <code>public.users.profile_image_key</code>.
      */
-    public UsersRecord setProfileImageUrl(String value) {
+    public UsersRecord setProfileImageKey(String value) {
         set(6, value);
         return this;
     }
 
     /**
-     * Getter for <code>public.users.profile_image_url</code>.
+     * Getter for <code>public.users.profile_image_key</code>.
      */
-    public String getProfileImageUrl() {
+    public String getProfileImageKey() {
         return (String) get(6);
     }
 
@@ -149,7 +149,7 @@ public class UsersRecord extends UpdatableRecordImpl<UsersRecord> {
     /**
      * Create a detached, initialised UsersRecord
      */
-    public UsersRecord(Boolean isWithdrawn, LocalDateTime createdAt, LocalDateTime modifiedAt, UUID id, String nickname, String phoneNo, String profileImageUrl) {
+    public UsersRecord(Boolean isWithdrawn, LocalDateTime createdAt, LocalDateTime modifiedAt, UUID id, String nickname, String phoneNo, String profileImageKey) {
         super(Users.USERS);
 
         setIsWithdrawn(isWithdrawn);
@@ -158,7 +158,7 @@ public class UsersRecord extends UpdatableRecordImpl<UsersRecord> {
         setId(id);
         setNickname(nickname);
         setPhoneNo(phoneNo);
-        setProfileImageUrl(profileImageUrl);
+        setProfileImageKey(profileImageKey);
         resetChangedOnNotNull();
     }
 
@@ -175,7 +175,7 @@ public class UsersRecord extends UpdatableRecordImpl<UsersRecord> {
             setId(value.getId());
             setNickname(value.getNickname());
             setPhoneNo(value.getPhoneNo());
-            setProfileImageUrl(value.getProfileImageUrl());
+            setProfileImageKey(value.getProfileImageKey());
             resetChangedOnNotNull();
         }
     }

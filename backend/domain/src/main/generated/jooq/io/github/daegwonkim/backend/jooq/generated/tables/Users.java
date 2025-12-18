@@ -84,9 +84,9 @@ public class Users extends TableImpl<UsersRecord> {
     public final TableField<UsersRecord, String> PHONE_NO = createField(DSL.name("phone_no"), SQLDataType.VARCHAR(255).nullable(false), this, "");
 
     /**
-     * The column <code>public.users.profile_image_url</code>.
+     * The column <code>public.users.profile_image_key</code>.
      */
-    public final TableField<UsersRecord, String> PROFILE_IMAGE_URL = createField(DSL.name("profile_image_url"), SQLDataType.VARCHAR(255), this, "");
+    public final TableField<UsersRecord, String> PROFILE_IMAGE_KEY = createField(DSL.name("profile_image_key"), SQLDataType.VARCHAR(255), this, "");
 
     private Users(Name alias, Table<UsersRecord> aliased) {
         this(alias, aliased, (Field<?>[]) null, null);

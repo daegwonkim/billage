@@ -23,7 +23,7 @@ public class Users implements Serializable {
     private UUID id;
     private String nickname;
     private String phoneNo;
-    private String profileImageUrl;
+    private String profileImageKey;
 
     public Users() {}
 
@@ -34,7 +34,7 @@ public class Users implements Serializable {
         this.id = value.id;
         this.nickname = value.nickname;
         this.phoneNo = value.phoneNo;
-        this.profileImageUrl = value.profileImageUrl;
+        this.profileImageKey = value.profileImageKey;
     }
 
     public Users(
@@ -44,7 +44,7 @@ public class Users implements Serializable {
         UUID id,
         String nickname,
         String phoneNo,
-        String profileImageUrl
+        String profileImageKey
     ) {
         this.isWithdrawn = isWithdrawn;
         this.createdAt = createdAt;
@@ -52,7 +52,7 @@ public class Users implements Serializable {
         this.id = id;
         this.nickname = nickname;
         this.phoneNo = phoneNo;
-        this.profileImageUrl = profileImageUrl;
+        this.profileImageKey = profileImageKey;
     }
 
     /**
@@ -146,17 +146,17 @@ public class Users implements Serializable {
     }
 
     /**
-     * Getter for <code>public.users.profile_image_url</code>.
+     * Getter for <code>public.users.profile_image_key</code>.
      */
-    public String getProfileImageUrl() {
-        return this.profileImageUrl;
+    public String getProfileImageKey() {
+        return this.profileImageKey;
     }
 
     /**
-     * Setter for <code>public.users.profile_image_url</code>.
+     * Setter for <code>public.users.profile_image_key</code>.
      */
-    public Users setProfileImageUrl(String profileImageUrl) {
-        this.profileImageUrl = profileImageUrl;
+    public Users setProfileImageKey(String profileImageKey) {
+        this.profileImageKey = profileImageKey;
         return this;
     }
 
@@ -205,11 +205,11 @@ public class Users implements Serializable {
         }
         else if (!this.phoneNo.equals(other.phoneNo))
             return false;
-        if (this.profileImageUrl == null) {
-            if (other.profileImageUrl != null)
+        if (this.profileImageKey == null) {
+            if (other.profileImageKey != null)
                 return false;
         }
-        else if (!this.profileImageUrl.equals(other.profileImageUrl))
+        else if (!this.profileImageKey.equals(other.profileImageKey))
             return false;
         return true;
     }
@@ -224,7 +224,7 @@ public class Users implements Serializable {
         result = prime * result + ((this.id == null) ? 0 : this.id.hashCode());
         result = prime * result + ((this.nickname == null) ? 0 : this.nickname.hashCode());
         result = prime * result + ((this.phoneNo == null) ? 0 : this.phoneNo.hashCode());
-        result = prime * result + ((this.profileImageUrl == null) ? 0 : this.profileImageUrl.hashCode());
+        result = prime * result + ((this.profileImageKey == null) ? 0 : this.profileImageKey.hashCode());
         return result;
     }
 
@@ -238,7 +238,7 @@ public class Users implements Serializable {
         sb.append(", ").append(id);
         sb.append(", ").append(nickname);
         sb.append(", ").append(phoneNo);
-        sb.append(", ").append(profileImageUrl);
+        sb.append(", ").append(profileImageKey);
 
         sb.append(")");
         return sb.toString();

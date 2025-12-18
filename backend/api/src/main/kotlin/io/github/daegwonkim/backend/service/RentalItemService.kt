@@ -75,7 +75,7 @@ class RentalItemService(
         val rentalItem = rentalItemJooqRepository.getRentalItem(rentalItemId = rentalItemId, userId = userId)
             ?: throw NotFoundException(ErrorCode.RENTAL_ITEM_NOT_FOUND)
 
-        val imageUrls = rentalItemImageRepository
+        val imageKeys = rentalItemImageRepository
             .findAllByRentalItemIdOrderBySequence(rentalItemId = rentalItem.id)
             .map { images -> images.key }
 
@@ -85,12 +85,12 @@ class RentalItemService(
                 id = rentalItem.sellerId,
                 nickname = rentalItem.sellerNickname,
                 address = rentalItem.address,
-                profileImageUrl = rentalItem.sellerProfileImageUrl
+                profileImageKey = rentalItem.sellerProfileImageKey
             ),
             category = rentalItem.category,
             title = rentalItem.title,
             description = rentalItem.description,
-            imageUrls = imageUrls,
+            imageKeys = imageKeys,
             pricePerDay = rentalItem.pricePerDay,
             pricePerWeek = rentalItem.pricePerWeek,
             rentalCount = rentalItem.rentalCount,

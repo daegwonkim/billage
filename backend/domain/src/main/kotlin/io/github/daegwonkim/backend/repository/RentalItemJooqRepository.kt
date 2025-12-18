@@ -71,7 +71,7 @@ class RentalItemJooqRepository(
         return dslContext.select(
             USERS.ID.`as`("seller_id"),
             USERS.NICKNAME.`as`("seller_nickname"),
-            USERS.PROFILE_IMAGE_URL.`as`("seller_profile_image_url"),
+            USERS.PROFILE_IMAGE_KEY.`as`("seller_profile_image_key"),
             RENTAL_ITEMS.ID,
             RENTAL_ITEMS.CATEGORY,
             RENTAL_ITEMS.TITLE,

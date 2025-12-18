@@ -22,8 +22,8 @@ class User(
     @Column(nullable = false)
     var nickname: String,
 
-    @Column(name = "profile_image_url")
-    var profileImageUrl: String? = null,
+    @Column(name = "profile_image_key")
+    var profileImageKey: String? = null,
 
     @Column(name = "is_withdrawn", nullable = false)
     var isWithdrawn: Boolean = false
