@@ -4,6 +4,9 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
 import toast, { Toaster } from 'react-hot-toast'
 import { categories } from '@/types'
+import { useMutation } from '@tanstack/react-query'
+import type { RentalItemRegisterRequest } from '@/api/rentall_item/dto/RentalItemRegister'
+import { register } from '@/api/rentall_item/rentalItem'
 
 interface FormData {
   category: string
@@ -49,6 +52,10 @@ export default function RentalItemRegister() {
   const [descriptionError, setDescriptionError] = useState<boolean>(false)
   const [pricePerDayError, setPricePerDayError] = useState<boolean>(false)
   const [pricePerWeekError, setPricePerWeekError] = useState<boolean>(false)
+
+  const registerMutation = useMutation({
+    mutationFn: (request: RentalItemRegisterRequest) => register(request)
+  })
 
   // 가격 포맷팅용 함수
   const formatPrice = (value: string) => {
@@ -194,9 +201,20 @@ export default function RentalItemRegister() {
     }
 
     if (!hasError) {
-      const imageUrls = images.map(img => img.fileName).filter(Boolean)
-
-      toast.success('등록 완료!')
+      registerMutation.mutate({
+        category: formData.category,
+        title: formData.title,
+        description: formData.description,
+        pricePerDay: formData.enablePricePerDay
+          ? Number(formData.pricePerDay.replace(/,/g, ''))
+          : null,
+        pricePerWeek: formData.enablePricePerWeek
+          ? Number(formData.pricePerWeek.replace(/,/g, ''))
+          : null,
+        imageKeys: images
+          .map(img => img.fileName)
+          .filter(fileName => fileName !== undefined)
+      })
     }
   }
 
@@ -300,7 +318,11 @@ export default function RentalItemRegister() {
                   ? 'border-red-500 focus:border-red-500'
                   : 'border-gray-300 focus:border-black'
               } ${!formData.category ? 'text-gray-400' : 'text-gray-800'}`}>
-              <span>{formData.category || '카테고리를 선택해주세요.'}</span>
+              <span>
+                {formData.category
+                  ? categories.find(c => c.value === formData.category)?.label
+                  : '카테고리를 선택해주세요.'}
+              </span>
               <svg
                 className={`h-5 w-5 transition-transform duration-200 ${
                   isOpen ? 'rotate-180' : ''
@@ -331,7 +353,7 @@ export default function RentalItemRegister() {
                         onClick={() => {
                           setFormData(prev => ({
                             ...prev,
-                            category: category.label
+                            category: category.value
                           }))
                           setCategoryError(false)
                           setIsOpen(false)

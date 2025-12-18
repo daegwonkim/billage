@@ -1,3 +1,8 @@
+import fetchWithToken from '../fetchWithToken'
+import type {
+  RentalItemRegisterRequest,
+  RentalItemRegisterResponse
+} from './dto/RentalItemRegister'
 import type {
   RentalItemDetailResponse,
   RentalItemsQueryResponse,
@@ -5,7 +10,8 @@ import type {
 } from './dto/RentalItemsQuery'
 import type { UserRentalItemsQueryResponse } from './dto/UserRentalItemsQuery'
 
-const API_BASE_URL = import.meta.env.API_BASE_URL!
+// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL!
+const API_BASE_URL = 'http://localhost:8080'
 
 export async function getRentalItems(
   page = 0,
@@ -54,6 +60,21 @@ export async function getSellerRentalItems(
   const response = await fetch(
     `${API_BASE_URL}/api/users/${sellerId}/rental-items?${params}`
   )
+  if (!response.ok) throw new Error('Failed to fetch rental item')
+  return response.json()
+}
+
+export async function register(
+  request: RentalItemRegisterRequest
+): Promise<RentalItemRegisterResponse> {
+  const response = await fetch(`${API_BASE_URL}/api/rental-items/register`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(request)
+  })
+
   if (!response.ok) throw new Error('Failed to fetch rental item')
   return response.json()
 }

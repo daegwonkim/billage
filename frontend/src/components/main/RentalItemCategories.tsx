@@ -1,13 +1,7 @@
-import type { RentalItemCategory } from '@/api/rentall_item/dto/RentalItemCategoriesQuery'
+import { categories } from '@/types'
 import { useRef, useState } from 'react'
 
-interface RentalItemCategoriesProps {
-  rentalItemCategories: RentalItemCategory[]
-}
-
-export function RentalItemCategories({
-  rentalItemCategories
-}: RentalItemCategoriesProps) {
+export function RentalItemCategories() {
   const scrollRef = useRef<HTMLDivElement>(null)
   const [isDragging, setIsDragging] = useState(false)
   const [startX, setStartX] = useState(0)
@@ -77,7 +71,7 @@ export function RentalItemCategories({
       }}
       className="hide-scrollbar">
       <div style={{ display: 'flex', gap: '15px', minWidth: 'max-content' }}>
-        {rentalItemCategories.map((cat, idx) => (
+        {categories.map((cat, idx) => (
           <div
             key={idx}
             style={{

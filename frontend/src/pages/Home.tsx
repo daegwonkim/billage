@@ -3,7 +3,7 @@ import { Header } from '../components/common/Header'
 import { RentalItemCategories } from '../components/main/RentalItemCategories'
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useRef } from 'react'
-import { useRentalItemCategories, useRentalItems } from '@/hooks/RentalItem'
+import { useRentalItems } from '@/hooks/RentalItem'
 
 export function Home() {
   const navigate = useNavigate()
@@ -12,12 +12,6 @@ export function Home() {
   const onRentalItemClick = (rentalItemId: string) => {
     navigate(`/rental-items/${rentalItemId}`)
   }
-
-  const {
-    data: rentalItemCategoriesData,
-    isLoading: rentalItemCategoriesLoading,
-    error: rentalItemCategoriesError
-  } = useRentalItemCategories()
 
   const {
     data: rentalItemsData,
@@ -50,15 +44,8 @@ export function Home() {
     }
   }, [fetchNextPage, hasNextPage, isFetchingNextPage])
 
-  const isLoading = rentalItemCategoriesLoading || rentalItemsLoading
-  const error = rentalItemCategoriesError || rentalItemsError
-
-  if (isLoading) {
-    return <div>Loading...</div>
-  }
-
-  if (error || !rentalItemCategoriesData || !rentalItemsData) {
-    return <div>Error: {error?.message}</div>
+  if (!rentalItemsData) {
+    return
   }
 
   const allRentalItems = rentalItemsData.pages.flatMap(page => page.content)
@@ -66,9 +53,7 @@ export function Home() {
   return (
     <>
       <Header />
-      <RentalItemCategories
-        rentalItemCategories={rentalItemCategoriesData.rentalItemCategories}
-      />
+      <RentalItemCategories />
       <RentalItems
         rentalItems={allRentalItems}
         onRentalItemClick={onRentalItemClick}
