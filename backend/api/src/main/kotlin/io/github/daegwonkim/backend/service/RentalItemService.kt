@@ -1,6 +1,5 @@
 package io.github.daegwonkim.backend.service
 
-import io.github.daegwonkim.backend.dto.rental_item.GetCategoriesResponse
 import io.github.daegwonkim.backend.dto.rental_item.RentalItemGetForModifyResponse
 import io.github.daegwonkim.backend.dto.rental_item.RentalItemModifyRequest
 import io.github.daegwonkim.backend.dto.rental_item.RentalItemModifyResponse
@@ -39,19 +38,6 @@ class RentalItemService(
     @Value($$"${supabase.storage.bucket.rental-item}")
     private val rentalItemBucket: String
 ) {
-    fun getCategories(): GetCategoriesResponse {
-        val categories = RentalItemCategory.entries
-            .sortedBy { it.order }
-            .map { category ->
-                GetCategoriesResponse.Category(
-                    title = category.title,
-                    iconPath = category.iconPath
-                )
-            }
-
-        return GetCategoriesResponse(categories = categories)
-    }
-
     fun search(
         category: RentalItemCategory?,
         keyword: String?,

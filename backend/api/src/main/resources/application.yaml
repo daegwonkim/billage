@@ -4,10 +4,6 @@ spring:
       - classpath:application-domain.yaml
       - classpath:application-infra.yaml
 
-  web:
-    resources:
-      static-locations: classpath:/static/
-
 jwt:
   secret: ${SECRET}
   access-token-expiration:
