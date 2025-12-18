@@ -1,4 +1,4 @@
-package io.github.daegwonkim.backend.dto.file
+package io.github.daegwonkim.backend.dto.storage
 
 data class GenerateSignedUrlRequest(
     val bucket: String,

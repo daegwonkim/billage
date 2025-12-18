@@ -24,14 +24,14 @@ class SupabaseStorageClient(
             .body(CreateSignedUrlResponse::class.java)
             ?: throw RuntimeException("Signed URL 발급에 실패했습니다")
 
-        return response.url
+        return "$supabaseUrl/storage/v1${response.url}"
     }
 
     /**
      * 파일 삭제
      * DELETE /storage/v1/object/{bucket}/{fileKey}
      */
-    fun deleteFile(bucket: String, fileKey: String): Boolean {
+    fun removeFile(bucket: String, fileKey: String): Boolean {
         return try {
             supabaseRestClient
                 .delete()

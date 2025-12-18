@@ -1,9 +1,11 @@
 package io.github.daegwonkim.backend.controller
 
-import io.github.daegwonkim.backend.dto.file.GenerateSignedUrlRequest
-import io.github.daegwonkim.backend.dto.file.GenerateSignedUrlResponse
+import io.github.daegwonkim.backend.dto.storage.GenerateSignedUrlRequest
+import io.github.daegwonkim.backend.dto.storage.GenerateSignedUrlResponse
+import io.github.daegwonkim.backend.dto.storage.StorageFileRemoveRequest
 import io.github.daegwonkim.backend.service.StorageService
 import io.swagger.v3.oas.annotations.Operation
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -19,10 +21,22 @@ class StorageController(
         summary = "업로드용 Signed URL 발급",
         description = "파일을 스토리지에 업로드하기 위한 Signed URL을 발급합니다"
     )
-    @PostMapping("/upload-url")
+    @PostMapping("/signed-url")
     fun generateSignedUrl(
         @RequestBody request: GenerateSignedUrlRequest
     ): GenerateSignedUrlResponse {
-        return storageService.generateSignedUrl(request.bucket, request.fileName)
+        return storageService.generateSignedUrl(
+            bucket = request.bucket,
+            originalFileName = request.fileName
+        )
+    }
+
+    @Operation(summary = "스토리지 파일 삭제", description = "스토리지에 저장된 파일을 삭제합니다")
+    @DeleteMapping("/file")
+    fun removeFile(@RequestBody request: StorageFileRemoveRequest) {
+        storageService.removeFile(
+            bucket = request.bucket,
+            fileKey = request.fileKey
+        )
     }
 }

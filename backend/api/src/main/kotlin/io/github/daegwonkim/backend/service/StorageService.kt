@@ -1,9 +1,8 @@
 package io.github.daegwonkim.backend.service
 
-import io.github.daegwonkim.backend.dto.file.GenerateSignedUrlResponse
+import io.github.daegwonkim.backend.dto.storage.GenerateSignedUrlResponse
 import io.github.daegwonkim.backend.exception.ExternalServiceException
 import io.github.daegwonkim.backend.exception.data.ErrorCode
-import io.github.daegwonkim.backend.logger
 import io.github.daegwonkim.backend.supabase.SupabaseStorageClient
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
@@ -33,6 +32,13 @@ class StorageService(
         } catch (e: Exception) {
             throw ExternalServiceException(ErrorCode.SIGNED_URL_CREATE_FAILED, e)
         }
+    }
+
+    /**
+     * 스토리지 파일 삭제
+     */
+    fun removeFile(bucket: String, fileKey: String) {
+        supabaseStorageClient.removeFile(bucket = bucket, fileKey = fileKey)
     }
 
     /**

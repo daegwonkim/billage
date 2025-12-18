@@ -15,6 +15,6 @@ class StorageEventListener(
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     fun handleFileDelete(event: StorageFileDeleteEvent) {
-        supabaseStorageClient.deleteFile(bucket = event.bucket, fileKey = event.fileKey)
+        supabaseStorageClient.removeFile(bucket = event.bucket, fileKey = event.fileKey)
     }
 }
