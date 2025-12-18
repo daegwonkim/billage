@@ -3,6 +3,7 @@ import { X, Plus, Camera, CircleAlert, Loader2 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
 import toast, { Toaster } from 'react-hot-toast'
+import { categories } from '@/types'
 
 interface FormData {
   category: string
@@ -36,19 +37,6 @@ export default function RentalItemRegister() {
     enablePricePerDay: true,
     enablePricePerWeek: true
   })
-
-  const categories = [
-    '전자기기',
-    '가구/인테리어',
-    '스포츠/레저',
-    '의류/잡화',
-    '도서/음반',
-    '카메라/촬영장비',
-    '캠핑/아웃도어',
-    '공구/장비',
-    '악기',
-    '기타'
-  ]
 
   const categoryRef = useRef<HTMLSelectElement>(null)
   const titleRef = useRef<HTMLInputElement>(null)
@@ -338,19 +326,22 @@ export default function RentalItemRegister() {
                   <div className="max-h-60 overflow-y-auto">
                     {categories.map((category, index) => (
                       <button
-                        key={category}
+                        key={category.value}
                         type="button"
                         onClick={() => {
-                          setFormData(prev => ({ ...prev, category }))
+                          setFormData(prev => ({
+                            ...prev,
+                            category: category.label
+                          }))
                           setCategoryError(false)
                           setIsOpen(false)
                         }}
                         className={`w-full px-4 py-3 text-left text-sm font-medium transition-colors hover:bg-gray-50 ${
-                          formData.category === category
+                          formData.category === category.value
                             ? 'bg-gray-50'
                             : 'text-gray-800'
                         } ${index !== categories.length - 1 ? 'border-b border-gray-100' : ''}`}>
-                        {category}
+                        {category.label}
                       </button>
                     ))}
                   </div>

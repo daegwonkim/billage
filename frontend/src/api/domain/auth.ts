@@ -11,8 +11,7 @@ import type {
 import type { VerificationCodeSendRequest } from '../dto/VerificationCodeSend'
 import { ApiError, type ApiErrorResponse } from './error'
 
-// const API_BASE_URL = 'https://billage.onrender.com'
-const API_BASE_URL = 'http://localhost:8080'
+const API_BASE_URL = import.meta.env.API_BASE_URL!
 
 export async function sendVerificationCode(
   request: VerificationCodeSendRequest

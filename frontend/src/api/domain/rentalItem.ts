@@ -1,10 +1,28 @@
 import type { UserRentalItemsQueryResponse } from '@/api/dto/UserRentalItemsQuery'
 import type {
   RentalItemDetailResponse,
+  RentalItemsQueryResponse,
   SimilarRentalItemsQueryResponse
 } from '../dto/RentalItemsQuery'
 
-const API_BASE_URL = 'https://billage.onrender.com'
+const API_BASE_URL = import.meta.env.API_BASE_URL!
+
+export async function getRentalItems(
+  page = 0,
+  size = 10,
+  sortBy = 'CREATED_AT',
+  sortDirection = 'DESC'
+): Promise<RentalItemsQueryResponse> {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    size: size.toString(),
+    sortBy,
+    sortDirection
+  })
+  const response = await fetch(`${API_BASE_URL}/api/rental-items?${params}`)
+  if (!response.ok) throw new Error('Failed to fetch rental items')
+  return response.json()
+}
 
 export async function getRentalItem(
   rentalItemId: string
