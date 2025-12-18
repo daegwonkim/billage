@@ -8,8 +8,8 @@ data class RentalItemGetForModifyResponse(
     val title: String,
     val description: String,
     val category: RentalItemCategory,
-    val pricePerDay: Int,
-    val pricePerWeek: Int,
+    val pricePerDay: Int?,
+    val pricePerWeek: Int?,
     val images: List<RentalItemImage>
 ) {
     data class RentalItemImage(
