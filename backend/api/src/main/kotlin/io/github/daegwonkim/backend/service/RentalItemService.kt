@@ -39,6 +39,8 @@ class RentalItemService(
     @Value($$"${supabase.storage.bucket.rental-item}")
     private val rentalItemBucket: String
 ) {
+
+    @Transactional(readOnly = true)
     fun getRentalItems(
         category: RentalItemCategory?,
         keyword: String?,
@@ -71,6 +73,7 @@ class RentalItemService(
         )
     }
 
+    @Transactional(readOnly = true)
     fun getRentalItem(userId: UUID, rentalItemId: UUID): GetRentalItemResponse {
         val rentalItem = rentalItemJooqRepository.getRentalItem(rentalItemId = rentalItemId, userId = userId)
             ?: throw NotFoundException(ErrorCode.RENTAL_ITEM_NOT_FOUND)
@@ -129,6 +132,7 @@ class RentalItemService(
         return RentalItemRegisterResponse(id = newRentalItem.id!!)
     }
 
+    @Transactional(readOnly = true)
     fun getForModify(id: UUID): RentalItemGetForModifyResponse {
         val rentalItem = rentalItemRepository.findById(id)
             .orElseThrow { NotFoundException(errorCode = ErrorCode.RENTAL_ITEM_NOT_FOUND) }

@@ -1,6 +1,6 @@
 package io.github.daegwonkim.backend.supabase.dto
 
-data class CreateSignedUrlResponse(
-    val signedURL: String,
+data class CreateUploadSignedUrlResponse(
+    val url: String,
     val token: String? = null
 )

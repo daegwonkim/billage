@@ -2,6 +2,8 @@ package io.github.daegwonkim.backend.controller
 
 import io.github.daegwonkim.backend.dto.storage.GenerateSignedUrlRequest
 import io.github.daegwonkim.backend.dto.storage.GenerateSignedUrlResponse
+import io.github.daegwonkim.backend.dto.storage.GenerateUploadSignedUrlRequest
+import io.github.daegwonkim.backend.dto.storage.GenerateUploadSignedUrlResponse
 import io.github.daegwonkim.backend.dto.storage.StorageFileRemoveRequest
 import io.github.daegwonkim.backend.service.StorageService
 import io.swagger.v3.oas.annotations.Operation
@@ -21,13 +23,27 @@ class StorageController(
         summary = "업로드용 Signed URL 발급",
         description = "파일을 스토리지에 업로드하기 위한 Signed URL을 발급합니다"
     )
+    @PostMapping("/upload/signed-url")
+    fun generateUploadSignedUrl(
+        @RequestBody request: GenerateUploadSignedUrlRequest
+    ): GenerateUploadSignedUrlResponse {
+        return storageService.generateUploadSignedUrl(
+            bucket = request.bucket,
+            originalFileName = request.fileName
+        )
+    }
+
+    @Operation(
+        summary = "조회용 Signed URL 발급",
+        description = "파일에 접근 위한 Signed URL을 발급합니다"
+    )
     @PostMapping("/signed-url")
     fun generateSignedUrl(
         @RequestBody request: GenerateSignedUrlRequest
     ): GenerateSignedUrlResponse {
         return storageService.generateSignedUrl(
             bucket = request.bucket,
-            originalFileName = request.fileName
+            fileKey = request.fileKey
         )
     }
 

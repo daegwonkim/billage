@@ -1,6 +1,7 @@
 package io.github.daegwonkim.backend.service
 
 import io.github.daegwonkim.backend.dto.storage.GenerateSignedUrlResponse
+import io.github.daegwonkim.backend.dto.storage.GenerateUploadSignedUrlResponse
 import io.github.daegwonkim.backend.exception.ExternalServiceException
 import io.github.daegwonkim.backend.exception.data.ErrorCode
 import io.github.daegwonkim.backend.supabase.SupabaseStorageClient
@@ -16,19 +17,35 @@ class StorageService(
     /**
      * 업로드용 Signed URL 생성
      */
-    fun generateSignedUrl(
+    fun generateUploadSignedUrl(
         bucket: String,
         originalFileName: String
-    ): GenerateSignedUrlResponse {
+    ): GenerateUploadSignedUrlResponse {
         val fileKey = generateFileKey(originalFileName)
 
         try {
-            val signedUrl = supabaseStorageClient.createSignedUrl(bucket = bucket, fileKey = fileKey)
+            val signedUrl = supabaseStorageClient.createUploadSignedUrl(bucket = bucket, fileKey = fileKey)
 
-            return GenerateSignedUrlResponse(
+            return GenerateUploadSignedUrlResponse(
                 fileKey = fileKey,
                 signedUrl = signedUrl
             )
+        } catch (e: Exception) {
+            throw ExternalServiceException(ErrorCode.SIGNED_URL_CREATE_FAILED, e)
+        }
+    }
+
+    /**
+     * 조회용 Signed URL 생성
+     */
+    fun generateSignedUrl(
+        bucket: String,
+        fileKey: String
+    ): GenerateSignedUrlResponse {
+        try {
+            val signedUrl = supabaseStorageClient.createSignedUrl(bucket = bucket, fileKey = fileKey)
+
+            return GenerateSignedUrlResponse(signedUrl = signedUrl)
         } catch (e: Exception) {
             throw ExternalServiceException(ErrorCode.SIGNED_URL_CREATE_FAILED, e)
         }

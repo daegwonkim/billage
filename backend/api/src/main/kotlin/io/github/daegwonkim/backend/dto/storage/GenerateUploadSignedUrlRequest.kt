@@ -1,6 +1,6 @@
 package io.github.daegwonkim.backend.dto.storage
 
-data class GenerateSignedUrlRequest(
+data class GenerateUploadSignedUrlRequest(
     val bucket: String,
-    val fileKey: String
+    val fileName: String
 )
