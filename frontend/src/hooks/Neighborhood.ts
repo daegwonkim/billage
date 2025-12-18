@@ -1,15 +1,15 @@
 import {
   locateNeighborhood,
   nearbyNeighborhoods
-} from '@/api/domain/neighborhoods'
+} from '@/api/neighborhood/neighborhood'
 import type {
   LocateNeighborhoodQueryRequest,
   LocateNeighborhoodQueryResponse
-} from '@/api/dto/LocateNeighborhoodQuery'
+} from '@/api/neighborhood/dto/LocateNeighborhoodQuery'
 import type {
   NearbyNeighborhoodsQueryRequest,
   NearbyNeighborhoodsQueryResponse
-} from '@/api/dto/NearbyNeighborhoodsQuery'
+} from '@/api/neighborhood/dto/NearbyNeighborhoodsQuery'
 import { useQuery } from '@tanstack/react-query'
 
 export function useNearbyNeighborhoods(

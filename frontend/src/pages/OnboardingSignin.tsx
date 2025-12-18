@@ -8,13 +8,13 @@ import {
   signIn,
   confirmPhoneNo,
   confirmVerificationCode
-} from '@/api/domain/auth'
+} from '@/api/auth/auth'
 import { useNavigate } from 'react-router-dom'
-import type { VerificationCodeConfirmRequest } from '@/api/dto/VerificationCodeConfirm'
-import type { VerificationCodeSendRequest } from '@/api/dto/VerificationCodeSend'
-import type { SignInRequest } from '@/api/dto/SignIn'
-import type { PhoneNoConfirmRequest } from '@/api/dto/PhoneNoConfirm'
-import { ErrorMessageMap, type ApiError } from '@/api/domain/error'
+import type { VerificationCodeConfirmRequest } from '@/api/auth/dto/VerificationCodeConfirm'
+import type { VerificationCodeSendRequest } from '@/api/auth/dto/VerificationCodeSend'
+import type { SignInRequest } from '@/api/auth/dto/SignIn'
+import type { PhoneNoConfirmRequest } from '@/api/auth/dto/PhoneNoConfirm'
+import { ErrorMessageMap, type ApiError } from '@/api/error'
 import toast from 'react-hot-toast'
 
 export default function OnboardingSignin() {

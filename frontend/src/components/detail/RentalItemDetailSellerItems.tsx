@@ -1,5 +1,5 @@
+import type { User } from '@/api/rentall_item/dto/UserRentalItemsQuery'
 import { useSellerRentalItems } from '@/hooks/User'
-import type { User } from '@/api/dto/UserRentalItemsQuery'
 import { ChevronRight } from 'lucide-react'
 import { useRef, useState } from 'react'
 

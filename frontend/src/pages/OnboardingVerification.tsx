@@ -1,10 +1,7 @@
-import {
-  sendVerificationCode,
-  confirmVerificationCode
-} from '@/api/domain/auth'
-import { ApiError, ErrorMessageMap } from '@/api/domain/error'
-import type { VerificationCodeConfirmRequest } from '@/api/dto/VerificationCodeConfirm'
-import type { VerificationCodeSendRequest } from '@/api/dto/VerificationCodeSend'
+import { sendVerificationCode, confirmVerificationCode } from '@/api/auth/auth'
+import { ApiError, ErrorMessageMap } from '@/api/error'
+import type { VerificationCodeConfirmRequest } from '@/api/auth/dto/VerificationCodeConfirm'
+import type { VerificationCodeSendRequest } from '@/api/auth/dto/VerificationCodeSend'
 import logo from '@/assets/main.png'
 import { useOnboardingStatus } from '@/hooks/useOnboardingStatus'
 import { useMutation } from '@tanstack/react-query'

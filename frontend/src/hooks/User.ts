@@ -1,6 +1,6 @@
+import type { UserRentalItemsQueryResponse } from '@/api/rentall_item/dto/UserRentalItemsQuery'
+import { getSellerRentalItems } from '@/api/rentall_item/rentalItem'
 import { useQuery } from '@tanstack/react-query'
-import { getSellerRentalItems } from '@/api/domain/detail'
-import type { UserRentalItemsQueryResponse } from '@/api/dto/UserRentalItemsQuery'
 
 export function useSellerRentalItems(
   sellerId: string,

@@ -1,5 +1,5 @@
-import { confirmPhoneNo } from '@/api/domain/auth'
-import type { PhoneNoConfirmRequest } from '@/api/dto/PhoneNoConfirm'
+import { confirmPhoneNo } from '@/api/auth/auth'
+import type { PhoneNoConfirmRequest } from '@/api/auth/dto/PhoneNoConfirm'
 import logo from '@/assets/main.png'
 import { useOnboardingStatus } from '@/hooks/useOnboardingStatus'
 import { formatPhoneNo } from '@/utils/utils'

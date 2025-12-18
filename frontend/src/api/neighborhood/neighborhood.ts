@@ -1,9 +1,9 @@
-import type { LocateNeighborhoodQueryRequest } from '../dto/LocateNeighborhoodQuery'
+import type { LocateNeighborhoodQueryRequest } from './dto/LocateNeighborhoodQuery'
 import type {
   NearbyNeighborhoodsQueryRequest,
   NearbyNeighborhoodsQueryResponse
-} from '../dto/NearbyNeighborhoodsQuery'
-import { ApiError, type ApiErrorResponse } from './error'
+} from './dto/NearbyNeighborhoodsQuery'
+import { ApiError, type ApiErrorResponse } from '../error'
 
 const API_BASE_URL = import.meta.env.API_BASE_URL!
 

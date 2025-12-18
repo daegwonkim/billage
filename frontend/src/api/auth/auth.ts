@@ -1,15 +1,15 @@
 import type {
   PhoneNoConfirmRequest,
   PhoneNoConfirmResponse
-} from '../dto/PhoneNoConfirm'
-import type { SignInRequest } from '../dto/SignIn'
-import type { SignUpRequest } from '../dto/SignUp'
+} from './dto/PhoneNoConfirm'
+import type { SignInRequest } from './dto/SignIn'
+import type { SignUpRequest } from './dto/SignUp'
 import type {
   VerificationCodeConfirmRequest,
   VerificationCodeConfirmResponse
-} from '../dto/VerificationCodeConfirm'
-import type { VerificationCodeSendRequest } from '../dto/VerificationCodeSend'
-import { ApiError, type ApiErrorResponse } from './error'
+} from './dto/VerificationCodeConfirm'
+import type { VerificationCodeSendRequest } from './dto/VerificationCodeSend'
+import { ApiError, type ApiErrorResponse } from '../error'
 
 const API_BASE_URL = import.meta.env.API_BASE_URL!
 

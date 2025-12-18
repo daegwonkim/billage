@@ -1,9 +1,9 @@
-import type { UserRentalItemsQueryResponse } from '@/api/dto/UserRentalItemsQuery'
 import type {
   RentalItemDetailResponse,
   RentalItemsQueryResponse,
   SimilarRentalItemsQueryResponse
-} from '../dto/RentalItemsQuery'
+} from './dto/RentalItemsQuery'
+import type { UserRentalItemsQueryResponse } from './dto/UserRentalItemsQuery'
 
 const API_BASE_URL = import.meta.env.API_BASE_URL!
 

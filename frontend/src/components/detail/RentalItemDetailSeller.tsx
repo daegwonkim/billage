@@ -6,7 +6,7 @@ import normalIcon from '@/assets/level/normal.png'
 import highIcon from '@/assets/level/high.png'
 import topIcon from '@/assets/level/top.png'
 import '@/css/BottomSheet.css'
-import type { RentalItemDetailResponse } from '@/api/dto/RentalItemsQuery'
+import type { RentalItemDetailResponse } from '@/api/rentall_item/dto/RentalItemsQuery'
 
 interface RentalItemDetailSellerProps {
   rentalItem: RentalItemDetailResponse

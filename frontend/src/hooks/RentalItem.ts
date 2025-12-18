@@ -1,20 +1,14 @@
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
-import { getCategories, getRentalItems } from '@/api/domain/main'
-import { getRentalItem, getSimilarRentalItems } from '@/api/domain/detail'
-import type { RentalItemCategoriesQueryResponse } from '@/api/dto/RentalItemCategoriesQuery'
 import type {
   RentalItemDetailResponse,
   RentalItemsQueryResponse,
   SimilarRentalItemsQueryResponse
-} from '@/api/dto/RentalItemsQuery'
-
-export function useRentalItemCategories() {
-  return useQuery<RentalItemCategoriesQueryResponse>({
-    queryKey: ['rentalItemCategories'],
-    queryFn: () => getCategories(),
-    staleTime: 5 * 60 * 1000
-  })
-}
+} from '@/api/rentall_item/dto/RentalItemsQuery'
+import {
+  getRentalItem,
+  getRentalItems,
+  getSimilarRentalItems
+} from '@/api/rentall_item/rentalItem'
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 
 export function useRentalItemDetail(id: string) {
   return useQuery<RentalItemDetailResponse>({
