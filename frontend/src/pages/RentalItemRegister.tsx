@@ -21,7 +21,7 @@ interface FormData {
 interface ImageData {
   file: File
   preview: string
-  fileName?: string
+  fileKey?: string
   isUploading: boolean
   isUploaded: boolean
 }
@@ -98,12 +98,12 @@ export default function RentalItemRegister() {
       try {
         // 고유한 파일명 생성
         const fileExt = newImage.file.name.split('.').pop()
-        const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
+        const fileKey = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
 
         // 스토리지에 업로드
         const { data, error } = await supabase.storage
           .from('rental-item')
-          .upload(fileName, newImage.file, {
+          .upload(fileKey, newImage.file, {
             cacheControl: '3600',
             upsert: false
           })
@@ -115,7 +115,7 @@ export default function RentalItemRegister() {
             idx === newImageIndex
               ? {
                   ...img,
-                  fileName: fileName,
+                  fileKey: fileKey,
                   isUploading: false,
                   isUploaded: true
                 }
@@ -138,9 +138,9 @@ export default function RentalItemRegister() {
     URL.revokeObjectURL(image.preview)
 
     // Supabase Storage에서 파일 삭제
-    if (image.fileName && image.isUploaded) {
+    if (image.fileKey && image.isUploaded) {
       try {
-        await supabase.storage.from('rental-item').remove([image.fileName])
+        await supabase.storage.from('rental-item').remove([image.fileKey])
       } catch (error) {
         console.error('Failed to delete from storage: ', error)
       }
@@ -212,8 +212,8 @@ export default function RentalItemRegister() {
           ? Number(formData.pricePerWeek.replace(/,/g, ''))
           : null,
         imageKeys: images
-          .map(img => img.fileName)
-          .filter(fileName => fileName !== undefined)
+          .map(img => img.fileKey)
+          .filter(fileKey => fileKey !== undefined)
       })
     }
   }
