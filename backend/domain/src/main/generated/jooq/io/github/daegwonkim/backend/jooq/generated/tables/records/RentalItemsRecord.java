@@ -156,6 +156,21 @@ public class RentalItemsRecord extends UpdatableRecordImpl<RentalItemsRecord> {
         return (UUID) get(8);
     }
 
+    /**
+     * Setter for <code>public.rental_items.view_count</code>.
+     */
+    public RentalItemsRecord setViewCount(Integer value) {
+        set(9, value);
+        return this;
+    }
+
+    /**
+     * Getter for <code>public.rental_items.view_count</code>.
+     */
+    public Integer getViewCount() {
+        return (Integer) get(9);
+    }
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -179,7 +194,7 @@ public class RentalItemsRecord extends UpdatableRecordImpl<RentalItemsRecord> {
     /**
      * Create a detached, initialised RentalItemsRecord
      */
-    public RentalItemsRecord(UUID id, LocalDateTime createdAt, LocalDateTime modifiedAt, String category, String description, Integer pricePerDay, Integer pricePerWeek, String title, UUID userId) {
+    public RentalItemsRecord(UUID id, LocalDateTime createdAt, LocalDateTime modifiedAt, String category, String description, Integer pricePerDay, Integer pricePerWeek, String title, UUID userId, Integer viewCount) {
         super(RentalItems.RENTAL_ITEMS);
 
         setId(id);
@@ -191,6 +206,7 @@ public class RentalItemsRecord extends UpdatableRecordImpl<RentalItemsRecord> {
         setPricePerWeek(pricePerWeek);
         setTitle(title);
         setUserId(userId);
+        setViewCount(viewCount);
         resetChangedOnNotNull();
     }
 
@@ -210,6 +226,7 @@ public class RentalItemsRecord extends UpdatableRecordImpl<RentalItemsRecord> {
             setPricePerWeek(value.getPricePerWeek());
             setTitle(value.getTitle());
             setUserId(value.getUserId());
+            setViewCount(value.getViewCount());
             resetChangedOnNotNull();
         }
     }

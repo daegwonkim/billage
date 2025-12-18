@@ -13,7 +13,7 @@ data class RentalItemGetForModifyResponse(
     val images: List<RentalItemImage>
 ) {
     data class RentalItemImage(
-        val url: String,
+        val key: String,
         val sequence: Int
     )
 }

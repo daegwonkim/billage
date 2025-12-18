@@ -1,11 +1,12 @@
 package io.github.daegwonkim.backend.controller
 
+import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemResponse
 import io.github.daegwonkim.backend.dto.rental_item.RentalItemGetForModifyResponse
 import io.github.daegwonkim.backend.dto.rental_item.RentalItemModifyRequest
 import io.github.daegwonkim.backend.dto.rental_item.RentalItemModifyResponse
 import io.github.daegwonkim.backend.dto.rental_item.RentalItemRegisterRequest
 import io.github.daegwonkim.backend.dto.rental_item.RentalItemRegisterResponse
-import io.github.daegwonkim.backend.dto.rental_item.SearchRentalItemsResponse
+import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemsResponse
 import io.github.daegwonkim.backend.enumerate.RentalItemCategory
 import io.github.daegwonkim.backend.enumerate.RentalItemSortBy
 import io.github.daegwonkim.backend.enumerate.SortDirection
@@ -47,13 +48,20 @@ class RentalItemController(
         )
     }
 
+    @Operation(summary = "대여 상품 상세 조회", description = "특정 상품의 상세 정보를 조회합니다")
+    @GetMapping("/{id}")
+    fun getRentalItem(
+        @PathVariable("id") id: UUID
+    ): GetRentalItemResponse {
+        return rentalItemService.getRentalItem(userId = UUID.randomUUID(), rentalItemId = id)
+    }
+
     @Operation(summary = "대여 상품 등록", description = "새로운 대여 상품을 등록합니다")
-    @PostMapping("/register")
+    @PostMapping
     fun register(
-        @AuthenticationPrincipal userId: UUID,
         @RequestBody request: RentalItemRegisterRequest
     ): RentalItemRegisterResponse {
-        return rentalItemService.register(userId = userId, request = request)
+        return rentalItemService.register(userId = UUID.randomUUID(), request = request)
     }
 
     @Operation(summary = "수정 전 데이터 조회", description = "대여 상품 수정 전 데이터를 조회합니다")

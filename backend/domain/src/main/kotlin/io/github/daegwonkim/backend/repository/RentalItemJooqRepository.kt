@@ -2,12 +2,14 @@ package io.github.daegwonkim.backend.repository
 
 import io.github.daegwonkim.backend.enumerate.RentalItemCategory
 import io.github.daegwonkim.backend.enumerate.RentalStatus
+import io.github.daegwonkim.backend.jooq.generated.Tables.USERS
 import io.github.daegwonkim.backend.jooq.generated.Tables.NEIGHBORHOODS
 import io.github.daegwonkim.backend.jooq.generated.Tables.RENTAL_ITEMS
 import io.github.daegwonkim.backend.jooq.generated.Tables.RENTAL_ITEM_IMAGES
 import io.github.daegwonkim.backend.jooq.generated.Tables.RENTAL_ITEM_LIKE_RECORDS
 import io.github.daegwonkim.backend.jooq.generated.Tables.RENTAL_RECORDS
 import io.github.daegwonkim.backend.jooq.generated.Tables.USER_NEIGHBORHOODS
+import io.github.daegwonkim.backend.repository.dto.GetRentalItemItem
 import io.github.daegwonkim.backend.repository.dto.GetRentalItemsItem
 import org.jooq.DSLContext
 import org.jooq.Field
@@ -21,6 +23,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
+import java.util.UUID
 
 @Repository
 class RentalItemJooqRepository(
@@ -64,13 +67,38 @@ class RentalItemJooqRepository(
         return PageImpl(results, pageable, totalCount)
     }
 
+    fun getRentalItem(rentalItemId: UUID, userId: UUID): GetRentalItemItem? {
+        return dslContext.select(
+            USERS.ID.`as`("seller_id"),
+            USERS.NICKNAME.`as`("seller_nickname"),
+            USERS.PROFILE_IMAGE_URL.`as`("seller_profile_image_url"),
+            RENTAL_ITEMS.ID,
+            RENTAL_ITEMS.CATEGORY,
+            RENTAL_ITEMS.TITLE,
+            RENTAL_ITEMS.DESCRIPTION,
+            RENTAL_ITEMS.PRICE_PER_DAY,
+            RENTAL_ITEMS.PRICE_PER_WEEK,
+            RENTAL_ITEMS.VIEW_COUNT,
+            RENTAL_ITEMS.CREATED_AT,
+            rentalCountSubquery(),
+            likeCountSubquery(),
+            addressField(),
+            likedSubquery(userId = userId))
+            .from(RENTAL_ITEMS)
+            .leftJoin(USERS).on(USERS.ID.eq(RENTAL_ITEMS.USER_ID))
+            .leftJoin(USER_NEIGHBORHOODS).on(USER_NEIGHBORHOODS.USER_ID.eq(RENTAL_ITEMS.USER_ID))
+            .leftJoin(NEIGHBORHOODS).on(NEIGHBORHOODS.ID.eq(USER_NEIGHBORHOODS.NEIGHBORHOOD_ID))
+            .where(RENTAL_ITEMS.ID.eq(rentalItemId))
+            .fetchOneInto(GetRentalItemItem::class.java)
+    }
+
     private fun thumbnailUrlSubquery() =
         dslContext.select(buildSupabaseStorageUrl(name = RENTAL_ITEM_IMAGES.KEY))
             .from(RENTAL_ITEM_IMAGES)
             .where(RENTAL_ITEM_IMAGES.RENTAL_ITEM_ID.eq(RENTAL_ITEMS.ID))
             .orderBy(RENTAL_ITEM_IMAGES.SEQUENCE.asc())
             .limit(1)
-            .asField<String>("thumbnailUrl")
+            .asField<String>("thumbnail_url")
 
     private fun rentalCountSubquery() =
         dslContext.selectCount()
@@ -84,6 +112,14 @@ class RentalItemJooqRepository(
             .from(RENTAL_ITEM_LIKE_RECORDS)
             .where(RENTAL_ITEM_LIKE_RECORDS.RENTAL_ITEM_ID.eq(RENTAL_ITEMS.ID))
             .asField<Int>("like_count")
+
+    private fun likedSubquery(userId: UUID) =
+        DSL.exists(
+            dslContext.selectOne()
+                .from(RENTAL_ITEM_LIKE_RECORDS)
+                .where(RENTAL_ITEM_LIKE_RECORDS.RENTAL_ITEM_ID.eq(RENTAL_ITEMS.ID)
+                    .and(RENTAL_ITEM_LIKE_RECORDS.USER_ID.eq(userId)))
+        ).`as`("liked")
 
     private fun addressField() =
         concat(

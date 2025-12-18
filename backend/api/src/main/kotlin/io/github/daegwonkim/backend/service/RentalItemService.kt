@@ -1,5 +1,6 @@
 package io.github.daegwonkim.backend.service
 
+import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemResponse
 import io.github.daegwonkim.backend.dto.rental_item.RentalItemGetForModifyResponse
 import io.github.daegwonkim.backend.dto.rental_item.RentalItemModifyRequest
 import io.github.daegwonkim.backend.dto.rental_item.RentalItemModifyResponse
@@ -70,6 +71,36 @@ class RentalItemService(
         )
     }
 
+    fun getRentalItem(userId: UUID, rentalItemId: UUID): GetRentalItemResponse {
+        val rentalItem = rentalItemJooqRepository.getRentalItem(rentalItemId = rentalItemId, userId = userId)
+            ?: throw NotFoundException(ErrorCode.RENTAL_ITEM_NOT_FOUND)
+
+        val imageUrls = rentalItemImageRepository
+            .findAllByRentalItemIdOrderBySequence(rentalItemId = rentalItem.id)
+            .map { images -> images.key }
+
+        return GetRentalItemResponse(
+            id = rentalItem.id,
+            seller = GetRentalItemResponse.Seller(
+                id = rentalItem.sellerId,
+                nickname = rentalItem.sellerNickname,
+                address = rentalItem.address,
+                profileImageUrl = rentalItem.sellerProfileImageUrl
+            ),
+            category = rentalItem.category,
+            title = rentalItem.title,
+            description = rentalItem.description,
+            imageUrls = imageUrls,
+            pricePerDay = rentalItem.pricePerDay,
+            pricePerWeek = rentalItem.pricePerWeek,
+            rentalCount = rentalItem.rentalCount,
+            likeCount = rentalItem.likeCount,
+            viewCount = rentalItem.viewCount,
+            liked = rentalItem.liked,
+            createdAt = rentalItem.createdAt
+        )
+    }
+
     @Transactional
     fun register(
         userId: UUID,
@@ -102,10 +133,10 @@ class RentalItemService(
         val rentalItem = rentalItemRepository.findById(id)
             .orElseThrow { NotFoundException(errorCode = ErrorCode.RENTAL_ITEM_NOT_FOUND) }
 
-        val rentalItemImages = rentalItemImageRepository.findAllByRentalItemId(rentalItemId = rentalItem.id!!)
+        val rentalItemImages = rentalItemImageRepository.findAllByRentalItemIdOrderBySequence(rentalItemId = rentalItem.id!!)
         val images = rentalItemImages.map { image ->
             RentalItemGetForModifyResponse.RentalItemImage(
-                url = supabaseStorageClient.getPublicUrl(bucket = rentalItemBucket, fileKey = image.key),
+                key = image.key,
                 sequence = image.sequence
             )
         }

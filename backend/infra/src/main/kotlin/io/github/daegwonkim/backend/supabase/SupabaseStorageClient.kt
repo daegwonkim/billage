@@ -12,13 +12,6 @@ class SupabaseStorageClient(
 ) {
 
     /**
-     * Public URL 생성
-     */
-    fun getPublicUrl(bucket: String, fileKey: String): String {
-        return "$supabaseUrl/storage/v1/object/public/$bucket/$fileKey"
-    }
-
-    /**
      * 파일 삭제
      * DELETE /storage/v1/object/{bucket}/{fileKey}
      */

@@ -37,4 +37,7 @@ class RentalItem(
 
     @Column(name = "price_per_week")
     var pricePerWeek: Int?,
+
+    @Column(name = "view_count", nullable = false)
+    var viewCount: Int = 0
 ) : BaseEntity()

@@ -26,6 +26,7 @@ public class RentalItems implements Serializable {
     private Integer pricePerWeek;
     private String title;
     private UUID userId;
+    private Integer viewCount;
 
     public RentalItems() {}
 
@@ -39,6 +40,7 @@ public class RentalItems implements Serializable {
         this.pricePerWeek = value.pricePerWeek;
         this.title = value.title;
         this.userId = value.userId;
+        this.viewCount = value.viewCount;
     }
 
     public RentalItems(
@@ -50,7 +52,8 @@ public class RentalItems implements Serializable {
         Integer pricePerDay,
         Integer pricePerWeek,
         String title,
-        UUID userId
+        UUID userId,
+        Integer viewCount
     ) {
         this.id = id;
         this.createdAt = createdAt;
@@ -61,6 +64,7 @@ public class RentalItems implements Serializable {
         this.pricePerWeek = pricePerWeek;
         this.title = title;
         this.userId = userId;
+        this.viewCount = viewCount;
     }
 
     /**
@@ -198,6 +202,21 @@ public class RentalItems implements Serializable {
         return this;
     }
 
+    /**
+     * Getter for <code>public.rental_items.view_count</code>.
+     */
+    public Integer getViewCount() {
+        return this.viewCount;
+    }
+
+    /**
+     * Setter for <code>public.rental_items.view_count</code>.
+     */
+    public RentalItems setViewCount(Integer viewCount) {
+        this.viewCount = viewCount;
+        return this;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -261,6 +280,12 @@ public class RentalItems implements Serializable {
         }
         else if (!this.userId.equals(other.userId))
             return false;
+        if (this.viewCount == null) {
+            if (other.viewCount != null)
+                return false;
+        }
+        else if (!this.viewCount.equals(other.viewCount))
+            return false;
         return true;
     }
 
@@ -277,6 +302,7 @@ public class RentalItems implements Serializable {
         result = prime * result + ((this.pricePerWeek == null) ? 0 : this.pricePerWeek.hashCode());
         result = prime * result + ((this.title == null) ? 0 : this.title.hashCode());
         result = prime * result + ((this.userId == null) ? 0 : this.userId.hashCode());
+        result = prime * result + ((this.viewCount == null) ? 0 : this.viewCount.hashCode());
         return result;
     }
 
@@ -293,6 +319,7 @@ public class RentalItems implements Serializable {
         sb.append(", ").append(pricePerWeek);
         sb.append(", ").append(title);
         sb.append(", ").append(userId);
+        sb.append(", ").append(viewCount);
 
         sb.append(")");
         return sb.toString();

@@ -100,6 +100,11 @@ public class RentalItems extends TableImpl<RentalItemsRecord> {
      */
     public final TableField<RentalItemsRecord, UUID> USER_ID = createField(DSL.name("user_id"), SQLDataType.UUID.nullable(false), this, "");
 
+    /**
+     * The column <code>public.rental_items.view_count</code>.
+     */
+    public final TableField<RentalItemsRecord, Integer> VIEW_COUNT = createField(DSL.name("view_count"), SQLDataType.INTEGER.nullable(false).defaultValue(DSL.field(DSL.raw("0"), SQLDataType.INTEGER)), this, "");
+
     private RentalItems(Name alias, Table<RentalItemsRecord> aliased) {
         this(alias, aliased, (Field<?>[]) null, null);
     }
