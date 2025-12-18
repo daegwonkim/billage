@@ -1,12 +1,12 @@
 import React, { useRef, useState } from 'react'
 import { X, Plus, Camera, CircleAlert, Loader2 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-import { supabase } from '@/lib/supabase'
 import toast, { Toaster } from 'react-hot-toast'
 import { categories } from '@/types'
 import { useMutation } from '@tanstack/react-query'
 import type { RentalItemRegisterRequest } from '@/api/rentall_item/dto/RentalItemRegister'
 import { register } from '@/api/rentall_item/rentalItem'
+import { generateSignedUrl, removeFile } from '@/api/storage/storage'
 
 interface FormData {
   category: string
@@ -96,19 +96,19 @@ export default function RentalItemRegister() {
       const newImageIndex = images.length + i
 
       try {
-        // 고유한 파일명 생성
-        const fileExt = newImage.file.name.split('.').pop()
-        const fileKey = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
+        // Signed URL 발급
+        const { fileKey, signedUrl } = await generateSignedUrl({
+          bucket: 'rental-item',
+          fileName: newImage.file.name
+        })
 
-        // 스토리지에 업로드
-        const { data, error } = await supabase.storage
-          .from('rental-item')
-          .upload(fileKey, newImage.file, {
-            cacheControl: '3600',
-            upsert: false
-          })
-
-        if (error) throw error
+        await fetch(signedUrl, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': newImage.file.type
+          },
+          body: newImage.file
+        })
 
         setImages(prev =>
           prev.map((img, idx) =>
@@ -137,10 +137,10 @@ export default function RentalItemRegister() {
 
     URL.revokeObjectURL(image.preview)
 
-    // Supabase Storage에서 파일 삭제
+    // Storage에서 파일 삭제
     if (image.fileKey && image.isUploaded) {
       try {
-        await supabase.storage.from('rental-item').remove([image.fileKey])
+        await removeFile({ bucket: 'rental-item', fileKey: image.fileKey })
       } catch (error) {
         console.error('Failed to delete from storage: ', error)
       }
