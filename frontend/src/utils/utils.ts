@@ -23,3 +23,12 @@ export const formatPrice = (value: string) => {
   const numbers = value.replace(/[^\d]/g, '')
   return numbers.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 }
+
+// 십만원 단위까지는 100,000, 백만원 이상은 100만 형식으로 포맷팅
+export function formatCompactPrice(price: number): string {
+  if (price >= 1000000) {
+    const millions = price / 10000
+    return `${millions}만`
+  }
+  return price.toLocaleString('ko-KR')
+}

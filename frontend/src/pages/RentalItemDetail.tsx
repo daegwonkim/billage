@@ -34,15 +34,15 @@ export function RentalItemDetail() {
   const imageUrls = rentalItemData.imageUrls
 
   return (
-    <div className="min-h-screen w-md bg-white pb-[115px]">
+    <div className="min-h-screen w-md pb-[115px]">
       <RentalItemDetailHeader navigate={navigate} />
       <RentalItemDetailImages imageUrls={imageUrls} />
       <RentalItemDetailSeller rentalItem={rentalItemData} />
-      <hr className="h-[0.5px] w-[90%] border-none bg-gray-500 opacity-50" />
+      <hr className="mx-auto h-[0.5px] w-[90%] border-none bg-gray-500 opacity-50" />
       <RentalItemDetailInfo rentalItem={rentalItemData} />
-      <hr className="h-[0.5px] w-[90%] border-none bg-gray-500 opacity-50" />
+      <hr className="mx-auto h-[0.5px] w-[90%] border-none bg-gray-500 opacity-50" />
       <RentalItemDetailSimilarItems rentalItemId={id} />
-      <hr className="h-[0.5px] w-[90%] border-none bg-gray-500 opacity-50" />
+      <hr className="mx-auto h-[0.5px] w-[90%] border-none bg-gray-500 opacity-50" />
       <RentalItemDetailSellerItems
         seller={rentalItemData.seller}
         rentalItemId={id}

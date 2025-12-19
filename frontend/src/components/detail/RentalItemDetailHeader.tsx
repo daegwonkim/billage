@@ -9,41 +9,15 @@ export function RentalItemDetailHeader({
   navigate
 }: RentalItemDetailHeaderProps) {
   return (
-    <div
-      style={{
-        position: 'sticky',
-        top: 0,
-        zIndex: 50,
-        backgroundColor: 'transparent'
-      }}>
-      <div
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          padding: '12px 16px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
-        }}>
+    <div className="sticky top-0 z-50 bg-transparent">
+      <div className="absolute top-0 right-0 left-0 flex items-center justify-between px-4 py-3">
         <button
           onClick={() => navigate(-1)}
-          style={{
-            background: 'rgba(0,0,0,0.5)',
-            border: 'none',
-            borderRadius: '50%',
-            width: '40px',
-            height: '40px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer'
-          }}>
+          className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-black/50">
           <Undo2
             size={24}
             color="white"
-            style={{ flexShrink: 0 }}
+            className="shrink-0"
           />
         </button>
       </div>

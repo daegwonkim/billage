@@ -20,6 +20,6 @@ export const categories: Category[] = [
   { icon: travelIcon, label: '여행용품', value: 'TRAVEL' },
   { icon: sportsIcon, label: '스포츠/운동', value: 'SPORTS' },
   { icon: electronicsIcon, label: '전자기기', value: 'ELECTRONICS' },
-  { icon: fashionIcon, label: '패션', value: 'FASHION' },
+  { icon: fashionIcon, label: '패션잡화', value: 'FASHION' },
   { icon: childcareIcon, label: '육아/교육', value: 'CHILDCARE' }
 ]

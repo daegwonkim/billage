@@ -1,6 +1,7 @@
 import type { Seller } from '@/api/rentall_item/dto/GetRentalItem'
 import { useGetUserRentalItems } from '@/hooks/User'
-import { ChevronRight } from 'lucide-react'
+import { formatCompactPrice } from '@/utils/utils'
+import { ChevronRight, Frown } from 'lucide-react'
 import { useRef, useState } from 'react'
 
 interface RentalItemDetailSellerItemsProps {
@@ -69,84 +70,77 @@ export function RentalItemDetailSellerItems({
   }
 
   if (sellerRentalItemError || !sellerRentalItemData) {
-    return <div>Error: {sellerRentalItemError?.message}</div>
+    return null
   }
 
+  const hasItems = sellerRentalItemData.rentalItems.length > 0
+
   return (
-    <div style={{ overflow: 'hidden' }}>
-      <div style={{ padding: '0px 16px' }}>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between'
-          }}>
-          <h3>{seller.nickname}님의 다른 대여 물품</h3>
-          <ChevronRight color="#707070" />
+    <div className="overflow-hidden pt-4 pb-4">
+      <div className="px-4">
+        <div className="flex items-center justify-between pb-2">
+          <h3 className="text-lg font-bold">
+            {seller.nickname}님의 다른 대여 상품
+          </h3>
+          {hasItems && <ChevronRight color="#707070" />}
         </div>
       </div>
-      <div
-        ref={scrollRef}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseLeave}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        style={{
-          display: 'flex',
-          gap: '10px',
-          overflowX: 'auto',
-          overflowY: 'hidden',
-          cursor: isDragging ? 'grabbing' : 'grab',
-          userSelect: 'none',
-          scrollbarWidth: 'none',
-          msOverflowStyle: 'none',
-          WebkitOverflowScrolling: 'touch',
-          paddingLeft: '16px',
-          paddingRight: '16px'
-        }}
-        className="hide-scrollbar">
-        {sellerRentalItemData.rentalItems.map(item => (
-          <div
-            key={item.id}
-            style={{
-              width: '110px',
-              flexShrink: 0
-            }}>
-            <img
-              src={item.thumbnailImageUrl}
-              style={{
-                width: '110px',
-                height: '110px',
-                borderRadius: '10px',
-                objectFit: 'cover',
-                pointerEvents: 'none'
-              }}
-            />
+      {hasItems ? (
+        <div
+          ref={scrollRef}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseLeave}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          className={`hide-scrollbar flex gap-2.5 overflow-x-auto overflow-y-hidden px-4 select-none ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+          style={{
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+            WebkitOverflowScrolling: 'touch'
+          }}>
+          {sellerRentalItemData.rentalItems.map(item => (
             <div
-              style={{
-                fontSize: '14px',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                display: '-webkit-box',
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: 'vertical'
-              }}>
-              {item.title}
+              key={item.id}
+              className="flex w-[110px] shrink-0 flex-col font-bold">
+              <img
+                src={item.thumbnailImageUrl}
+                className="pointer-events-none mb-1.5 h-[110px] w-[110px] rounded-[10px] object-cover"
+              />
+              <div className="flex flex-1 flex-col gap-0.5">
+                <div
+                  className="flex-1 overflow-hidden text-sm text-ellipsis"
+                  style={{
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical'
+                  }}>
+                  {item.title}
+                </div>
+                <div className="mt-auto">
+                  <div className="text-[15px] font-bold">
+                    {formatCompactPrice(item.pricePerDay)}
+                    <span className="text-[13px] text-gray-600">원 / 일</span>
+                  </div>
+                  <div className="text-[15px] font-bold">
+                    {formatCompactPrice(item.pricePerWeek)}
+                    <span className="text-[13px] text-gray-600">원 / 주</span>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div style={{ fontSize: '15px', fontWeight: 700 }}>
-              {item.pricePerDay}
-              <span style={{ fontSize: '13px', color: '#666' }}>원 / 일</span>
-            </div>
-            <div style={{ fontSize: '15px', fontWeight: 700 }}>
-              {item.pricePerWeek}
-              <span style={{ fontSize: '13px', color: '#666' }}>원 / 주</span>
-            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="flex flex-col items-center gap-2 px-4 py-8 text-gray-400">
+          <Frown size={32} />
+          <div className="text-sm">
+            앗! {seller.nickname}님의 다른 물건이 없어요
           </div>
-        ))}
-      </div>
+        </div>
+      )}
     </div>
   )
 }
