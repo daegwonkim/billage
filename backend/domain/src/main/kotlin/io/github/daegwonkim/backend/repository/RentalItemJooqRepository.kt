@@ -141,7 +141,6 @@ class RentalItemJooqRepository(
 
     private fun addressField() =
         concat(
-            NEIGHBORHOODS.SIDO, value(" "),
             NEIGHBORHOODS.SIGUNGU, value(" "),
             NEIGHBORHOODS.EUPMYEONDONG,
         ).`as`("address")
