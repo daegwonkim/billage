@@ -131,7 +131,7 @@ export function RentalItemDetailSimilarItems({
       ) : (
         <div className="flex flex-col items-center gap-2 px-4 py-8 text-gray-400">
           <Frown size={32} />
-          <div className="text-sm">앗! 아직 비슷한 물건이 없어요</div>
+          <div className="text-sm">앗! 아직 준비된 물건이 없어요</div>
         </div>
       )}
     </div>
