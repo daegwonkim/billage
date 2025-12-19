@@ -25,7 +25,7 @@ export interface RentalItemDetailResponse {
   category: string
   title: string
   description: string
-  imageKeys: string[]
+  imageUrls: string[]
   pricePerDay: number
   pricePerWeek: number
   rentalCount: number
@@ -39,7 +39,7 @@ export interface Seller {
   id: string
   nickname: string
   address: string
-  profileImageKey: string
+  profileImageUrl: string
 }
 
 export interface SimilarRentalItemsQueryResponse {

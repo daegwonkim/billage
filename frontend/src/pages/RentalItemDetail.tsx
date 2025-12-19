@@ -31,12 +31,12 @@ export function RentalItemDetail() {
     return <div>상품 정보를 불러오는데 실패했습니다.</div>
   }
 
-  const imageKeys = rentalItemData.imageKeys
+  const imageUrls = rentalItemData.imageUrls
 
   return (
     <div className="min-h-screen w-md bg-white pb-[115px]">
       <RentalItemDetailHeader navigate={navigate} />
-      <RentalItemDetailImages imageKeys={imageKeys} />
+      <RentalItemDetailImages imageUrls={imageUrls} />
       <RentalItemDetailSeller rentalItem={rentalItemData} />
       <hr className="h-[0.5px] w-[90%] border-none bg-gray-500 opacity-50" />
       <RentalItemDetailInfo rentalItem={rentalItemData} />

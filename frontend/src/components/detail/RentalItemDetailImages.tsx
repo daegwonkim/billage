@@ -1,46 +1,16 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef } from 'react'
 import Slider from 'react-slick'
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
-import { generateSignedUrl } from '@/api/storage/storage'
-import { Loader2 } from 'lucide-react'
 
 interface RentalItemDetailImagesProps {
-  imageKeys: string[]
+  imageUrls: string[]
 }
 
 export function RentalItemDetailImages({
-  imageKeys
+  imageUrls
 }: RentalItemDetailImagesProps) {
   const sliderRef = useRef<Slider>(null)
-  const [imageUrls, setImageUrls] = useState<string[]>([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    const fetchSignedUrls = async () => {
-      try {
-        setLoading(true)
-        const urls = await Promise.all(
-          imageKeys.map(async fileKey => {
-            const { signedUrl } = await generateSignedUrl({
-              bucket: 'rental-item-images',
-              fileKey
-            })
-            return signedUrl
-          })
-        )
-        setImageUrls(urls)
-      } catch (error) {
-        console.error('Failed to fetch signed URLs:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    if (imageKeys.length > 0) {
-      fetchSignedUrls()
-    }
-  }, [imageKeys])
 
   const settings = {
     dots: true,
@@ -54,20 +24,6 @@ export function RentalItemDetailImages({
       <div className="h-1.5 w-1.5 rounded-full bg-white/50 transition-colors" />
     ),
     dotsClass: 'slick-dots custom-dots'
-  }
-
-  if (loading) {
-    return (
-      <div className="relative aspect-square w-full overflow-hidden bg-gray-100">
-        <div className="flex h-full items-center justify-center">
-          <Loader2
-            color="black"
-            size={24}
-            className="animate-spin text-white"
-          />
-        </div>
-      </div>
-    )
   }
 
   return (
