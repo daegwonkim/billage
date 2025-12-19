@@ -38,11 +38,11 @@ export function RentalItemDetail() {
       <RentalItemDetailHeader navigate={navigate} />
       <RentalItemDetailImages imageUrls={imageUrls} />
       <RentalItemDetailSeller rentalItem={rentalItemData} />
-      <hr className="mx-auto h-[0.5px] w-[90%] border-none bg-gray-500 opacity-50" />
+      <hr className="mx-auto h-[0.5px] w-[90%] border-none bg-neutral-400 opacity-50" />
       <RentalItemDetailInfo rentalItem={rentalItemData} />
-      <hr className="mx-auto h-[0.5px] w-[90%] border-none bg-gray-500 opacity-50" />
+      <hr className="mx-auto h-[0.5px] w-[90%] border-none bg-neutral-400 opacity-50" />
       <RentalItemDetailSimilarItems rentalItemId={id} />
-      <hr className="mx-auto h-[0.5px] w-[90%] border-none bg-gray-500 opacity-50" />
+      <hr className="mx-auto h-[0.5px] w-[90%] border-none bg-neutral-400 opacity-50" />
       <RentalItemDetailSellerItems
         seller={rentalItemData.seller}
         rentalItemId={id}

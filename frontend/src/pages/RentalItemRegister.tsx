@@ -217,7 +217,7 @@ export default function RentalItemRegister() {
   }
 
   return (
-    <div className="min-h-screen w-md bg-gray-50">
+    <div className="min-h-screen w-md">
       <Toaster
         position="bottom-center"
         toastOptions={{ className: 'text-sm' }}
@@ -356,9 +356,9 @@ export default function RentalItemRegister() {
                           setCategoryError(false)
                           setIsOpen(false)
                         }}
-                        className={`w-full px-4 py-3 text-left text-sm font-medium transition-colors hover:bg-gray-50 ${
+                        className={`w-full px-4 py-3 text-left text-sm font-medium transition-colors hover:bg-neutral-50 ${
                           formData.category === category.value
-                            ? 'bg-gray-50'
+                            ? 'bg-neutral-50'
                             : 'text-gray-800'
                         } ${index !== categories.length - 1 ? 'border-b border-gray-100' : ''}`}>
                         {category.label}
@@ -544,7 +544,7 @@ export default function RentalItemRegister() {
         </div>
 
         {/* Submit Button */}
-        <div className="sticky bottom-0 z-10 bg-gray-50 p-4">
+        <div className="sticky bottom-0 z-10 bg-neutral-50 p-4">
           <button
             className="w-full rounded-lg bg-black py-3 font-medium text-white"
             onClick={handleSubmit}>
