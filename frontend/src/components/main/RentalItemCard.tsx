@@ -1,9 +1,9 @@
-import type { GetRentalItemsItem } from '@/api/rentall_item/dto/GetRentalItems'
+import type { RentalItem } from '@/api/rentall_item/dto/GetRentalItems'
 import { getTimeAgo } from '@/utils/utils'
 import { MapPin, Package, MessageCircleMore, Heart } from 'lucide-react'
 
 interface RentalItemCardProps {
-  rentalItem: GetRentalItemsItem
+  rentalItem: RentalItem
   onClick?: () => void
 }
 

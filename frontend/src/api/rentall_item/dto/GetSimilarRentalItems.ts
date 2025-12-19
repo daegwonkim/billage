@@ -1,8 +1,8 @@
 export interface GetSimilarRentalItemsResponse {
-  rentalItems: GetSimilarRentalItemsItem[]
+  rentalItems: RentalItem[]
 }
 
-export interface GetSimilarRentalItemsItem {
+export interface RentalItem {
   id: string
   name: string
   thumbnailImageUrl: string

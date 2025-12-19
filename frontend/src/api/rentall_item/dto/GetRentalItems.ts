@@ -1,12 +1,12 @@
 export interface GetRentalItemsResponse {
-  content: GetRentalItemsItem[]
+  content: RentalItem[]
   page: number
   size: number
   totalElements: number
   totalPages: number
 }
 
-export interface GetRentalItemsItem {
+export interface RentalItem {
   id: string
   name: string
   thumbnailImageUrl: string
