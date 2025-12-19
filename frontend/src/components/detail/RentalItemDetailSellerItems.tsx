@@ -116,7 +116,7 @@ export function RentalItemDetailSellerItems({
             <div
               key={item.id}
               onClick={() => handleItemClick(item.id)}
-              className="flex w-[110px] shrink-0 flex-col cursor-pointer">
+              className="flex w-[110px] shrink-0 cursor-pointer flex-col">
               <img
                 src={item.thumbnailImageUrl}
                 className="pointer-events-none mb-1.5 h-[110px] w-[110px] rounded-[10px] object-cover"
