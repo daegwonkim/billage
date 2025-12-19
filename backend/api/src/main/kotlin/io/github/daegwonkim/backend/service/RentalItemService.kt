@@ -7,6 +7,7 @@ import io.github.daegwonkim.backend.dto.rental_item.ModifyRentalItemResponse
 import io.github.daegwonkim.backend.dto.rental_item.RegisterRentalItemRequest
 import io.github.daegwonkim.backend.dto.rental_item.RegisterRentalItemResponse
 import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemsResponse
+import io.github.daegwonkim.backend.dto.rental_item.GetSimilarRentalItemsResponse
 import io.github.daegwonkim.backend.entity.RentalItem
 import io.github.daegwonkim.backend.entity.RentalItemImage
 import io.github.daegwonkim.backend.enumerate.RentalItemCategory
@@ -113,6 +114,84 @@ class RentalItemService(
             viewCount = rentalItem.viewCount,
             liked = rentalItem.liked,
             createdAt = rentalItem.createdAt
+        )
+    }
+
+    @Transactional(readOnly = true)
+    fun getSimilarRentalItems(id: UUID): GetSimilarRentalItemsResponse {
+        return GetSimilarRentalItemsResponse(
+            rentalItems = listOf(
+                GetSimilarRentalItemsResponse.RentalItem(
+                    id = UUID.randomUUID(),
+                    thumbnailImageUrl = "https://picsum.photos/seed/item1/400/300",
+                    title = "캠핑 텐트 4인용",
+                    pricePerDay = 15000,
+                    pricePerWeek = 80000
+                ),
+                GetSimilarRentalItemsResponse.RentalItem(
+                    id = UUID.randomUUID(),
+                    thumbnailImageUrl = "https://picsum.photos/seed/item2/400/300",
+                    title = "소니 A7M4 미러리스 카메라",
+                    pricePerDay = 50000,
+                    pricePerWeek = 280000
+                ),
+                GetSimilarRentalItemsResponse.RentalItem(
+                    id = UUID.randomUUID(),
+                    thumbnailImageUrl = "https://picsum.photos/seed/item3/400/300",
+                    title = "전동 킥보드 샤오미",
+                    pricePerDay = 10000,
+                    pricePerWeek = 55000
+                ),
+                GetSimilarRentalItemsResponse.RentalItem(
+                    id = UUID.randomUUID(),
+                    thumbnailImageUrl = "https://picsum.photos/seed/item4/400/300",
+                    title = "빔프로젝터 엡손 EH-TW7100",
+                    pricePerDay = 25000,
+                    pricePerWeek = 140000
+                ),
+                GetSimilarRentalItemsResponse.RentalItem(
+                    id = UUID.randomUUID(),
+                    thumbnailImageUrl = "https://picsum.photos/seed/item5/400/300",
+                    title = "드론 DJI Mini 3 Pro",
+                    pricePerDay = 35000,
+                    pricePerWeek = 200000
+                ),
+                GetSimilarRentalItemsResponse.RentalItem(
+                    id = UUID.randomUUID(),
+                    thumbnailImageUrl = "https://picsum.photos/seed/item6/400/300",
+                    title = "닌텐도 스위치 OLED",
+                    pricePerDay = 8000,
+                    pricePerWeek = 45000
+                ),
+                GetSimilarRentalItemsResponse.RentalItem(
+                    id = UUID.randomUUID(),
+                    thumbnailImageUrl = "https://picsum.photos/seed/item7/400/300",
+                    title = "캠핑 의자 세트 (4개)",
+                    pricePerDay = 5000,
+                    pricePerWeek = 28000
+                ),
+                GetSimilarRentalItemsResponse.RentalItem(
+                    id = UUID.randomUUID(),
+                    thumbnailImageUrl = "https://picsum.photos/seed/item8/400/300",
+                    title = "고프로 히어로 12",
+                    pricePerDay = 20000,
+                    pricePerWeek = 110000
+                ),
+                GetSimilarRentalItemsResponse.RentalItem(
+                    id = UUID.randomUUID(),
+                    thumbnailImageUrl = "https://picsum.photos/seed/item9/400/300",
+                    title = "무선 마이크 로데 와이어리스 고",
+                    pricePerDay = 12000,
+                    pricePerWeek = 65000
+                ),
+                GetSimilarRentalItemsResponse.RentalItem(
+                    id = UUID.randomUUID(),
+                    thumbnailImageUrl = "https://picsum.photos/seed/item10/400/300",
+                    title = "스탠딩 조명 세트",
+                    pricePerDay = 18000,
+                    pricePerWeek = 100000
+                )
+            )
         )
     }
 
