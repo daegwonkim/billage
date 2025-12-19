@@ -8,7 +8,7 @@ import type { GetOtherRentalItemsBySellerResponse } from './dto/GetOtherRentalIt
 import type { GetSimilarRentalItemsResponse } from './dto/GetSimilarRentalItems'
 import type { GetRentalItemResponse } from './dto/GetRentalItem'
 
-const API_BASE_URL = import.meta.env.API_BASE_URL!
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL!
 
 export async function getRentalItems(
   page = 0,
