@@ -51,12 +51,13 @@ export function Home() {
   const allRentalItems = rentalItemsData.pages.flatMap(page => page.content)
 
   return (
-    <div className="min-h-screen w-md">
+    <div className="min-h-screen w-md bg-neutral-50">
       <Header />
       <RentalItemCategories />
       <RentalItems
         rentalItems={allRentalItems}
         onRentalItemClick={onRentalItemClick}
+        isFetchingNextPage={isFetchingNextPage}
       />
 
       {/* 무한 스크롤 트리거 요소 */}
@@ -64,10 +65,6 @@ export function Home() {
         ref={observerTarget}
         className="h-5"
       />
-
-      {isFetchingNextPage && (
-        <div className="p-5 text-center">Loading more...</div>
-      )}
     </div>
   )
 }
