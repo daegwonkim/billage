@@ -66,8 +66,26 @@ class RentalItemService(
             pageable = pageable
         )
 
+        val content = result.content.map { rentalItem ->
+            GetRentalItemsResponse.RentalItem(
+                id = rentalItem.id,
+                title = rentalItem.title,
+                thumbnailImageUrl = supabaseStorageClient.getPublicUrl(
+                    bucket = rentalItemImagesBucket,
+                    fileKey = rentalItem.thumbnailImageKey
+                ),
+                address = rentalItem.address,
+                pricePerDay = rentalItem.pricePerDay,
+                pricePerWeek = rentalItem.pricePerWeek,
+                rentalCount = rentalItem.rentalCount,
+                likeCount = rentalItem.likeCount,
+                viewCount = rentalItem.viewCount,
+                createdAt = rentalItem.createdAt
+            )
+        }
+
         return GetRentalItemsResponse(
-            content = result.content,
+            content = content,
             currentPage = result.number,
             size = result.size,
             totalElements = result.totalElements,

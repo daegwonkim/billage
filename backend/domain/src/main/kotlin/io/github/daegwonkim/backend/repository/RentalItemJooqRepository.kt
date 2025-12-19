@@ -41,6 +41,7 @@ class RentalItemJooqRepository(
             RENTAL_ITEMS.TITLE,
             RENTAL_ITEMS.PRICE_PER_DAY,
             RENTAL_ITEMS.PRICE_PER_WEEK,
+            RENTAL_ITEMS.VIEW_COUNT,
             RENTAL_ITEMS.CREATED_AT,
             thumbnailImageUrlSubquery(),
             rentalCountSubquery(),

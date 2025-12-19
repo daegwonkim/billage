@@ -6,11 +6,12 @@ import java.util.UUID
 data class GetRentalItemsItem(
     val id: UUID,
     val title: String,
-    val thumbnailImageUrl: String,
+    val thumbnailImageKey: String,
     val address: String,
     val pricePerDay: Int,
     val pricePerWeek: Int,
     val rentalCount: Int,
     val likeCount: Int,
+    val viewCount: Int,
     val createdAt: LocalDateTime
 )
