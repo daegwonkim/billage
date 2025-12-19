@@ -1,3 +1,3 @@
-export interface VerificationCodeSendRequest {
+export interface SendVerificationCodeRequest {
   phoneNo: string
 }

@@ -1,5 +1,5 @@
 import type { Seller } from '@/api/rentall_item/dto/RentalItemsQuery'
-import { useSellerRentalItems } from '@/hooks/User'
+import { useGetUserRentalItems } from '@/hooks/User'
 import { ChevronRight } from 'lucide-react'
 import { useRef, useState } from 'react'
 
@@ -62,7 +62,7 @@ export function RentalItemDetailSellerItems({
     data: sellerRentalItemData,
     isLoading: sellerRentalItemLoading,
     error: sellerRentalItemError
-  } = useSellerRentalItems(seller.id, rentalItemId)
+  } = useGetUserRentalItems(seller.id, rentalItemId)
 
   if (sellerRentalItemLoading) {
     return <div>Loading...</div>

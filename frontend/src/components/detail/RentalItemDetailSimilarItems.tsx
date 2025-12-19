@@ -1,4 +1,4 @@
-import { useSimilarRentalItems } from '@/hooks/RentalItem'
+import { useGetSimilarRentalItems } from '@/hooks/RentalItem'
 import { ChevronRight } from 'lucide-react'
 import { useRef, useState } from 'react'
 
@@ -59,7 +59,7 @@ export function RentalItemDetailSimilarItems({
     data: similarRentalItemData,
     isLoading: similarRentalItemLoading,
     error: similarRentalItemError
-  } = useSimilarRentalItems(rentalItemId)
+  } = useGetSimilarRentalItems(rentalItemId)
 
   if (similarRentalItemLoading) {
     return <div>Loading...</div>

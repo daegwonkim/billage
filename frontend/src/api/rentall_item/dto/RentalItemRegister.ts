@@ -1,4 +1,4 @@
-export interface RentalItemRegisterRequest {
+export interface RegisterRentalItemRequest {
   title: string
   description: string
   category: string
@@ -7,6 +7,6 @@ export interface RentalItemRegisterRequest {
   imageKeys: string[]
 }
 
-export interface RentalItemRegisterResponse {
+export interface RegisterRentalItemResponse {
   id: string
 }

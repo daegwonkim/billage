@@ -6,7 +6,7 @@ import type {
   GenerateUploadSignedUrlRequest,
   GenerateUploadSignedUrlResponse
 } from './dto/GenerateUploadSignedUrl'
-import type { StorageFileRemoveRequest } from './dto/StorageFileRemove'
+import type { RemoveStorageFileRequest } from './dto/StorageFileRemove'
 
 // const API_BASE_URL = import.meta.env.VITE_API_BASE_URL!
 const API_BASE_URL = 'http://localhost:8080'
@@ -45,7 +45,7 @@ export async function generateSignedUrl(
 }
 
 export async function removeFile(
-  request: StorageFileRemoveRequest
+  request: RemoveStorageFileRequest
 ): Promise<void> {
   const response = await fetch(`${API_BASE_URL}/api/storage/file`, {
     method: 'DELETE',

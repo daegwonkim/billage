@@ -1,7 +1,7 @@
 import { sendVerificationCode, confirmVerificationCode } from '@/api/auth/auth'
 import { ApiError, ErrorMessageMap } from '@/api/error'
-import type { VerificationCodeConfirmRequest } from '@/api/auth/dto/VerificationCodeConfirm'
-import type { VerificationCodeSendRequest } from '@/api/auth/dto/VerificationCodeSend'
+import type { ConfirmVerificationCodeRequest } from '@/api/auth/dto/VerificationCodeConfirm'
+import type { SendVerificationCodeRequest } from '@/api/auth/dto/VerificationCodeSend'
 import logo from '@/assets/main.png'
 import { useOnboardingStatus } from '@/hooks/useOnboardingStatus'
 import { useMutation } from '@tanstack/react-query'
@@ -23,7 +23,7 @@ export default function OnboardingVerification() {
   const verificationCodeInputRef = useRef<HTMLInputElement>(null)
 
   const sendVerificationCodeMutation = useMutation({
-    mutationFn: (request: VerificationCodeSendRequest) =>
+    mutationFn: (request: SendVerificationCodeRequest) =>
       sendVerificationCode(request),
     onSuccess: () => setTimeLeft(300),
     onError: (error: ApiError) => {
@@ -35,7 +35,7 @@ export default function OnboardingVerification() {
   })
 
   const verificationCodeConfirmMutation = useMutation({
-    mutationFn: (request: VerificationCodeConfirmRequest) =>
+    mutationFn: (request: ConfirmVerificationCodeRequest) =>
       confirmVerificationCode(request),
     onSuccess: data => {
       updateStatus({ isVerified: true })

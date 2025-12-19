@@ -6,7 +6,7 @@ import { RentalItemDetailSellerItems } from '@/components/detail/RentalItemDetai
 import { RentalItemDetailSimilarItems } from '@/components/detail/RentalItemDetailSimilarItems'
 import { RentalItemDetailSeller } from '@/components/detail/RentalItemDetailSeller'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useRentalItemDetail } from '@/hooks/RentalItem'
+import { useGetRentalItem } from '@/hooks/RentalItem'
 
 export function RentalItemDetail() {
   const navigate = useNavigate()
@@ -21,7 +21,7 @@ export function RentalItemDetail() {
     data: rentalItemData,
     isLoading: rentalItemLoading,
     error: rentalItemError
-  } = useRentalItemDetail(id)
+  } = useGetRentalItem(id)
 
   if (rentalItemLoading) {
     return <div>상품 정보를 불러오는 중입니다...</div>

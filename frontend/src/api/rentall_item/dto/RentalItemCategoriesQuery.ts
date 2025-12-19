@@ -1,4 +1,4 @@
-export interface RentalItemCategoriesQueryResponse {
+export interface GetRentalItemCategoriesResponse {
   rentalItemCategories: RentalItemCategory[]
 }
 

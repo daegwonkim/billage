@@ -17,3 +17,9 @@ export const formatPhoneNo = (value: string) => {
   if (digits.length <= 7) return `${digits.slice(0, 3)}-${digits.slice(3)}`
   return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7, 11)}`
 }
+
+// 가격 포맷팅용 함수
+export const formatPrice = (value: string) => {
+  const numbers = value.replace(/[^\d]/g, '')
+  return numbers.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+}

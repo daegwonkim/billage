@@ -1,8 +1,8 @@
-import type { RentalItemDetailResponse } from '@/api/rentall_item/dto/RentalItemsQuery'
+import type { GetRentalItemResponse } from '@/api/rentall_item/dto/RentalItemsQuery'
 import { getTimeAgo } from '@/utils/utils'
 
 interface RentalItemDetailInfoProps {
-  rentalItem: RentalItemDetailResponse
+  rentalItem: GetRentalItemResponse
 }
 
 export function RentalItemDetailInfo({
@@ -16,9 +16,7 @@ export function RentalItemDetailInfo({
 
   return (
     <div className="px-4 py-4">
-      <h1 className="mb-3 mt-0 text-[22px] font-bold">
-        {rentalItem.title}
-      </h1>
+      <h1 className="mt-0 mb-3 text-[22px] font-bold">{rentalItem.title}</h1>
 
       <div className="mb-5 flex items-center gap-2 text-sm text-gray-600">
         {rentalItem.category && (
@@ -34,10 +32,8 @@ export function RentalItemDetailInfo({
       </div>
 
       <div className="mb-6">
-        <h2 className="mb-3 text-base font-bold">
-          상세 설명
-        </h2>
-        <p className="whitespace-pre-line text-[15px] leading-relaxed text-gray-800">
+        <h2 className="mb-3 text-base font-bold">상세 설명</h2>
+        <p className="text-[15px] leading-relaxed whitespace-pre-line text-gray-800">
           {rentalItem.description}
         </p>
       </div>

@@ -1,14 +1,14 @@
 import fetchWithToken from '../fetchWithToken'
 import type {
-  RentalItemRegisterRequest,
-  RentalItemRegisterResponse
+  RegisterRentalItemRequest,
+  RegisterRentalItemResponse
 } from './dto/RentalItemRegister'
 import type {
-  RentalItemDetailResponse,
-  RentalItemsQueryResponse,
-  SimilarRentalItemsQueryResponse
+  GetRentalItemResponse,
+  GetRentalItemsResponse,
+  GetSimilarRentalItemsResponse
 } from './dto/RentalItemsQuery'
-import type { UserRentalItemsQueryResponse } from './dto/UserRentalItemsQuery'
+import type { GetUserRentalItemsResponse } from './dto/UserRentalItemsQuery'
 
 // const API_BASE_URL = import.meta.env.VITE_API_BASE_URL!
 const API_BASE_URL = 'http://localhost:8080'
@@ -18,7 +18,7 @@ export async function getRentalItems(
   size = 10,
   sortBy = 'CREATED_AT',
   sortDirection = 'DESC'
-): Promise<RentalItemsQueryResponse> {
+): Promise<GetRentalItemsResponse> {
   const params = new URLSearchParams({
     page: page.toString(),
     size: size.toString(),
@@ -32,7 +32,7 @@ export async function getRentalItems(
 
 export async function getRentalItem(
   rentalItemId: string
-): Promise<RentalItemDetailResponse> {
+): Promise<GetRentalItemResponse> {
   const response = await fetch(
     `${API_BASE_URL}/api/rental-items/${rentalItemId}`
   )
@@ -42,7 +42,7 @@ export async function getRentalItem(
 
 export async function getSimilarRentalItems(
   rentalItemId: string
-): Promise<SimilarRentalItemsQueryResponse> {
+): Promise<GetSimilarRentalItemsResponse> {
   const response = await fetch(
     `${API_BASE_URL}/api/rental-items/${rentalItemId}/similar`
   )
@@ -50,10 +50,10 @@ export async function getSimilarRentalItems(
   return response.json()
 }
 
-export async function getSellerRentalItems(
+export async function getGetUserRentalItems(
   sellerId: string,
   excludeRentalItemId: string
-): Promise<UserRentalItemsQueryResponse> {
+): Promise<GetUserRentalItemsResponse> {
   const params = new URLSearchParams({
     excludeRentalItemId
   })
@@ -65,8 +65,8 @@ export async function getSellerRentalItems(
 }
 
 export async function register(
-  request: RentalItemRegisterRequest
-): Promise<RentalItemRegisterResponse> {
+  request: RegisterRentalItemRequest
+): Promise<RegisterRentalItemResponse> {
   const response = await fetch(`${API_BASE_URL}/api/rental-items`, {
     method: 'POST',
     headers: {

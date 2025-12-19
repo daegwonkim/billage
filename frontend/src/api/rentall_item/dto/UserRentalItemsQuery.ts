@@ -1,8 +1,8 @@
-export interface UserRentalItemsQueryResponse {
-  rentalItems: UserRentalItem[]
+export interface GetUserRentalItemsResponse {
+  rentalItems: GetUserRentalItemsItem[]
 }
 
-export interface UserRentalItem {
+export interface GetUserRentalItemsItem {
   id: string
   name: string
   thumbnailImageUrl: string

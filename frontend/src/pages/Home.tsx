@@ -3,7 +3,7 @@ import { Header } from '../components/common/Header'
 import { RentalItemCategories } from '../components/main/RentalItemCategories'
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useRef } from 'react'
-import { useRentalItems } from '@/hooks/RentalItem'
+import { useGetRentalItems } from '@/hooks/RentalItem'
 
 export function Home() {
   const navigate = useNavigate()
@@ -20,7 +20,7 @@ export function Home() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage
-  } = useRentalItems()
+  } = useGetRentalItems()
 
   useEffect(() => {
     const observer = new IntersectionObserver(

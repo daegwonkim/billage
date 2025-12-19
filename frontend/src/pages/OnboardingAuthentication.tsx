@@ -1,5 +1,5 @@
 import { confirmPhoneNo } from '@/api/auth/auth'
-import type { PhoneNoConfirmRequest } from '@/api/auth/dto/PhoneNoConfirm'
+import type { ConfirmPhoneNoRequest } from '@/api/auth/dto/PhoneNoConfirm'
 import logo from '@/assets/main.png'
 import { useOnboardingStatus } from '@/hooks/useOnboardingStatus'
 import { formatPhoneNo } from '@/utils/utils'
@@ -19,7 +19,7 @@ export default function OnboardingAuthentication() {
   const phoneNoInputRef = useRef<HTMLInputElement>(null)
 
   const confirmPhoneNoMutation = useMutation({
-    mutationFn: (request: PhoneNoConfirmRequest) => confirmPhoneNo(request),
+    mutationFn: (request: ConfirmPhoneNoRequest) => confirmPhoneNo(request),
     onSuccess: (data, variables) => {
       if (data.exists) {
         setExistsPhoneNo(true)

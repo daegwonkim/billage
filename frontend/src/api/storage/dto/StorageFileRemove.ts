@@ -1,4 +1,4 @@
-export interface StorageFileRemoveRequest {
+export interface RemoveStorageFileRequest {
   bucket: string
   fileKey: string
 }

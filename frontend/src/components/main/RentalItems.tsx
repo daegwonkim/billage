@@ -1,8 +1,8 @@
-import type { RentalItemsCard } from '@/api/dto/RentalItemsQuery'
+import type { GetRentalItemsItem } from '@/api/rentall_item/dto/RentalItemsQuery'
 import { RentalItemCard } from './RentalItemCard'
 
 interface RentalItemsProps {
-  rentalItems: RentalItemsCard[]
+  rentalItems: GetRentalItemsItem[]
   onRentalItemClick: (rentalItemId: string) => void
 }
 

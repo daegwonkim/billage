@@ -1,7 +1,7 @@
-export interface PhoneNoConfirmRequest {
+export interface ConfirmPhoneNoRequest {
   phoneNo: string
 }
 
-export interface PhoneNoConfirmResponse {
+export interface ConfirmPhoneNoResponse {
   exists: boolean
 }

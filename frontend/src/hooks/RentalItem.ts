@@ -1,7 +1,7 @@
 import type {
-  RentalItemDetailResponse,
-  RentalItemsQueryResponse,
-  SimilarRentalItemsQueryResponse
+  GetRentalItemResponse,
+  GetRentalItemsResponse,
+  GetSimilarRentalItemsResponse
 } from '@/api/rentall_item/dto/RentalItemsQuery'
 import {
   getRentalItem,
@@ -10,8 +10,8 @@ import {
 } from '@/api/rentall_item/rentalItem'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 
-export function useRentalItemDetail(id: string) {
-  return useQuery<RentalItemDetailResponse>({
+export function useGetRentalItem(id: string) {
+  return useQuery<GetRentalItemResponse>({
     queryKey: ['rentalItem', id],
     queryFn: () => getRentalItem(id),
     enabled: !!id,
@@ -19,8 +19,8 @@ export function useRentalItemDetail(id: string) {
   })
 }
 
-export function useRentalItems() {
-  return useInfiniteQuery<RentalItemsQueryResponse>({
+export function useGetRentalItems() {
+  return useInfiniteQuery<GetRentalItemsResponse>({
     queryKey: ['rentalItems'],
     queryFn: ({ pageParam }) => getRentalItems(pageParam as number),
     getNextPageParam: lastPage => {
@@ -34,8 +34,8 @@ export function useRentalItems() {
   })
 }
 
-export function useSimilarRentalItems(rentalItemId: string) {
-  return useQuery<SimilarRentalItemsQueryResponse>({
+export function useGetSimilarRentalItems(rentalItemId: string) {
+  return useQuery<GetSimilarRentalItemsResponse>({
     queryKey: ['similarRentalItems', rentalItemId],
     queryFn: () => getSimilarRentalItems(rentalItemId),
     staleTime: 5 * 60 * 1000

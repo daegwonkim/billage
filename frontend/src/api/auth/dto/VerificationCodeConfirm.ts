@@ -1,9 +1,9 @@
-export interface VerificationCodeConfirmRequest {
+export interface ConfirmVerificationCodeRequest {
   phoneNo: string
   verificationCode: string
 }
 
-export interface VerificationCodeConfirmResponse {
+export interface ConfirmVerificationCodeResponse {
   phoneNo: string
   verifiedToken: string
 }

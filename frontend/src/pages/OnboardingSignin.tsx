@@ -10,10 +10,10 @@ import {
   confirmVerificationCode
 } from '@/api/auth/auth'
 import { useNavigate } from 'react-router-dom'
-import type { VerificationCodeConfirmRequest } from '@/api/auth/dto/VerificationCodeConfirm'
-import type { VerificationCodeSendRequest } from '@/api/auth/dto/VerificationCodeSend'
+import type { ConfirmVerificationCodeRequest } from '@/api/auth/dto/VerificationCodeConfirm'
+import type { SendVerificationCodeRequest } from '@/api/auth/dto/VerificationCodeSend'
 import type { SignInRequest } from '@/api/auth/dto/SignIn'
-import type { PhoneNoConfirmRequest } from '@/api/auth/dto/PhoneNoConfirm'
+import type { ConfirmPhoneNoRequest } from '@/api/auth/dto/PhoneNoConfirm'
 import { ErrorMessageMap, type ApiError } from '@/api/error'
 import toast from 'react-hot-toast'
 
@@ -33,7 +33,7 @@ export default function OnboardingSignin() {
   const [failedSignIn, setFailedSignIn] = useState(false)
 
   const confirmPhoneNoMutation = useMutation({
-    mutationFn: (request: PhoneNoConfirmRequest) => confirmPhoneNo(request),
+    mutationFn: (request: ConfirmPhoneNoRequest) => confirmPhoneNo(request),
     onSuccess: (data, variables) => {
       if (!data.exists) {
         setInvalidPhoneNo(true)
@@ -49,7 +49,7 @@ export default function OnboardingSignin() {
   })
 
   const sendVerificationCodeMutation = useMutation({
-    mutationFn: (request: VerificationCodeSendRequest) =>
+    mutationFn: (request: SendVerificationCodeRequest) =>
       sendVerificationCode(request),
     onError: (error: ApiError) => {
       toast.error(
@@ -60,7 +60,7 @@ export default function OnboardingSignin() {
   })
 
   const resendVerificationCodeMutation = useMutation({
-    mutationFn: (request: VerificationCodeSendRequest) =>
+    mutationFn: (request: SendVerificationCodeRequest) =>
       sendVerificationCode(request),
     onSuccess: () => {
       setTimeLeft(300)
@@ -74,7 +74,7 @@ export default function OnboardingSignin() {
   })
 
   const confirmVerificationCodeMutation = useMutation({
-    mutationFn: (request: VerificationCodeConfirmRequest) =>
+    mutationFn: (request: ConfirmVerificationCodeRequest) =>
       confirmVerificationCode(request),
     onSuccess: (data, variables) => {
       setInvalidVerificationCode(false)

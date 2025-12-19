@@ -1,20 +1,20 @@
 import type {
-  PhoneNoConfirmRequest,
-  PhoneNoConfirmResponse
+  ConfirmPhoneNoRequest,
+  ConfirmPhoneNoResponse
 } from './dto/PhoneNoConfirm'
 import type { SignInRequest } from './dto/SignIn'
 import type { SignUpRequest } from './dto/SignUp'
 import type {
-  VerificationCodeConfirmRequest,
-  VerificationCodeConfirmResponse
+  ConfirmVerificationCodeRequest,
+  ConfirmVerificationCodeResponse
 } from './dto/VerificationCodeConfirm'
-import type { VerificationCodeSendRequest } from './dto/VerificationCodeSend'
+import type { SendVerificationCodeRequest } from './dto/VerificationCodeSend'
 import { ApiError, type ApiErrorResponse } from '../error'
 
 const API_BASE_URL = import.meta.env.API_BASE_URL!
 
 export async function sendVerificationCode(
-  request: VerificationCodeSendRequest
+  request: SendVerificationCodeRequest
 ): Promise<void> {
   const response = await fetch(
     `${API_BASE_URL}/api/auth/verification-code/send`,
@@ -39,8 +39,8 @@ export async function sendVerificationCode(
 }
 
 export async function confirmVerificationCode(
-  request: VerificationCodeConfirmRequest
-): Promise<VerificationCodeConfirmResponse> {
+  request: ConfirmVerificationCodeRequest
+): Promise<ConfirmVerificationCodeResponse> {
   const response = await fetch(
     `${API_BASE_URL}/api/auth/verification-code/confirm`,
     {
@@ -88,8 +88,8 @@ export async function signIn(request: SignInRequest): Promise<void> {
 }
 
 export async function confirmPhoneNo(
-  request: PhoneNoConfirmRequest
-): Promise<PhoneNoConfirmResponse> {
+  request: ConfirmPhoneNoRequest
+): Promise<ConfirmPhoneNoResponse> {
   const response = await fetch(`${API_BASE_URL}/api/auth/phone-no/confirm`, {
     method: 'POST',
     headers: {

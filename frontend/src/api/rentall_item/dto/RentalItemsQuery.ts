@@ -1,12 +1,12 @@
-export interface RentalItemsQueryResponse {
-  content: RentalItemsCard[]
+export interface GetRentalItemsResponse {
+  content: GetRentalItemsItem[]
   page: number
   size: number
   totalElements: number
   totalPages: number
 }
 
-export interface RentalItemsCard {
+export interface GetRentalItemsItem {
   id: string
   name: string
   thumbnailImageUrl: string
@@ -19,7 +19,7 @@ export interface RentalItemsCard {
   createdAt: Date
 }
 
-export interface RentalItemDetailResponse {
+export interface GetRentalItemResponse {
   id: string
   seller: Seller
   category: string
@@ -42,11 +42,11 @@ export interface Seller {
   profileImageUrl: string
 }
 
-export interface SimilarRentalItemsQueryResponse {
-  rentalItems: SimilarRentalItem[]
+export interface GetSimilarRentalItemsResponse {
+  rentalItems: GetSimilarRentalItemsItem[]
 }
 
-export interface SimilarRentalItem {
+export interface GetSimilarRentalItemsItem {
   id: string
   name: string
   thumbnailImageUrl: string
