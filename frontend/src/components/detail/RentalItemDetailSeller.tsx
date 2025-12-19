@@ -22,11 +22,11 @@ export function RentalItemDetailSeller({
 
   useEffect(() => {
     const fetchProfileImage = async () => {
-      if (rentalItem.seller?.profileImageKey) {
+      if (rentalItem.seller?.profileImageUrl) {
         try {
           const { signedUrl } = await generateSignedUrl({
             bucket: 'user-profile-images',
-            fileKey: rentalItem.seller.profileImageKey
+            fileKey: rentalItem.seller.profileImageUrl
           })
           setProfileImageUrl(signedUrl)
         } catch (error) {
@@ -36,7 +36,7 @@ export function RentalItemDetailSeller({
     }
 
     fetchProfileImage()
-  }, [rentalItem.seller?.profileImageKey])
+  }, [rentalItem.seller?.profileImageUrl])
 
   return (
     <>
