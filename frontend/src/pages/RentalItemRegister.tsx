@@ -4,9 +4,10 @@ import { useNavigate } from 'react-router-dom'
 import toast, { Toaster } from 'react-hot-toast'
 import { categories } from '@/types'
 import { useMutation } from '@tanstack/react-query'
-import type { RentalItemRegisterRequest } from '@/api/rentall_item/dto/RentalItemRegister'
+import type { RegisterRentalItemRequest } from '@/api/rentall_item/dto/RentalItemRegister'
 import { register } from '@/api/rentall_item/rentalItem'
 import { generateUploadSignedUrl, removeFile } from '@/api/storage/storage'
+import { formatPrice } from '@/utils/utils'
 
 interface FormData {
   category: string
@@ -54,14 +55,8 @@ export default function RentalItemRegister() {
   const [pricePerWeekError, setPricePerWeekError] = useState<boolean>(false)
 
   const registerMutation = useMutation({
-    mutationFn: (request: RentalItemRegisterRequest) => register(request)
+    mutationFn: (request: RegisterRentalItemRequest) => register(request)
   })
-
-  // 가격 포맷팅용 함수
-  const formatPrice = (value: string) => {
-    const numbers = value.replace(/[^\d]/g, '')
-    return numbers.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-  }
 
   // 가격 변경 시 동작하는 함수
   // 단위 포맷팅 및 상태 업데이트
