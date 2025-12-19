@@ -7,6 +7,7 @@ import io.github.daegwonkim.backend.dto.rental_item.ModifyRentalItemResponse
 import io.github.daegwonkim.backend.dto.rental_item.RegisterRentalItemRequest
 import io.github.daegwonkim.backend.dto.rental_item.RegisterRentalItemResponse
 import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemsResponse
+import io.github.daegwonkim.backend.dto.rental_item.GetSimilarRentalItemsResponse
 import io.github.daegwonkim.backend.enumerate.RentalItemCategory
 import io.github.daegwonkim.backend.enumerate.RentalItemSortBy
 import io.github.daegwonkim.backend.enumerate.SortDirection
@@ -53,6 +54,87 @@ class RentalItemController(
         @PathVariable("id") id: UUID
     ): GetRentalItemResponse {
         return rentalItemService.getRentalItem(userId = UUID.randomUUID(), rentalItemId = id)
+    }
+
+    @Operation(summary = "비슷한 상품 목록 조회", description = "현재 보고있는 상품과 비슷한 상품 목록을 조회합니다")
+    @GetMapping("/{id}/similar")
+    fun getSimilarRentalItems(
+        @PathVariable("id") id: UUID
+    ): GetSimilarRentalItemsResponse {
+        return GetSimilarRentalItemsResponse(
+            rentalItems = listOf(
+                GetSimilarRentalItemsResponse.RentalItem(
+                    id = UUID.randomUUID(),
+                    thumbnailImageUrl = "https://picsum.photos/seed/item1/400/300",
+                    title = "캠핑 텐트 4인용",
+                    pricePerDay = 15000,
+                    pricePerWeek = 80000
+                ),
+                GetSimilarRentalItemsResponse.RentalItem(
+                    id = UUID.randomUUID(),
+                    thumbnailImageUrl = "https://picsum.photos/seed/item2/400/300",
+                    title = "소니 A7M4 미러리스 카메라",
+                    pricePerDay = 50000,
+                    pricePerWeek = 280000
+                ),
+                GetSimilarRentalItemsResponse.RentalItem(
+                    id = UUID.randomUUID(),
+                    thumbnailImageUrl = "https://picsum.photos/seed/item3/400/300",
+                    title = "전동 킥보드 샤오미",
+                    pricePerDay = 10000,
+                    pricePerWeek = 55000
+                ),
+                GetSimilarRentalItemsResponse.RentalItem(
+                    id = UUID.randomUUID(),
+                    thumbnailImageUrl = "https://picsum.photos/seed/item4/400/300",
+                    title = "빔프로젝터 엡손 EH-TW7100",
+                    pricePerDay = 25000,
+                    pricePerWeek = 140000
+                ),
+                GetSimilarRentalItemsResponse.RentalItem(
+                    id = UUID.randomUUID(),
+                    thumbnailImageUrl = "https://picsum.photos/seed/item5/400/300",
+                    title = "드론 DJI Mini 3 Pro",
+                    pricePerDay = 35000,
+                    pricePerWeek = 200000
+                ),
+                GetSimilarRentalItemsResponse.RentalItem(
+                    id = UUID.randomUUID(),
+                    thumbnailImageUrl = "https://picsum.photos/seed/item6/400/300",
+                    title = "닌텐도 스위치 OLED",
+                    pricePerDay = 8000,
+                    pricePerWeek = 45000
+                ),
+                GetSimilarRentalItemsResponse.RentalItem(
+                    id = UUID.randomUUID(),
+                    thumbnailImageUrl = "https://picsum.photos/seed/item7/400/300",
+                    title = "캠핑 의자 세트 (4개)",
+                    pricePerDay = 5000,
+                    pricePerWeek = 28000
+                ),
+                GetSimilarRentalItemsResponse.RentalItem(
+                    id = UUID.randomUUID(),
+                    thumbnailImageUrl = "https://picsum.photos/seed/item8/400/300",
+                    title = "고프로 히어로 12",
+                    pricePerDay = 20000,
+                    pricePerWeek = 110000
+                ),
+                GetSimilarRentalItemsResponse.RentalItem(
+                    id = UUID.randomUUID(),
+                    thumbnailImageUrl = "https://picsum.photos/seed/item9/400/300",
+                    title = "무선 마이크 로데 와이어리스 고",
+                    pricePerDay = 12000,
+                    pricePerWeek = 65000
+                ),
+                GetSimilarRentalItemsResponse.RentalItem(
+                    id = UUID.randomUUID(),
+                    thumbnailImageUrl = "https://picsum.photos/seed/item10/400/300",
+                    title = "스탠딩 조명 세트",
+                    pricePerDay = 18000,
+                    pricePerWeek = 100000
+                )
+            )
+        )
     }
 
     @Operation(summary = "대여 상품 등록", description = "새로운 대여 상품을 등록합니다")
