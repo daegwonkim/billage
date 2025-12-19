@@ -1,8 +1,6 @@
-import type {
-  GetRentalItemResponse,
-  GetRentalItemsResponse,
-  GetSimilarRentalItemsResponse
-} from '@/api/rentall_item/dto/GetRentalItems'
+import type { GetRentalItemResponse } from '@/api/rentall_item/dto/GetRentalItem'
+import type { GetRentalItemsResponse } from '@/api/rentall_item/dto/GetRentalItems'
+import type { GetSimilarRentalItemsResponse } from '@/api/rentall_item/dto/GetSimilarRentalItems'
 import {
   getRentalItem,
   getRentalItems,

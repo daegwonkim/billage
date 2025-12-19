@@ -1,4 +1,4 @@
-import type { GetRentalItemResponse } from '@/api/rentall_item/dto/GetRentalItems'
+import type { GetRentalItemResponse } from '@/api/rentall_item/dto/GetRentalItem'
 import { getTimeAgo } from '@/utils/utils'
 
 interface RentalItemDetailInfoProps {

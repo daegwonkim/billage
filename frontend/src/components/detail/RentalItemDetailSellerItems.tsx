@@ -1,4 +1,4 @@
-import type { Seller } from '@/api/rentall_item/dto/GetRentalItems'
+import type { Seller } from '@/api/rentall_item/dto/GetRentalItem'
 import { useGetUserRentalItems } from '@/hooks/User'
 import { ChevronRight } from 'lucide-react'
 import { useRef, useState } from 'react'

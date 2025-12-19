@@ -7,7 +7,7 @@ import highIcon from '@/assets/level/high.png'
 import topIcon from '@/assets/level/top.png'
 import defaultProfileImage from '@/assets/default-profile.png'
 import '@/css/BottomSheet.css'
-import type { GetRentalItemResponse } from '@/api/rentall_item/dto/GetRentalItems'
+import type { GetRentalItemResponse } from '@/api/rentall_item/dto/GetRentalItem'
 import { generateSignedUrl } from '@/api/storage/storage'
 
 interface RentalItemDetailSellerProps {

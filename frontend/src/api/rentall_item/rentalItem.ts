@@ -3,12 +3,10 @@ import type {
   RegisterRentalItemRequest,
   RegisterRentalItemResponse
 } from './dto/RegisterRentalItem'
-import type {
-  GetRentalItemResponse,
-  GetRentalItemsResponse,
-  GetSimilarRentalItemsResponse
-} from './dto/GetRentalItems'
+import type { GetRentalItemsResponse } from './dto/GetRentalItems'
 import type { GetUserRentalItemsResponse } from './dto/GetUserRentalItems'
+import type { GetSimilarRentalItemsResponse } from './dto/GetSimilarRentalItems'
+import type { GetRentalItemResponse } from './dto/GetRentalItem'
 
 // const API_BASE_URL = import.meta.env.VITE_API_BASE_URL!
 const API_BASE_URL = 'http://localhost:8080'
