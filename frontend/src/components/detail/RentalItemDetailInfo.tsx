@@ -2,14 +2,19 @@ import type { GetRentalItemResponse } from '@/api/rentall_item/dto/GetRentalItem
 import { getTimeAgo } from '@/utils/utils'
 import { categories } from '@/types'
 import { MapPin } from 'lucide-react'
+import { useState } from 'react'
 
 interface RentalItemDetailInfoProps {
   rentalItem: GetRentalItemResponse
 }
 
+const MAX_DESCRIPTION_LENGTH = 200
+
 export function RentalItemDetailInfo({
   rentalItem
 }: RentalItemDetailInfoProps) {
+  const [isExpanded, setIsExpanded] = useState(false)
+
   const categoryLabel = rentalItem.category
     ? categories.find(cat => cat.value === rentalItem.category)?.label
     : null
@@ -19,6 +24,13 @@ export function RentalItemDetailInfo({
     rentalItem.likeCount > 0 ? `관심 ${rentalItem.likeCount}` : null,
     rentalItem.viewCount > 0 ? `조회 ${rentalItem.viewCount}` : null
   ].filter(Boolean)
+
+  const isLongDescription =
+    rentalItem.description.length > MAX_DESCRIPTION_LENGTH
+  const displayedDescription =
+    isExpanded || !isLongDescription
+      ? rentalItem.description
+      : rentalItem.description.slice(0, MAX_DESCRIPTION_LENGTH) + '...'
 
   return (
     <div className="px-4 py-4">
@@ -50,8 +62,15 @@ export function RentalItemDetailInfo({
         <div className="mb-6">
           <h2 className="mb-3 text-lg font-bold">상세 설명</h2>
           <p className="text-[15px] leading-relaxed whitespace-pre-line text-gray-800">
-            {rentalItem.description}
+            {displayedDescription}
           </p>
+          {isLongDescription && (
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="mt-2 text-xs text-gray-500 underline underline-offset-2">
+              {isExpanded ? '간략히' : '더보기'}
+            </button>
+          )}
         </div>
         <div className="flex gap-1 text-[13px] text-gray-500">
           {infoItems.map((item, index) => (
