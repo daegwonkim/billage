@@ -1,4 +1,6 @@
 HELP.md
+CLAUDE.md
+
 .gradle
 domain/gradle.properties
 build/
