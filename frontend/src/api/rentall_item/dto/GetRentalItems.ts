@@ -1,9 +1,11 @@
 export interface GetRentalItemsResponse {
   content: RentalItem[]
-  page: number
+  currentPage: number
   size: number
   totalElements: number
   totalPages: number
+  hasNext: boolean
+  hasPrevious: boolean
 }
 
 export interface RentalItem {

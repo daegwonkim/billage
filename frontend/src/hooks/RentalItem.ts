@@ -22,8 +22,8 @@ export function useGetRentalItems() {
     queryKey: ['rentalItems'],
     queryFn: ({ pageParam }) => getRentalItems(pageParam as number),
     getNextPageParam: lastPage => {
-      if (lastPage.page + 1 < lastPage.totalPages) {
-        return lastPage.page + 1
+      if (lastPage.hasNext) {
+        return lastPage.currentPage + 1
       }
       return undefined
     },
