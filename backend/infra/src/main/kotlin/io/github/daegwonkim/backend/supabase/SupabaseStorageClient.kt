@@ -63,4 +63,8 @@ class SupabaseStorageClient(
             false
         }
     }
+
+    fun getPublicUrl(bucket: String, fileKey: String): String {
+        return "$supabaseUrl/storage/v1/object/public/$bucket/$fileKey"
+    }
 }

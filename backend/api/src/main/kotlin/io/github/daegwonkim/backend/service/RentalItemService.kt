@@ -36,8 +36,10 @@ class RentalItemService(
     private val supabaseStorageClient: SupabaseStorageClient,
     private val eventPublisher: ApplicationEventPublisher,
 
-    @Value($$"${supabase.storage.bucket.rental-item}")
-    private val rentalItemBucket: String
+    @Value($$"${supabase.storage.bucket.rental-item-images}")
+    private val rentalItemImagesBucket: String,
+    @Value($$"${supabase.storage.bucket.rental-item-images}")
+    private val userProfileImagesBucket: String
 ) {
 
     @Transactional(readOnly = true)
@@ -78,9 +80,14 @@ class RentalItemService(
         val rentalItem = rentalItemJooqRepository.getRentalItem(rentalItemId = rentalItemId, userId = userId)
             ?: throw NotFoundException(ErrorCode.RENTAL_ITEM_NOT_FOUND)
 
-        val imageKeys = rentalItemImageRepository
+        val imageUrls = rentalItemImageRepository
             .findAllByRentalItemIdOrderBySequence(rentalItemId = rentalItem.id)
-            .map { images -> images.key }
+            .map { image ->
+                supabaseStorageClient.getPublicUrl(
+                    bucket = rentalItemImagesBucket,
+                    fileKey = image.key
+                )
+            }
 
         return GetRentalItemResponse(
             id = rentalItem.id,
@@ -88,12 +95,17 @@ class RentalItemService(
                 id = rentalItem.sellerId,
                 nickname = rentalItem.sellerNickname,
                 address = rentalItem.address,
-                profileImageKey = rentalItem.sellerProfileImageKey
+                profileImageUrl = rentalItem.sellerProfileImageKey?.let {
+                    supabaseStorageClient.getPublicUrl(
+                        bucket = userProfileImagesBucket,
+                        fileKey = it
+                    )
+                }
             ),
             category = rentalItem.category,
             title = rentalItem.title,
             description = rentalItem.description,
-            imageKeys = imageKeys,
+            imageUrls = imageUrls,
             pricePerDay = rentalItem.pricePerDay,
             pricePerWeek = rentalItem.pricePerWeek,
             rentalCount = rentalItem.rentalCount,
@@ -174,7 +186,10 @@ class RentalItemService(
             rentalItemImageRepository.deleteAllByKeyIn(modifiedInfo.deleteImageKeys)
 
             modifiedInfo.deleteImageKeys.forEach { key ->
-                eventPublisher.publishEvent(StorageFileDeleteEvent(bucket = rentalItemBucket, fileKey = key))
+                eventPublisher.publishEvent(StorageFileDeleteEvent(
+                    bucket = rentalItemImagesBucket,
+                    fileKey = key)
+                )
             }
         }
 

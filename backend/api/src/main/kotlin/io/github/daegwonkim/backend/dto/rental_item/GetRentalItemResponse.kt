@@ -9,7 +9,7 @@ data class GetRentalItemResponse(
     val category: String,
     val title: String,
     val description: String,
-    val imageKeys: List<String>,
+    val imageUrls: List<String>,
     val pricePerDay: Int,
     val pricePerWeek: Int,
     val rentalCount: Int,
@@ -22,6 +22,6 @@ data class GetRentalItemResponse(
         val id: UUID,
         val nickname: String,
         val address: String,
-        val profileImageKey: String?
+        val profileImageUrl: String?
     )
 }

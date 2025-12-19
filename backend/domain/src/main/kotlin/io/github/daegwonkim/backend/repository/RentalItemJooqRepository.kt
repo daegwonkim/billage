@@ -149,5 +149,5 @@ class RentalItemJooqRepository(
         } ?: RENTAL_ITEMS.CREATED_AT.desc()
 
     private fun buildSupabaseStorageUrl(name: Field<String>) =
-        concat(DSL.value("$supabaseUrl/storage/v1/object/public/rental-item"), name)
+        concat(DSL.value("$supabaseUrl/storage/v1/object/public/rental-item-images"), name)
 }
