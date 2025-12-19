@@ -1,4 +1,4 @@
-export interface GetSimilarRentalItemsResponse {
+export interface GetOtherRentalItemsBySellerResponse {
   rentalItems: RentalItem[]
 }
 

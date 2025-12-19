@@ -62,7 +62,7 @@ export function RentalItemDetailSellerItems({
     data: sellerRentalItemData,
     isLoading: sellerRentalItemLoading,
     error: sellerRentalItemError
-  } = useGetUserRentalItems(seller.id, rentalItemId)
+  } = useGetUserRentalItems(rentalItemId, seller.id)
 
   if (sellerRentalItemLoading) {
     return <div>Loading...</div>
@@ -134,7 +134,7 @@ export function RentalItemDetailSellerItems({
                 WebkitLineClamp: 2,
                 WebkitBoxOrient: 'vertical'
               }}>
-              {item.name}
+              {item.title}
             </div>
             <div style={{ fontSize: '15px', fontWeight: 700 }}>
               {item.pricePerDay}

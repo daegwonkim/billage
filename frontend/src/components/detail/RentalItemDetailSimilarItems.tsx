@@ -107,7 +107,7 @@ export function RentalItemDetailSimilarItems({
                 WebkitLineClamp: 2,
                 WebkitBoxOrient: 'vertical'
               }}>
-              {item.name}
+              {item.title}
             </div>
             <div className="text-[15px] font-bold">
               {item.pricePerDay}

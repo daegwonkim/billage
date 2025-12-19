@@ -1,14 +1,14 @@
-import type { GetUserRentalItemsResponse } from '@/api/rentall_item/dto/GetUserRentalItems'
-import { getGetUserRentalItems } from '@/api/rentall_item/rentalItem'
+import type { GetOtherRentalItemsBySellerResponse } from '@/api/rentall_item/dto/GetOtherRentalItemsBySeller'
+import { getOtherRentalItemsBySeller } from '@/api/rentall_item/rentalItem'
 import { useQuery } from '@tanstack/react-query'
 
 export function useGetUserRentalItems(
-  sellerId: string,
-  excludeRentalItemId: string
+  excludeRentalItemId: string,
+  sellerId: string
 ) {
-  return useQuery<GetUserRentalItemsResponse>({
-    queryKey: ['sellerRentalItems', sellerId, excludeRentalItemId],
-    queryFn: () => getGetUserRentalItems(sellerId, excludeRentalItemId),
+  return useQuery<GetOtherRentalItemsBySellerResponse>({
+    queryKey: ['sellerRentalItems', excludeRentalItemId, sellerId],
+    queryFn: () => getOtherRentalItemsBySeller(excludeRentalItemId, sellerId),
     staleTime: 5 * 60 * 1000
   })
 }

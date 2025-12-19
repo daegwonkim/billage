@@ -41,12 +41,12 @@ export function RentalItemDetail() {
       <hr className="h-[0.5px] w-[90%] border-none bg-gray-500 opacity-50" />
       <RentalItemDetailInfo rentalItem={rentalItemData} />
       <hr className="h-[0.5px] w-[90%] border-none bg-gray-500 opacity-50" />
-      {/* <RentalItemDetailSimilarItems rentalItemId={id} />
+      <RentalItemDetailSimilarItems rentalItemId={id} />
       <hr className="h-[0.5px] w-[90%] border-none bg-gray-500 opacity-50" />
       <RentalItemDetailSellerItems
         seller={rentalItemData.seller}
         rentalItemId={id}
-      /> */}
+      />
       <RentalItemDetailBottom
         liked={rentalItemData.likeed}
         pricePerDay={rentalItemData.pricePerDay}

@@ -4,7 +4,7 @@ import type {
   RegisterRentalItemResponse
 } from './dto/RegisterRentalItem'
 import type { GetRentalItemsResponse } from './dto/GetRentalItems'
-import type { GetUserRentalItemsResponse } from './dto/GetUserRentalItems'
+import type { GetOtherRentalItemsBySellerResponse } from './dto/GetOtherRentalItemsBySeller'
 import type { GetSimilarRentalItemsResponse } from './dto/GetSimilarRentalItems'
 import type { GetRentalItemResponse } from './dto/GetRentalItem'
 
@@ -48,15 +48,12 @@ export async function getSimilarRentalItems(
   return response.json()
 }
 
-export async function getGetUserRentalItems(
-  sellerId: string,
-  excludeRentalItemId: string
-): Promise<GetUserRentalItemsResponse> {
-  const params = new URLSearchParams({
-    excludeRentalItemId
-  })
+export async function getOtherRentalItemsBySeller(
+  excludeRentalItemId: string,
+  sellerId: string
+): Promise<GetOtherRentalItemsBySellerResponse> {
   const response = await fetch(
-    `${API_BASE_URL}/api/users/${sellerId}/rental-items?${params}`
+    `${API_BASE_URL}/api/rental-items/${excludeRentalItemId}/other/${sellerId}`
   )
   if (!response.ok) throw new Error('Failed to fetch rental item')
   return response.json()
