@@ -99,7 +99,7 @@ export function RentalItemDetailSimilarItems({
           {similarRentalItemData.rentalItems.map(item => (
             <div
               key={item.id}
-              className="flex w-[110px] shrink-0 flex-col font-bold">
+              className="flex w-[110px] shrink-0 flex-col">
               <img
                 src={item.thumbnailImageUrl}
                 className="pointer-events-none mb-1.5 h-[110px] w-[110px] rounded-[10px] object-cover"
