@@ -1,5 +1,6 @@
 package io.github.daegwonkim.backend.service
 
+import io.github.daegwonkim.backend.dto.rental_item.GetOtherRentalItemsBySellerResponse
 import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemResponse
 import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemForModifyResponse
 import io.github.daegwonkim.backend.dto.rental_item.ModifyRentalItemRequest
@@ -193,6 +194,30 @@ class RentalItemService(
                 )
             )
         )
+    }
+
+    @Transactional(readOnly = true)
+    fun getOtherRentalItemsBySeller(
+        id: UUID,
+        sellerId: UUID
+    ): GetOtherRentalItemsBySellerResponse {
+        val otherRentalItems = rentalItemJooqRepository.getOtherRentalItemsBySeller(
+            rentalItemId = id,
+            sellerId = sellerId
+        ).map { rentalItem ->
+            GetOtherRentalItemsBySellerResponse.RentalItem(
+                id = rentalItem.id,
+                thumbnailImageUrl = supabaseStorageClient.getPublicUrl(
+                    bucket = rentalItemImagesBucket,
+                    fileKey = rentalItem.thumbnailImageKey
+                ),
+                title = rentalItem.title,
+                pricePerDay = rentalItem.pricePerDay,
+                pricePerWeek = rentalItem.pricePerWeek
+            )
+        }
+
+        return GetOtherRentalItemsBySellerResponse(rentalItems = otherRentalItems)
     }
 
     @Transactional

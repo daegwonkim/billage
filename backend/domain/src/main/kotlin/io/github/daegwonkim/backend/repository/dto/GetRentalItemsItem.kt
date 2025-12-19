@@ -6,7 +6,7 @@ import java.util.UUID
 data class GetRentalItemsItem(
     val id: UUID,
     val title: String,
-    val thumbnailUrl: String,
+    val thumbnailImageUrl: String,
     val address: String,
     val pricePerDay: Int,
     val pricePerWeek: Int,

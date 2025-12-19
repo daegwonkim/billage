@@ -9,10 +9,10 @@ import io.github.daegwonkim.backend.jooq.generated.Tables.RENTAL_ITEM_IMAGES
 import io.github.daegwonkim.backend.jooq.generated.Tables.RENTAL_ITEM_LIKE_RECORDS
 import io.github.daegwonkim.backend.jooq.generated.Tables.RENTAL_RECORDS
 import io.github.daegwonkim.backend.jooq.generated.Tables.USER_NEIGHBORHOODS
+import io.github.daegwonkim.backend.repository.dto.GetOtherRentalItemsBySellerItem
 import io.github.daegwonkim.backend.repository.dto.GetRentalItemItem
 import io.github.daegwonkim.backend.repository.dto.GetRentalItemsItem
 import org.jooq.DSLContext
-import org.jooq.Field
 import org.jooq.impl.DSL
 import org.jooq.impl.DSL.concat
 import org.jooq.impl.DSL.lower
@@ -42,20 +42,20 @@ class RentalItemJooqRepository(
             RENTAL_ITEMS.PRICE_PER_DAY,
             RENTAL_ITEMS.PRICE_PER_WEEK,
             RENTAL_ITEMS.CREATED_AT,
-            thumbnailUrlSubquery(),
+            thumbnailImageUrlSubquery(),
             rentalCountSubquery(),
             likeCountSubquery(),
             addressField())
             .from(RENTAL_ITEMS)
-            .leftJoin(USER_NEIGHBORHOODS).on(USER_NEIGHBORHOODS.USER_ID.eq(RENTAL_ITEMS.USER_ID))
-            .leftJoin(NEIGHBORHOODS).on(NEIGHBORHOODS.ID.eq(USER_NEIGHBORHOODS.NEIGHBORHOOD_ID))
+            .join(USER_NEIGHBORHOODS).on(USER_NEIGHBORHOODS.USER_ID.eq(RENTAL_ITEMS.USER_ID))
+            .join(NEIGHBORHOODS).on(NEIGHBORHOODS.ID.eq(USER_NEIGHBORHOODS.NEIGHBORHOOD_ID))
             .where(buildGetRentalItemsCondition(category = category, keyword = keyword))
             .orderBy(buildSortOrder(pageable = pageable))
 
         val totalCount = dslContext.selectCount()
             .from(RENTAL_ITEMS)
-            .leftJoin(USER_NEIGHBORHOODS).on(USER_NEIGHBORHOODS.USER_ID.eq(RENTAL_ITEMS.USER_ID))
-            .leftJoin(NEIGHBORHOODS).on(NEIGHBORHOODS.ID.eq(USER_NEIGHBORHOODS.NEIGHBORHOOD_ID))
+            .join(USER_NEIGHBORHOODS).on(USER_NEIGHBORHOODS.USER_ID.eq(RENTAL_ITEMS.USER_ID))
+            .join(NEIGHBORHOODS).on(NEIGHBORHOODS.ID.eq(USER_NEIGHBORHOODS.NEIGHBORHOOD_ID))
             .where(buildGetRentalItemsCondition(category = category, keyword = keyword))
             .fetchOne(0, Long::class.java) ?: 0L
 
@@ -85,20 +85,38 @@ class RentalItemJooqRepository(
             addressField(),
             likedSubquery(userId = userId))
             .from(RENTAL_ITEMS)
-            .leftJoin(USERS).on(USERS.ID.eq(RENTAL_ITEMS.USER_ID))
-            .leftJoin(USER_NEIGHBORHOODS).on(USER_NEIGHBORHOODS.USER_ID.eq(RENTAL_ITEMS.USER_ID))
-            .leftJoin(NEIGHBORHOODS).on(NEIGHBORHOODS.ID.eq(USER_NEIGHBORHOODS.NEIGHBORHOOD_ID))
+            .join(USERS).on(USERS.ID.eq(RENTAL_ITEMS.USER_ID))
+            .join(USER_NEIGHBORHOODS).on(USER_NEIGHBORHOODS.USER_ID.eq(RENTAL_ITEMS.USER_ID))
+            .join(NEIGHBORHOODS).on(NEIGHBORHOODS.ID.eq(USER_NEIGHBORHOODS.NEIGHBORHOOD_ID))
             .where(RENTAL_ITEMS.ID.eq(rentalItemId))
             .fetchOneInto(GetRentalItemItem::class.java)
     }
 
-    private fun thumbnailUrlSubquery() =
-        dslContext.select(buildSupabaseStorageUrl(name = RENTAL_ITEM_IMAGES.KEY))
+    fun getOtherRentalItemsBySeller(
+        rentalItemId: UUID,
+        sellerId: UUID
+    ): List<GetOtherRentalItemsBySellerItem> {
+        return dslContext.select(
+            RENTAL_ITEMS.ID,
+            RENTAL_ITEMS.TITLE,
+            RENTAL_ITEMS.PRICE_PER_DAY,
+            RENTAL_ITEMS.PRICE_PER_WEEK,
+            thumbnailImageUrlSubquery())
+            .from(RENTAL_ITEMS)
+            .join(USERS).on(USERS.ID.eq(RENTAL_ITEMS.USER_ID))
+            .where(RENTAL_ITEMS.ID.ne(rentalItemId)
+                .and(USERS.ID.eq(sellerId)))
+            .limit(10)
+            .fetchInto(GetOtherRentalItemsBySellerItem::class.java)
+    }
+
+    private fun thumbnailImageUrlSubquery() =
+        dslContext.select(RENTAL_ITEM_IMAGES.KEY)
             .from(RENTAL_ITEM_IMAGES)
             .where(RENTAL_ITEM_IMAGES.RENTAL_ITEM_ID.eq(RENTAL_ITEMS.ID))
             .orderBy(RENTAL_ITEM_IMAGES.SEQUENCE.asc())
             .limit(1)
-            .asField<String>("thumbnail_url")
+            .asField<String>("thumbnail_image_key")
 
     private fun rentalCountSubquery() =
         dslContext.selectCount()
@@ -147,7 +165,4 @@ class RentalItemJooqRepository(
             }
             if (sort.isAscending) field.asc() else field.desc()
         } ?: RENTAL_ITEMS.CREATED_AT.desc()
-
-    private fun buildSupabaseStorageUrl(name: Field<String>) =
-        concat(DSL.value("$supabaseUrl/storage/v1/object/public/rental-item-images"), name)
 }
