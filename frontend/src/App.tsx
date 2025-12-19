@@ -25,12 +25,7 @@ function AppContent() {
   )
 
   return (
-    <div
-      className="border border-gray-200 bg-white"
-      style={{
-        display: 'flex',
-        justifyContent: 'center'
-      }}>
+    <div className="flex justify-center border border-gray-200 bg-white">
       <div
         style={{
           fontFamily: 'system-ui, -apple-system, sans-serif',

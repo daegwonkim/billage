@@ -11,7 +11,7 @@ export function RentalItems({
   onRentalItemClick
 }: RentalItemsProps) {
   return (
-    <div className="pb-16">
+    <div className="pb-[42px]">
       {rentalItems.map(rentalItem => (
         <RentalItemCard
           key={rentalItem.id}

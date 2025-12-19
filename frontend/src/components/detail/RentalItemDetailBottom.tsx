@@ -16,7 +16,8 @@ export function RentalItemDetailBottom({
     <div className="fixed bottom-0 left-1/2 flex w-full max-w-md -translate-x-1/2 items-center gap-5 border-t border-gray-200 bg-white p-4">
       <Heart
         size={40}
-        color={liked ? '#ff4d4f' : '#888'}
+        strokeWidth={1}
+        color={liked ? '#ff4d4f' : 'gray'}
         fill={liked ? '#ff4d4f' : 'none'}
         className="shrink-0 cursor-pointer"
       />
