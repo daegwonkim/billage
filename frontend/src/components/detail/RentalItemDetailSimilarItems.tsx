@@ -2,6 +2,7 @@ import { useGetSimilarRentalItems } from '@/hooks/RentalItem'
 import { formatCompactPrice } from '@/utils/utils'
 import { ChevronRight, Frown } from 'lucide-react'
 import { useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 interface RentalItemDetailSimilarItemsProps {
   rentalItemId: string
@@ -10,14 +11,17 @@ interface RentalItemDetailSimilarItemsProps {
 export function RentalItemDetailSimilarItems({
   rentalItemId
 }: RentalItemDetailSimilarItemsProps) {
+  const navigate = useNavigate()
   const scrollRef = useRef<HTMLDivElement>(null)
   const [isDragging, setIsDragging] = useState(false)
   const [startX, setStartX] = useState(0)
   const [scrollLeft, setScrollLeft] = useState(0)
+  const [hasMoved, setHasMoved] = useState(false)
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!scrollRef.current) return
     setIsDragging(true)
+    setHasMoved(false)
     setStartX(e.pageX - scrollRef.current.offsetLeft)
     setScrollLeft(scrollRef.current.scrollLeft)
   }
@@ -25,6 +29,7 @@ export function RentalItemDetailSimilarItems({
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isDragging || !scrollRef.current) return
     e.preventDefault()
+    setHasMoved(true)
     const x = e.pageX - scrollRef.current.offsetLeft
     const walk = (x - startX) * 2
     scrollRef.current.scrollLeft = scrollLeft - walk
@@ -32,6 +37,12 @@ export function RentalItemDetailSimilarItems({
 
   const handleMouseUp = () => {
     setIsDragging(false)
+  }
+
+  const handleItemClick = (itemId: string) => {
+    if (!hasMoved) {
+      navigate(`/rental-items/${itemId}`)
+    }
   }
 
   const handleMouseLeave = () => {
@@ -99,7 +110,8 @@ export function RentalItemDetailSimilarItems({
           {similarRentalItemData.rentalItems.map(item => (
             <div
               key={item.id}
-              className="flex w-[110px] shrink-0 flex-col">
+              onClick={() => handleItemClick(item.id)}
+              className="flex w-[110px] shrink-0 cursor-pointer flex-col">
               <img
                 src={item.thumbnailImageUrl}
                 className="pointer-events-none mb-1.5 h-[110px] w-[110px] rounded-[10px] object-cover"
