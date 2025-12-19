@@ -2,7 +2,7 @@ import type {
   GetRentalItemResponse,
   GetRentalItemsResponse,
   GetSimilarRentalItemsResponse
-} from '@/api/rentall_item/dto/RentalItemsQuery'
+} from '@/api/rentall_item/dto/GetRentalItems'
 import {
   getRentalItem,
   getRentalItems,

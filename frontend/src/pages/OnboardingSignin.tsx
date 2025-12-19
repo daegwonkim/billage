@@ -10,10 +10,10 @@ import {
   confirmVerificationCode
 } from '@/api/auth/auth'
 import { useNavigate } from 'react-router-dom'
-import type { ConfirmVerificationCodeRequest } from '@/api/auth/dto/VerificationCodeConfirm'
-import type { SendVerificationCodeRequest } from '@/api/auth/dto/VerificationCodeSend'
+import type { ConfirmVerificationCodeRequest } from '@/api/auth/dto/ConfirmVerificationCode'
+import type { SendVerificationCodeRequest } from '@/api/auth/dto/SendVerificationCode'
 import type { SignInRequest } from '@/api/auth/dto/SignIn'
-import type { ConfirmPhoneNoRequest } from '@/api/auth/dto/PhoneNoConfirm'
+import type { ConfirmPhoneNoRequest } from '@/api/auth/dto/ConfirmPhoneNo'
 import { ErrorMessageMap, type ApiError } from '@/api/error'
 import toast from 'react-hot-toast'
 

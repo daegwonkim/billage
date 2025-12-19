@@ -2,13 +2,13 @@ import fetchWithToken from '../fetchWithToken'
 import type {
   RegisterRentalItemRequest,
   RegisterRentalItemResponse
-} from './dto/RentalItemRegister'
+} from './dto/RegisterRentalItem'
 import type {
   GetRentalItemResponse,
   GetRentalItemsResponse,
   GetSimilarRentalItemsResponse
-} from './dto/RentalItemsQuery'
-import type { GetUserRentalItemsResponse } from './dto/UserRentalItemsQuery'
+} from './dto/GetRentalItems'
+import type { GetUserRentalItemsResponse } from './dto/GetUserRentalItems'
 
 // const API_BASE_URL = import.meta.env.VITE_API_BASE_URL!
 const API_BASE_URL = 'http://localhost:8080'

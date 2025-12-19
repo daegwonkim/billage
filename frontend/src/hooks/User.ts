@@ -1,4 +1,4 @@
-import type { GetUserRentalItemsResponse } from '@/api/rentall_item/dto/UserRentalItemsQuery'
+import type { GetUserRentalItemsResponse } from '@/api/rentall_item/dto/GetUserRentalItems'
 import { getGetUserRentalItems } from '@/api/rentall_item/rentalItem'
 import { useQuery } from '@tanstack/react-query'
 

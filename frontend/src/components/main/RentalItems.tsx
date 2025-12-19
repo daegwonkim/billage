@@ -1,4 +1,4 @@
-import type { GetRentalItemsItem } from '@/api/rentall_item/dto/RentalItemsQuery'
+import type { GetRentalItemsItem } from '@/api/rentall_item/dto/GetRentalItems'
 import { RentalItemCard } from './RentalItemCard'
 
 interface RentalItemsProps {
