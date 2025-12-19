@@ -4,7 +4,7 @@ import io.github.daegwonkim.backend.dto.storage.GenerateSignedUrlRequest
 import io.github.daegwonkim.backend.dto.storage.GenerateSignedUrlResponse
 import io.github.daegwonkim.backend.dto.storage.GenerateUploadSignedUrlRequest
 import io.github.daegwonkim.backend.dto.storage.GenerateUploadSignedUrlResponse
-import io.github.daegwonkim.backend.dto.storage.StorageFileRemoveRequest
+import io.github.daegwonkim.backend.dto.storage.RemoveStorageFileRequest
 import io.github.daegwonkim.backend.service.StorageService
 import io.swagger.v3.oas.annotations.Operation
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -49,7 +49,7 @@ class StorageController(
 
     @Operation(summary = "스토리지 파일 삭제", description = "스토리지에 저장된 파일을 삭제합니다")
     @DeleteMapping("/file")
-    fun removeFile(@RequestBody request: StorageFileRemoveRequest) {
+    fun removeFile(@RequestBody request: RemoveStorageFileRequest) {
         storageService.removeFile(
             bucket = request.bucket,
             fileKey = request.fileKey

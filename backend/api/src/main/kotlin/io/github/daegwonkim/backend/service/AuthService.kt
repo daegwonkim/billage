@@ -1,18 +1,18 @@
 package io.github.daegwonkim.backend.service
 
 import io.github.daegwonkim.backend.coolsms.CoolsmsService
-import io.github.daegwonkim.backend.dto.auth.TokenReissueResponse
-import io.github.daegwonkim.backend.dto.auth.PhoneNoConfirmRequest
-import io.github.daegwonkim.backend.dto.auth.TokenReissueRequest
+import io.github.daegwonkim.backend.dto.auth.ReissueTokenResponse
+import io.github.daegwonkim.backend.dto.auth.ConfirmPhoneNoRequest
+import io.github.daegwonkim.backend.dto.auth.ReissueTokenRequest
 import io.github.daegwonkim.backend.dto.auth.SignInRequest
 import io.github.daegwonkim.backend.dto.auth.SignInResponse
 import io.github.daegwonkim.backend.dto.auth.SignUpRequest
 import io.github.daegwonkim.backend.dto.auth.SignUpResponse
-import io.github.daegwonkim.backend.dto.auth.VerificationCodeConfirmRequest
-import io.github.daegwonkim.backend.dto.auth.VerificationCodeConfirmResponse
-import io.github.daegwonkim.backend.dto.auth.VerificationCodeSendRequest
+import io.github.daegwonkim.backend.dto.auth.ConfirmVerificationCodeRequest
+import io.github.daegwonkim.backend.dto.auth.ConfirmVerificationCodeResponse
+import io.github.daegwonkim.backend.dto.auth.SendVerificationCodeRequest
 import io.github.daegwonkim.backend.entity.User
-import io.github.daegwonkim.backend.dto.auth.PhoneNoConfirmResponse
+import io.github.daegwonkim.backend.dto.auth.ConfirmPhoneNoResponse
 import io.github.daegwonkim.backend.exception.ExternalServiceException
 import io.github.daegwonkim.backend.exception.InvalidValueException
 import io.github.daegwonkim.backend.exception.NotFoundException
@@ -55,7 +55,7 @@ class AuthService(
         private const val VERIFICATION_CODE_LENGTH = 6
     }
 
-    fun sendVerificationCode(request: VerificationCodeSendRequest) {
+    fun sendVerificationCode(request: SendVerificationCodeRequest) {
         val verificationCode = generateVerificationCode()
 
         verificationCodeRedisRepository.save(phoneNo = request.phoneNo, verificationCode = verificationCode)
@@ -75,7 +75,7 @@ class AuthService(
         }
     }
 
-    fun confirmVerificationCode(request: VerificationCodeConfirmRequest): VerificationCodeConfirmResponse {
+    fun confirmVerificationCode(request: ConfirmVerificationCodeRequest): ConfirmVerificationCodeResponse {
         validateVerificationCode(phoneNo = request.phoneNo, verificationCode = request.verificationCode)
 
         val verifiedToken = UUID.randomUUID().toString()
@@ -83,13 +83,13 @@ class AuthService(
         verifiedTokenRedisRepository.save(phoneNo = request.phoneNo, verifiedToken = verifiedToken)
         verificationCodeRedisRepository.delete(phoneNo = request.phoneNo)
 
-        return VerificationCodeConfirmResponse(verifiedToken = verifiedToken)
+        return ConfirmVerificationCodeResponse(verifiedToken = verifiedToken)
     }
 
     @Transactional(readOnly = true)
-    fun confirmPhoneNo(request: PhoneNoConfirmRequest): PhoneNoConfirmResponse {
+    fun confirmPhoneNo(request: ConfirmPhoneNoRequest): ConfirmPhoneNoResponse {
         val exists = userRepository.existsByPhoneNoAndIsWithdrawnFalse(phoneNo = request.phoneNo)
-        return PhoneNoConfirmResponse(exists)
+        return ConfirmPhoneNoResponse(exists)
     }
 
     @Transactional
@@ -145,7 +145,7 @@ class AuthService(
     }
 
     @Transactional(readOnly = true)
-    fun reissueToken(request: TokenReissueRequest): TokenReissueResponse {
+    fun reissueToken(request: ReissueTokenRequest): ReissueTokenResponse {
         if (!jwtTokenProvider.validateToken(token = request.refreshToken)) {
             throw InvalidValueException(errorCode = ErrorCode.INVALID_REFRESH_TOKEN)
         }
@@ -163,7 +163,7 @@ class AuthService(
         eventPublisher.publishEvent(RefreshTokenDeleteEvent(userId = userId))
         eventPublisher.publishEvent(RefreshTokenSaveEvent(userId = userId, refreshToken = newRefreshToken))
 
-        return TokenReissueResponse(accessToken = newAccessToken, refreshToken = newRefreshToken)
+        return ReissueTokenResponse(accessToken = newAccessToken, refreshToken = newRefreshToken)
     }
 
     // Private helper methods

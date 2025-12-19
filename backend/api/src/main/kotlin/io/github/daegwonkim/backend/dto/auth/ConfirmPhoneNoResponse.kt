@@ -1,5 +1,5 @@
 package io.github.daegwonkim.backend.dto.auth
 
-data class PhoneNoConfirmResponse(
+data class ConfirmPhoneNoResponse(
     val exists: Boolean
 )

@@ -1,11 +1,11 @@
 package io.github.daegwonkim.backend.service
 
 import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemResponse
-import io.github.daegwonkim.backend.dto.rental_item.RentalItemGetForModifyResponse
-import io.github.daegwonkim.backend.dto.rental_item.RentalItemModifyRequest
-import io.github.daegwonkim.backend.dto.rental_item.RentalItemModifyResponse
-import io.github.daegwonkim.backend.dto.rental_item.RentalItemRegisterRequest
-import io.github.daegwonkim.backend.dto.rental_item.RentalItemRegisterResponse
+import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemForModifyResponse
+import io.github.daegwonkim.backend.dto.rental_item.ModifyRentalItemRequest
+import io.github.daegwonkim.backend.dto.rental_item.ModifyRentalItemResponse
+import io.github.daegwonkim.backend.dto.rental_item.RegisterRentalItemRequest
+import io.github.daegwonkim.backend.dto.rental_item.RegisterRentalItemResponse
 import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemsResponse
 import io.github.daegwonkim.backend.entity.RentalItem
 import io.github.daegwonkim.backend.entity.RentalItemImage
@@ -119,8 +119,8 @@ class RentalItemService(
     @Transactional
     fun register(
         userId: UUID,
-        request: RentalItemRegisterRequest
-    ): RentalItemRegisterResponse {
+        request: RegisterRentalItemRequest
+    ): RegisterRentalItemResponse {
         val newRentalItem = rentalItemRepository.save(
             RentalItem(
                 userId = userId,
@@ -141,23 +141,23 @@ class RentalItemService(
         }
         rentalItemImageRepository.saveAll(rentalItemImages)
 
-        return RentalItemRegisterResponse(id = newRentalItem.id!!)
+        return RegisterRentalItemResponse(id = newRentalItem.id!!)
     }
 
     @Transactional(readOnly = true)
-    fun getForModify(id: UUID): RentalItemGetForModifyResponse {
+    fun getForModify(id: UUID): GetRentalItemForModifyResponse {
         val rentalItem = rentalItemRepository.findById(id)
             .orElseThrow { NotFoundException(errorCode = ErrorCode.RENTAL_ITEM_NOT_FOUND) }
 
         val rentalItemImages = rentalItemImageRepository.findAllByRentalItemIdOrderBySequence(rentalItemId = rentalItem.id!!)
         val images = rentalItemImages.map { image ->
-            RentalItemGetForModifyResponse.RentalItemImage(
+            GetRentalItemForModifyResponse.RentalItemImage(
                 key = image.key,
                 sequence = image.sequence
             )
         }
 
-        return RentalItemGetForModifyResponse(
+        return GetRentalItemForModifyResponse(
             id = rentalItem.id!!,
             title = rentalItem.title,
             description = rentalItem.description,
@@ -171,8 +171,8 @@ class RentalItemService(
     @Transactional
     fun modify(
         id: UUID,
-        modifiedInfo: RentalItemModifyRequest
-    ): RentalItemModifyResponse {
+        modifiedInfo: ModifyRentalItemRequest
+    ): ModifyRentalItemResponse {
         val rentalItem = rentalItemRepository.findById(id)
             .orElseThrow { NotFoundException(ErrorCode.RENTAL_ITEM_NOT_FOUND) }
 
@@ -204,6 +204,6 @@ class RentalItemService(
             rentalItemImageRepository.saveAll(newRentalItemImages)
         }
 
-        return RentalItemModifyResponse(id)
+        return ModifyRentalItemResponse(id)
     }
 }

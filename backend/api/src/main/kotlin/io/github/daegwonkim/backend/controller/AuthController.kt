@@ -1,13 +1,13 @@
 package io.github.daegwonkim.backend.controller
 
-import io.github.daegwonkim.backend.dto.auth.PhoneNoConfirmRequest
-import io.github.daegwonkim.backend.dto.auth.PhoneNoConfirmResponse
-import io.github.daegwonkim.backend.dto.auth.TokenReissueRequest
+import io.github.daegwonkim.backend.dto.auth.ConfirmPhoneNoRequest
+import io.github.daegwonkim.backend.dto.auth.ConfirmPhoneNoResponse
+import io.github.daegwonkim.backend.dto.auth.ReissueTokenRequest
 import io.github.daegwonkim.backend.dto.auth.SignInRequest
 import io.github.daegwonkim.backend.dto.auth.SignUpRequest
-import io.github.daegwonkim.backend.dto.auth.VerificationCodeConfirmRequest
-import io.github.daegwonkim.backend.dto.auth.VerificationCodeConfirmResponse
-import io.github.daegwonkim.backend.dto.auth.VerificationCodeSendRequest
+import io.github.daegwonkim.backend.dto.auth.ConfirmVerificationCodeRequest
+import io.github.daegwonkim.backend.dto.auth.ConfirmVerificationCodeResponse
+import io.github.daegwonkim.backend.dto.auth.SendVerificationCodeRequest
 import io.github.daegwonkim.backend.service.AuthService
 import io.github.daegwonkim.backend.util.CookieUtil
 import io.swagger.v3.oas.annotations.Operation
@@ -26,19 +26,19 @@ class AuthController(
 ) {
     @Operation(summary = "인증번호 전송", description = "사용자에게 인증번호를 전송합니다")
     @PostMapping("/verification-code/send")
-    fun sendVerificationCode(@Valid @RequestBody request: VerificationCodeSendRequest) =
+    fun sendVerificationCode(@Valid @RequestBody request: SendVerificationCodeRequest) =
         authService.sendVerificationCode(request)
 
     @Operation(summary = "인증번호 검증", description = "사용자가 입력한 인증번호를 검증합니다")
     @PostMapping("/verification-code/confirm")
     fun confirmVerificationCode(
-        @Valid @RequestBody request: VerificationCodeConfirmRequest
-    ): VerificationCodeConfirmResponse =
+        @Valid @RequestBody request: ConfirmVerificationCodeRequest
+    ): ConfirmVerificationCodeResponse =
         authService.confirmVerificationCode(request)
 
     @Operation(summary = "휴대폰 번호 검증", description = "서버에 존재하는 휴대폰 번호인지 검증합니다")
     @PostMapping("/phone-no/confirm")
-    fun confirmPhoneNo(@Valid @RequestBody request: PhoneNoConfirmRequest): PhoneNoConfirmResponse =
+    fun confirmPhoneNo(@Valid @RequestBody request: ConfirmPhoneNoRequest): ConfirmPhoneNoResponse =
         authService.confirmPhoneNo(request)
 
     @Operation(summary = "회원가입", description = "새로운 계정을 등록합니다")
@@ -61,7 +61,7 @@ class AuthController(
 
     @Operation(summary = "토큰 재발급", description = "AccessToken, RefreshToken을 재발급합니다")
     @PostMapping("/token/reissue")
-    fun reissueToken(request: TokenReissueRequest, response: HttpServletResponse) {
+    fun reissueToken(request: ReissueTokenRequest, response: HttpServletResponse) {
         val reissueTokenResponse = authService.reissueToken(request)
 
         response.addCookie(cookieUtil.createAccessTokenCookie(reissueTokenResponse.accessToken))

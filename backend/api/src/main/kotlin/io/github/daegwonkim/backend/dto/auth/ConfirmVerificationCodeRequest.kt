@@ -4,7 +4,7 @@ import io.github.daegwonkim.backend.validator.annotation.ValidPhoneNo
 import io.github.daegwonkim.backend.validator.annotation.ValidVerificationCode
 import jakarta.validation.constraints.NotBlank
 
-data class VerificationCodeConfirmRequest(
+data class ConfirmVerificationCodeRequest(
     @field:NotBlank(message = "휴대폰 번호는 필수입니다")
     @field:ValidPhoneNo
     val phoneNo: String,

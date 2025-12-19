@@ -1,18 +1,17 @@
 package io.github.daegwonkim.backend.controller
 
 import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemResponse
-import io.github.daegwonkim.backend.dto.rental_item.RentalItemGetForModifyResponse
-import io.github.daegwonkim.backend.dto.rental_item.RentalItemModifyRequest
-import io.github.daegwonkim.backend.dto.rental_item.RentalItemModifyResponse
-import io.github.daegwonkim.backend.dto.rental_item.RentalItemRegisterRequest
-import io.github.daegwonkim.backend.dto.rental_item.RentalItemRegisterResponse
+import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemForModifyResponse
+import io.github.daegwonkim.backend.dto.rental_item.ModifyRentalItemRequest
+import io.github.daegwonkim.backend.dto.rental_item.ModifyRentalItemResponse
+import io.github.daegwonkim.backend.dto.rental_item.RegisterRentalItemRequest
+import io.github.daegwonkim.backend.dto.rental_item.RegisterRentalItemResponse
 import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemsResponse
 import io.github.daegwonkim.backend.enumerate.RentalItemCategory
 import io.github.daegwonkim.backend.enumerate.RentalItemSortBy
 import io.github.daegwonkim.backend.enumerate.SortDirection
 import io.github.daegwonkim.backend.service.RentalItemService
 import io.swagger.v3.oas.annotations.Operation
-import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -59,14 +58,14 @@ class RentalItemController(
     @Operation(summary = "대여 상품 등록", description = "새로운 대여 상품을 등록합니다")
     @PostMapping
     fun register(
-        @RequestBody request: RentalItemRegisterRequest
-    ): RentalItemRegisterResponse {
+        @RequestBody request: RegisterRentalItemRequest
+    ): RegisterRentalItemResponse {
         return rentalItemService.register(userId = UUID.randomUUID(), request = request)
     }
 
     @Operation(summary = "수정 전 데이터 조회", description = "대여 상품 수정 전 데이터를 조회합니다")
     @GetMapping("/modify/{id}")
-    fun getForModify(@PathVariable("id") id: UUID): RentalItemGetForModifyResponse {
+    fun getForModify(@PathVariable("id") id: UUID): GetRentalItemForModifyResponse {
         return rentalItemService.getForModify(id)
     }
 
@@ -74,8 +73,8 @@ class RentalItemController(
     @PutMapping("/{id}")
     fun modify(
         @PathVariable("id") id: UUID,
-        @RequestBody modifiedInfo: RentalItemModifyRequest
-    ): RentalItemModifyResponse {
+        @RequestBody modifiedInfo: ModifyRentalItemRequest
+    ): ModifyRentalItemResponse {
         return rentalItemService.modify(id = id, modifiedInfo = modifiedInfo)
     }
 }
