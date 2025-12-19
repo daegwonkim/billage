@@ -9,11 +9,12 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useRentalItemDetail } from '@/hooks/RentalItem'
 
 export function RentalItemDetail() {
-  const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
 
+  const { id } = useParams<{ id: string }>()
+
   if (!id) {
-    return <div>Error: Rental item ID is missing.</div>
+    return <div>상품 정보를 불러오는데 실패했습니다.</div>
   }
 
   const {
@@ -23,60 +24,31 @@ export function RentalItemDetail() {
   } = useRentalItemDetail(id)
 
   if (rentalItemLoading) {
-    return <div>Loading...</div>
+    return <div>상품 정보를 불러오는 중입니다...</div>
   }
 
   if (rentalItemError || !rentalItemData) {
-    return <div>Error: {rentalItemError?.message}</div>
+    return <div>상품 정보를 불러오는데 실패했습니다.</div>
   }
 
-  const imageUrls = rentalItemData.imageUrls
+  const imageKeys = rentalItemData.imageKeys
 
   return (
-    <div
-      style={{
-        backgroundColor: 'white',
-        minHeight: '100vh',
-        paddingBottom: '115px'
-      }}>
+    <div className="min-h-screen w-md bg-white pb-[115px]">
       <RentalItemDetailHeader navigate={navigate} />
-      <RentalItemDetailImages imageUrls={imageUrls} />
+      <RentalItemDetailImages imageKeys={imageKeys} />
       <RentalItemDetailSeller rentalItem={rentalItemData} />
-      <hr
-        style={{
-          width: '90%',
-          height: '0.5px',
-          border: 'none',
-          backgroundColor: '#888',
-          opacity: '0.5'
-        }}
-      />
+      <hr className="h-[0.5px] w-[90%] border-none bg-gray-500 opacity-50" />
       <RentalItemDetailInfo rentalItem={rentalItemData} />
-      <hr
-        style={{
-          width: '90%',
-          height: '0.5px',
-          border: 'none',
-          backgroundColor: '#888',
-          opacity: '0.5'
-        }}
-      />
-      <RentalItemDetailSimilarItems rentalItemId={id} />
-      <hr
-        style={{
-          width: '90%',
-          height: '0.5px',
-          border: 'none',
-          backgroundColor: '#888',
-          opacity: '0.5'
-        }}
-      />
+      <hr className="h-[0.5px] w-[90%] border-none bg-gray-500 opacity-50" />
+      {/* <RentalItemDetailSimilarItems rentalItemId={id} />
+      <hr className="h-[0.5px] w-[90%] border-none bg-gray-500 opacity-50" />
       <RentalItemDetailSellerItems
         seller={rentalItemData.seller}
         rentalItemId={id}
-      />
+      /> */}
       <RentalItemDetailBottom
-        isLiked={rentalItemData.isLiked}
+        liked={rentalItemData.likeed}
         pricePerDay={rentalItemData.pricePerDay}
         pricePerWeek={rentalItemData.pricePerWeek}
       />

@@ -6,7 +6,7 @@ import { categories } from '@/types'
 import { useMutation } from '@tanstack/react-query'
 import type { RentalItemRegisterRequest } from '@/api/rentall_item/dto/RentalItemRegister'
 import { register } from '@/api/rentall_item/rentalItem'
-import { generateSignedUrl, removeFile } from '@/api/storage/storage'
+import { generateUploadSignedUrl, removeFile } from '@/api/storage/storage'
 
 interface FormData {
   category: string
@@ -97,8 +97,8 @@ export default function RentalItemRegister() {
 
       try {
         // Signed URL 발급
-        const { fileKey, signedUrl } = await generateSignedUrl({
-          bucket: 'rental-item',
+        const { fileKey, signedUrl } = await generateUploadSignedUrl({
+          bucket: 'rental-item-images',
           fileName: newImage.file.name
         })
 
@@ -140,7 +140,10 @@ export default function RentalItemRegister() {
     // Storage에서 파일 삭제
     if (image.fileKey && image.isUploaded) {
       try {
-        await removeFile({ bucket: 'rental-item', fileKey: image.fileKey })
+        await removeFile({
+          bucket: 'rental-item-images',
+          fileKey: image.fileKey
+        })
       } catch (error) {
         console.error('Failed to delete from storage: ', error)
       }

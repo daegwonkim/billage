@@ -1,4 +1,4 @@
-import type { RentalItemDetailResponse } from '@/api/dto/RentalItemsQuery'
+import type { RentalItemDetailResponse } from '@/api/rentall_item/dto/RentalItemsQuery'
 import { getTimeAgo } from '@/utils/utils'
 
 interface RentalItemDetailInfoProps {
@@ -9,80 +9,43 @@ export function RentalItemDetailInfo({
   rentalItem
 }: RentalItemDetailInfoProps) {
   const infoItems = [
-    rentalItem.rentals > 0 ? `대여 ${rentalItem.rentals}` : null,
-    rentalItem.chats > 0 ? `채팅 ${rentalItem.chats}` : null,
-    rentalItem.likes > 0 ? `관심 ${rentalItem.likes}` : null,
-    rentalItem.views > 0 ? `조회 ${rentalItem.views}` : null
+    rentalItem.rentalCount > 0 ? `대여 ${rentalItem.rentalCount}` : null,
+    rentalItem.likeCount > 0 ? `관심 ${rentalItem.likeCount}` : null,
+    rentalItem.viewCount > 0 ? `조회 ${rentalItem.viewCount}` : null
   ].filter(Boolean)
 
   return (
-    <div style={{ padding: '16px 16px' }}>
-      <h1
-        style={{
-          fontSize: '22px',
-          fontWeight: 'bold',
-          marginTop: '0px',
-          marginBottom: '12px'
-        }}>
-        {rentalItem.name}
+    <div className="px-4 py-4">
+      <h1 className="mb-3 mt-0 text-[22px] font-bold">
+        {rentalItem.title}
       </h1>
 
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          marginBottom: '20px',
-          fontSize: '14px',
-          color: '#666'
-        }}>
+      <div className="mb-5 flex items-center gap-2 text-sm text-gray-600">
         {rentalItem.category && (
-          <span
-            style={{
-              fontSize: '15px',
-              textDecoration: 'underline',
-              textUnderlineOffset: '1.5px'
-            }}>
+          <span className="text-[15px] underline underline-offset-[1.5px]">
             {rentalItem.category}
           </span>
         )}
-        <span style={{ marginLeft: 'auto' }}>
+        <span className="ml-auto">
           {rentalItem.createdAt && (
             <span>{getTimeAgo(new Date(rentalItem.createdAt))}</span>
           )}
         </span>
       </div>
 
-      <div style={{ marginBottom: '24px' }}>
-        <h2
-          style={{
-            fontSize: '16px',
-            fontWeight: 'bold',
-            marginBottom: '12px'
-          }}>
+      <div className="mb-6">
+        <h2 className="mb-3 text-base font-bold">
           상세 설명
         </h2>
-        <p
-          style={{
-            fontSize: '15px',
-            lineHeight: '1.6',
-            color: '#333',
-            whiteSpace: 'pre-line'
-          }}>
+        <p className="whitespace-pre-line text-[15px] leading-relaxed text-gray-800">
           {rentalItem.description}
         </p>
       </div>
-      <div
-        style={{
-          display: 'flex',
-          fontSize: '13px',
-          color: '#777',
-          gap: '4px'
-        }}>
+      <div className="flex gap-1 text-[13px] text-gray-500">
         {infoItems.map((item, index) => (
           <span
             key={index}
-            style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            className="flex items-center gap-1">
             {item}
             {index < infoItems.length - 1 && <span>·</span>}
           </span>

@@ -1,9 +1,8 @@
 export interface GenerateSignedUrlRequest {
   bucket: string
-  fileName: string
+  fileKey: string
 }
 
 export interface GenerateSignedUrlResponse {
-  fileKey: string
   signedUrl: string
 }

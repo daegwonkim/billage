@@ -1,5 +1,3 @@
-import type { User } from './UserRentalItemsQuery'
-
 export interface RentalItemsQueryResponse {
   content: RentalItemsCard[]
   page: number
@@ -23,19 +21,25 @@ export interface RentalItemsCard {
 
 export interface RentalItemDetailResponse {
   id: string
-  seller: User
+  seller: Seller
   category: string
-  name: string
+  title: string
   description: string
-  imageUrls: string[]
+  imageKeys: string[]
   pricePerDay: number
   pricePerWeek: number
-  isLiked: boolean
-  rentals: number
-  chats: number
-  likes: number
-  views: number
+  rentalCount: number
+  likeCount: number
+  viewCount: number
+  likeed: boolean
   createdAt: Date
+}
+
+export interface Seller {
+  id: string
+  nickname: string
+  address: string
+  profileImageKey: string
 }
 
 export interface SimilarRentalItemsQueryResponse {

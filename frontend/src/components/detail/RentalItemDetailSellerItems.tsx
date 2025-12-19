@@ -1,10 +1,10 @@
-import type { User } from '@/api/rentall_item/dto/UserRentalItemsQuery'
+import type { Seller } from '@/api/rentall_item/dto/RentalItemsQuery'
 import { useSellerRentalItems } from '@/hooks/User'
 import { ChevronRight } from 'lucide-react'
 import { useRef, useState } from 'react'
 
 interface RentalItemDetailSellerItemsProps {
-  seller: User
+  seller: Seller
   rentalItemId: string
 }
 
@@ -81,7 +81,7 @@ export function RentalItemDetailSellerItems({
             alignItems: 'center',
             justifyContent: 'space-between'
           }}>
-          <h3>{seller.name}님의 다른 대여 물품</h3>
+          <h3>{seller.nickname}님의 다른 대여 물품</h3>
           <ChevronRight color="#707070" />
         </div>
       </div>

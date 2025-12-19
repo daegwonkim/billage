@@ -1,16 +1,46 @@
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Slider from 'react-slick'
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
+import { generateSignedUrl } from '@/api/storage/storage'
+import { Loader2 } from 'lucide-react'
 
 interface RentalItemDetailImagesProps {
-  imageUrls: string[]
+  imageKeys: string[]
 }
 
 export function RentalItemDetailImages({
-  imageUrls
+  imageKeys
 }: RentalItemDetailImagesProps) {
   const sliderRef = useRef<Slider>(null)
+  const [imageUrls, setImageUrls] = useState<string[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchSignedUrls = async () => {
+      try {
+        setLoading(true)
+        const urls = await Promise.all(
+          imageKeys.map(async fileKey => {
+            const { signedUrl } = await generateSignedUrl({
+              bucket: 'rental-item-images',
+              fileKey
+            })
+            return signedUrl
+          })
+        )
+        setImageUrls(urls)
+      } catch (error) {
+        console.error('Failed to fetch signed URLs:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    if (imageKeys.length > 0) {
+      fetchSignedUrls()
+    }
+  }, [imageKeys])
 
   const settings = {
     dots: true,
@@ -20,29 +50,28 @@ export function RentalItemDetailImages({
     slidesToScroll: 1,
     initialSlide: 0,
     arrows: false,
-    customPaging: (i: number) => (
-      <div
-        style={{
-          width: '6px',
-          height: '6px',
-          borderRadius: '50%',
-          backgroundColor: 'rgba(255,255,255,0.5)',
-          transition: 'background-color 0.3s'
-        }}
-      />
+    customPaging: () => (
+      <div className="h-1.5 w-1.5 rounded-full bg-white/50 transition-colors" />
     ),
     dotsClass: 'slick-dots custom-dots'
   }
 
+  if (loading) {
+    return (
+      <div className="relative aspect-square w-full overflow-hidden bg-gray-100">
+        <div className="flex h-full items-center justify-center">
+          <Loader2
+            color="black"
+            size={24}
+            className="animate-spin text-white"
+          />
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div
-      style={{
-        position: 'relative',
-        width: '100%',
-        aspectRatio: '1/1',
-        backgroundColor: '#f5f5f5',
-        overflow: 'hidden'
-      }}>
+    <div className="relative aspect-square w-full overflow-hidden bg-gray-100">
       <style>{`
         .custom-dots {
           position: absolute;
@@ -56,44 +85,44 @@ export function RentalItemDetailImages({
           margin: 0;
           justify-content: center;
         }
-        
+
         .custom-dots li {
           width: 6px;
           height: 6px;
           margin: 0;
         }
-        
+
         .custom-dots li button {
           width: 6px;
           height: 6px;
           padding: 0;
         }
-        
+
         .custom-dots li button:before {
           display: none;
         }
-        
+
         .custom-dots li.slick-active div {
           background-color: white !important;
         }
-        
+
         .slick-slider {
           height: 100%;
         }
-        
+
         .slick-list {
           height: 100%;
         }
-        
+
         .slick-track {
           height: 100%;
           display: flex;
         }
-        
+
         .slick-slide {
           height: 100%;
         }
-        
+
         .slick-slide > div {
           height: 100%;
         }
@@ -102,20 +131,14 @@ export function RentalItemDetailImages({
       <Slider
         ref={sliderRef}
         {...settings}>
-        {imageUrls.map((imageUrl, idx) => (
+        {imageUrls.map((url, idx) => (
           <div
             key={idx}
-            style={{ height: '100%' }}>
+            className="h-full">
             <img
-              src={imageUrl}
+              src={url}
               alt={`Slide ${idx + 1}`}
-              style={{
-                width: '400px',
-                height: '400px',
-                objectFit: 'cover',
-                userSelect: 'none',
-                pointerEvents: 'none'
-              }}
+              className="pointer-events-none h-full w-full object-cover select-none"
             />
           </div>
         ))}

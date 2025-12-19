@@ -70,14 +70,9 @@ export function RentalItemDetailSimilarItems({
   }
 
   return (
-    <div style={{ overflow: 'hidden', paddingBottom: '16px' }}>
-      <div style={{ padding: '0px 16px' }}>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between'
-          }}>
+    <div className="overflow-hidden pb-4">
+      <div className="px-4">
+        <div className="flex items-center justify-between">
           <h3>지금 보고 있는 물품과 비슷해요</h3>
           <ChevronRight color="#707070" />
         </div>
@@ -91,55 +86,36 @@ export function RentalItemDetailSimilarItems({
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
+        className={`hide-scrollbar flex gap-2.5 overflow-x-auto overflow-y-hidden px-4 select-none ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
         style={{
-          display: 'flex',
-          gap: '10px',
-          overflowX: 'auto',
-          overflowY: 'hidden',
-          cursor: isDragging ? 'grabbing' : 'grab',
-          userSelect: 'none',
           scrollbarWidth: 'none',
           msOverflowStyle: 'none',
-          WebkitOverflowScrolling: 'touch',
-          paddingLeft: '16px',
-          paddingRight: '16px'
-        }}
-        className="hide-scrollbar">
+          WebkitOverflowScrolling: 'touch'
+        }}>
         {similarRentalItemData.rentalItems.map(item => (
           <div
             key={item.id}
-            style={{
-              width: '110px',
-              flexShrink: 0
-            }}>
+            className="w-[110px] shrink-0">
             <img
               src={item.thumbnailImageUrl}
-              style={{
-                width: '110px',
-                height: '110px',
-                borderRadius: '10px',
-                objectFit: 'cover',
-                pointerEvents: 'none'
-              }}
+              className="pointer-events-none h-[110px] w-[110px] rounded-[10px] object-cover"
             />
             <div
+              className="overflow-hidden text-sm text-ellipsis"
               style={{
-                fontSize: '14px',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
                 display: '-webkit-box',
                 WebkitLineClamp: 2,
                 WebkitBoxOrient: 'vertical'
               }}>
               {item.name}
             </div>
-            <div style={{ fontSize: '15px', fontWeight: 700 }}>
+            <div className="text-[15px] font-bold">
               {item.pricePerDay}
-              <span style={{ fontSize: '13px', color: '#666' }}>원 / 일</span>
+              <span className="text-[13px] text-gray-600">원 / 일</span>
             </div>
-            <div style={{ fontSize: '15px', fontWeight: 700 }}>
+            <div className="text-[15px] font-bold">
               {item.pricePerWeek}
-              <span style={{ fontSize: '13px', color: '#666' }}>원 / 주</span>
+              <span className="text-[13px] text-gray-600">원 / 주</span>
             </div>
           </div>
         ))}

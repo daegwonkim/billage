@@ -1,13 +1,13 @@
 import { Heart } from 'lucide-react'
 
 interface RentalItemDetailBottomProps {
-  isLiked: boolean
+  liked: boolean
   pricePerDay: number
   pricePerWeek: number
 }
 
 export function RentalItemDetailBottom({
-  isLiked,
+  liked,
   pricePerDay,
   pricePerWeek
 }: RentalItemDetailBottomProps) {
@@ -29,8 +29,8 @@ export function RentalItemDetailBottom({
       }}>
       <Heart
         size={35}
-        color={isLiked ? '#ff4d4f' : '#888'}
-        fill={isLiked ? '#ff4d4f' : 'none'}
+        color={liked ? '#ff4d4f' : '#888'}
+        fill={liked ? '#ff4d4f' : 'none'}
         style={{ flexShrink: 0, cursor: 'pointer' }}
       />
       <div style={{ flex: 1 }}>
