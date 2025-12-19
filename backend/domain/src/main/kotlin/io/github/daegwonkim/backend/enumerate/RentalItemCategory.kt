@@ -7,6 +7,6 @@ enum class RentalItemCategory(
     TRAVEL("여행용품"),
     SPORTS("스포츠/운동"),
     ELECTRONIC("전자기기"),
-    FASHION("패션"),
+    FASHION("패션잡화"),
     CHILDCARE("육아/교육")
 }
