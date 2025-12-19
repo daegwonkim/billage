@@ -89,7 +89,7 @@ export function RentalItemDetailSellerItems({
   return (
     <div className="overflow-hidden pt-4 pb-4">
       <div className="px-4">
-        <div className="flex items-center justify-between pb-2">
+        <div className="flex items-center justify-between pb-4">
           <h3 className="text-lg font-bold">
             {seller.nickname}님의 다른 대여 상품
           </h3>
