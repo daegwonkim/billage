@@ -8,13 +8,13 @@ export interface GetRentalItemsResponse {
 
 export interface RentalItem {
   id: string
-  name: string
+  title: string
   thumbnailImageUrl: string
   address: string
   pricePerDay: number
   pricePerWeek: number
-  rentals: number
-  chats: number
-  likes: number
+  rentalCount: number
+  likeCount: number
+  viewCount: number
   createdAt: Date
 }

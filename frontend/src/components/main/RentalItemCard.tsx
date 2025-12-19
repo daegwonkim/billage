@@ -1,6 +1,6 @@
 import type { RentalItem } from '@/api/rentall_item/dto/GetRentalItems'
 import { getTimeAgo } from '@/utils/utils'
-import { MapPin, Package, MessageCircleMore, Heart } from 'lucide-react'
+import { MapPin, Package, Heart, Eye } from 'lucide-react'
 
 interface RentalItemCardProps {
   rentalItem: RentalItem
@@ -12,145 +12,77 @@ export function RentalItemCard({ rentalItem, onClick }: RentalItemCardProps) {
     <div
       key={rentalItem.id}
       onClick={onClick}
-      style={{
-        height: '125px',
-        backgroundColor: 'white',
-        marginBottom: '3px',
-        padding: '16px'
-      }}>
-      <div style={{ height: '125px', display: 'flex', gap: '12px' }}>
-        <div style={{ width: '125px' }}>
+      className="cursor-pointer border-b border-gray-100 bg-white p-4 transition-colors hover:bg-gray-50">
+      <div className="flex gap-3">
+        <div className="h-28 w-28 shrink-0">
           <img
             src={rentalItem.thumbnailImageUrl}
-            alt={rentalItem.name}
-            style={{
-              width: '100%',
-              height: '100%',
-              borderRadius: '8px',
-              objectFit: 'cover',
-              flexShrink: 0
-            }}
+            alt={rentalItem.title}
+            className="h-full w-full rounded object-cover"
           />
         </div>
-        <div
-          style={{
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            minWidth: 0
-          }}>
-          <h3
-            style={{
-              fontSize: '15px',
-              fontWeight: '500',
-              margin: '0px 0px',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              display: '-webkit-box',
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: 'vertical'
-            }}>
-            {rentalItem.name}
-          </h3>
-
-          <div style={{ position: 'relative', marginTop: 'auto' }}>
-            <div
+        <div className="flex min-w-0 flex-1 flex-col justify-between py-0.5">
+          <div>
+            <h3
+              className="mb-1.5 overflow-hidden text-sm leading-tight font-normal text-ellipsis text-gray-900"
               style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px',
-                fontSize: '12px',
-                color: '#666',
-                marginBottom: '6px'
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical'
               }}>
+              {rentalItem.title}
+            </h3>
+            <div className="mb-2 flex items-center gap-1.5 text-xs text-gray-500">
               <MapPin
-                size={18}
-                color="#ff4d4f"
+                size={14}
+                strokeWidth={2}
               />
-              <span
-                style={{
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap'
-                }}>
+              <span className="overflow-hidden text-ellipsis whitespace-nowrap">
                 {rentalItem.address}
               </span>
               {rentalItem.createdAt && (
                 <>
-                  <span style={{ margin: '0 4px' }}>|</span>
+                  <span>·</span>
                   <span>{getTimeAgo(new Date(rentalItem.createdAt))}</span>
                 </>
               )}
             </div>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'baseline',
-                gap: '2px',
-                marginBottom: '2px'
-              }}>
-              <span style={{ fontSize: '16px', fontWeight: 'bold' }}>
-                {Number(rentalItem.pricePerDay).toLocaleString()}
-              </span>
-              <span style={{ fontSize: '14px', color: '#666' }}>원 / 일</span>
-            </div>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'baseline',
-                gap: '2px',
-                marginBottom: '2px'
-              }}>
-              <span style={{ fontSize: '16px', fontWeight: 'bold' }}>
-                {Number(rentalItem.pricePerWeek).toLocaleString()}
-              </span>
-              <span style={{ fontSize: '14px', color: '#666' }}>원 / 주</span>
-            </div>
+          </div>
 
-            <div
-              style={{
-                position: 'absolute',
-                bottom: 0,
-                right: 0,
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                fontSize: '13px',
-                color: '#8B939F'
-              }}>
-              {rentalItem.rentals > 0 && (
-                <span
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '4px'
-                  }}>
-                  <Package size={16} />
-                  {rentalItem.rentals}
+          <div>
+            <div className="mb-1 flex items-baseline gap-1">
+              <span className="text-base font-bold text-gray-900">
+                {Number(rentalItem.pricePerDay).toLocaleString()}원
+              </span>
+              <span className="text-xs text-gray-500">/ 일</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <div className="flex items-baseline gap-1">
+                <span className="text-sm font-semibold text-gray-700">
+                  {Number(rentalItem.pricePerWeek).toLocaleString()}원
                 </span>
-              )}
-              {rentalItem.chats > 0 && (
-                <span
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '4px'
-                  }}>
-                  <MessageCircleMore size={16} />
-                  {rentalItem.chats}
-                </span>
-              )}
-              {rentalItem.likes > 0 && (
-                <span
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '2px'
-                  }}>
-                  <Heart size={16} />
-                  {rentalItem.likes}
-                </span>
-              )}
+                <span className="text-xs text-gray-500">/ 주</span>
+              </div>
+              <div className="flex items-center gap-2.5 text-xs text-gray-400">
+                {rentalItem.rentalCount > 0 && (
+                  <span className="flex items-center gap-0.5">
+                    <Package size={14} />
+                    {rentalItem.rentalCount}
+                  </span>
+                )}
+                {rentalItem.likeCount > 0 && (
+                  <span className="flex items-center gap-0.5">
+                    <Heart size={14} />
+                    {rentalItem.likeCount}
+                  </span>
+                )}
+                {rentalItem.viewCount > 0 && (
+                  <span className="flex items-center gap-0.5">
+                    <Eye size={14} />
+                    {rentalItem.viewCount}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
         </div>

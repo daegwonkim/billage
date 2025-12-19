@@ -1,6 +1,6 @@
 import { confirmPhoneNo } from '@/api/auth/auth'
 import type { ConfirmPhoneNoRequest } from '@/api/auth/dto/ConfirmPhoneNo'
-import logo from '@/assets/main.png'
+import logo from '@/assets/logo.png'
 import { useOnboardingStatus } from '@/hooks/useOnboardingStatus'
 import { formatPhoneNo } from '@/utils/utils'
 import { useMutation } from '@tanstack/react-query'

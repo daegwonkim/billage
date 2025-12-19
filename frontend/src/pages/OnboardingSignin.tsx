@@ -1,4 +1,4 @@
-import logo from '@/assets/main.png'
+import logo from '@/assets/logo.png'
 import { formatPhoneNo } from '@/utils/utils'
 import { ChevronLeft, CircleAlert } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'

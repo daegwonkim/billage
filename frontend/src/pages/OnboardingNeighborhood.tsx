@@ -1,7 +1,7 @@
 import { signUp } from '@/api/auth/auth'
 import { ApiError, ErrorMessageMap } from '@/api/error'
 import type { SignUpRequest } from '@/api/auth/dto/SignUp'
-import logo from '@/assets/main.png'
+import logo from '@/assets/logo.png'
 import neighborhood from '@/assets/neighborhood.png'
 import {
   useNearbyNeighborhoods,

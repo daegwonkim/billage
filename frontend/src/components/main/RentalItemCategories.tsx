@@ -6,10 +6,13 @@ export function RentalItemCategories() {
   const [isDragging, setIsDragging] = useState(false)
   const [startX, setStartX] = useState(0)
   const [scrollLeft, setScrollLeft] = useState(0)
+  const [selectedCategory, setSelectedCategory] = useState(0) // 첫 번째 카테고리(인기상품) 선택
+  const [hasMoved, setHasMoved] = useState(false)
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!scrollRef.current) return
     setIsDragging(true)
+    setHasMoved(false)
     setStartX(e.pageX - scrollRef.current.offsetLeft)
     setScrollLeft(scrollRef.current.scrollLeft)
   }
@@ -17,6 +20,7 @@ export function RentalItemCategories() {
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isDragging || !scrollRef.current) return
     e.preventDefault()
+    setHasMoved(true)
     const x = e.pageX - scrollRef.current.offsetLeft
     const walk = (x - startX) * 2
     scrollRef.current.scrollLeft = scrollLeft - walk
@@ -33,12 +37,14 @@ export function RentalItemCategories() {
   const handleTouchStart = (e: React.TouchEvent) => {
     if (!scrollRef.current) return
     setIsDragging(true)
+    setHasMoved(false)
     setStartX(e.touches[0].pageX - scrollRef.current.offsetLeft)
     setScrollLeft(scrollRef.current.scrollLeft)
   }
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!isDragging || !scrollRef.current) return
+    setHasMoved(true)
     const x = e.touches[0].pageX - scrollRef.current.offsetLeft
     const walk = (x - startX) * 2
     scrollRef.current.scrollLeft = scrollLeft - walk
@@ -48,72 +54,43 @@ export function RentalItemCategories() {
     setIsDragging(false)
   }
 
+  const handleCategoryClick = (idx: number) => {
+    if (!hasMoved) {
+      setSelectedCategory(idx)
+    }
+  }
+
   return (
-    <div
-      ref={scrollRef}
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseLeave}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-      style={{
-        backgroundColor: 'white',
-        overflowX: 'auto',
-        padding: '12px 16px',
-        borderTop: '1px solid #f0f0f0',
-        cursor: isDragging ? 'grabbing' : 'grab',
-        userSelect: 'none',
-        scrollbarWidth: 'none',
-        msOverflowStyle: 'none',
-        WebkitOverflowScrolling: 'touch'
-      }}
-      className="hide-scrollbar">
-      <div style={{ display: 'flex', gap: '15px', minWidth: 'max-content' }}>
-        {categories.map((cat, idx) => (
-          <div
-            key={idx}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              position: 'relative'
-            }}>
-            <div
-              style={{
-                width: '56px',
-                height: '56px',
-                borderRadius: '50%',
-                backgroundColor: '#f5f5f5',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '28px',
-                marginBottom: '6px',
-                position: 'relative',
-                pointerEvents: 'none' // 드래그 방해 방지
-              }}>
-              <img
-                src={cat.icon}
-                alt={cat.label}
-                width={35}
-                height={35}
-                style={{ pointerEvents: 'none' }} // 이미지 드래그 방지
-              />
-            </div>
-            <span
-              style={{
-                fontSize: '12px',
-                fontWeight: '600',
-                color: '#333',
-                whiteSpace: 'nowrap',
-                pointerEvents: 'none' // 텍스트 선택 방지
-              }}>
+    <div className="sticky top-[52px] z-50 bg-black">
+      <div
+        ref={scrollRef}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseLeave}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        className={`hide-scrollbar overflow-x-auto px-4 py-2 pb-0 select-none ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+        style={{
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+          WebkitOverflowScrolling: 'touch'
+        }}>
+        <div className="flex min-w-max gap-5">
+          {categories.map((cat, idx) => (
+            <button
+              key={idx}
+              onClick={() => handleCategoryClick(idx)}
+              className={`cursor-pointer border-b-[3px] bg-black py-2 text-sm font-extrabold whitespace-nowrap transition-all ${
+                selectedCategory === idx
+                  ? 'border-white text-white'
+                  : 'border-black text-neutral-400'
+              }`}>
               {cat.label}
-            </span>
-          </div>
-        ))}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   )

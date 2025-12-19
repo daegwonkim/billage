@@ -1,67 +1,33 @@
-import { Search, Bell, ShoppingBag } from 'lucide-react'
-import icon from '@/assets/main.png'
+import { Search, Bell } from 'lucide-react'
 
 export function Header() {
   return (
-    <div
-      style={{
-        backgroundColor: 'white',
-        position: 'sticky',
-        top: 0,
-        zIndex: 50
-      }}>
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '12px 16px'
-        }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <img
-            src={icon}
-            width={35}
-            height={35}
-          />
-          <h1 style={{ fontSize: '20px', margin: 0, fontFamily: 'Paperozi' }}>
-            빌리지
-          </h1>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <Search
-            size={20}
-            color="#666"
-          />
-          <div style={{ position: 'relative' }}>
-            <ShoppingBag
-              size={20}
-              color="#666"
-            />
-            <div
-              style={{
-                position: 'absolute',
-                top: '-4px',
-                right: '-4px',
-                backgroundColor: '#ef4444',
-                color: 'white',
-                fontSize: '10px',
-                borderRadius: '50%',
-                width: '16px',
-                height: '16px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontWeight: 'bold'
-              }}>
-              3
-            </div>
+    <header className="sticky top-0 z-50 bg-black">
+      <div className="flex items-center justify-between px-4 py-3">
+        <div className="flex items-center gap-1.5">
+          <div
+            className="m-0 text-lg font-bold text-white"
+            style={{ fontFamily: 'Paperozi' }}>
+            BILLAGE
           </div>
-          <Bell
-            size={20}
-            color="#666"
-          />
+        </div>
+        <div className="flex items-center gap-4">
+          <button className="cursor-pointer border-none bg-transparent p-0 text-gray-600 transition-colors hover:text-black">
+            <Search
+              size={22}
+              strokeWidth={1.5}
+              color="white"
+            />
+          </button>
+          <button className="cursor-pointer border-none bg-transparent p-0 text-gray-600 transition-colors hover:text-black">
+            <Bell
+              size={22}
+              strokeWidth={1.5}
+              color="white"
+            />
+          </button>
         </div>
       </div>
-    </div>
+    </header>
   )
 }

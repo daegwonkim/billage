@@ -51,7 +51,7 @@ export function Home() {
   const allRentalItems = rentalItemsData.pages.flatMap(page => page.content)
 
   return (
-    <>
+    <div className="min-h-screen w-md">
       <Header />
       <RentalItemCategories />
       <RentalItems
@@ -62,14 +62,12 @@ export function Home() {
       {/* 무한 스크롤 트리거 요소 */}
       <div
         ref={observerTarget}
-        style={{ height: '20px' }}
+        className="h-5"
       />
 
       {isFetchingNextPage && (
-        <div style={{ textAlign: 'center', padding: '20px' }}>
-          Loading more...
-        </div>
+        <div className="p-5 text-center">Loading more...</div>
       )}
-    </>
+    </div>
   )
 }

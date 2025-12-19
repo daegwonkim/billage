@@ -26,7 +26,7 @@ function AppContent() {
 
   return (
     <div
-      className="border border-gray-200 bg-neutral-50"
+      className="border border-gray-200 bg-white"
       style={{
         display: 'flex',
         justifyContent: 'center'
