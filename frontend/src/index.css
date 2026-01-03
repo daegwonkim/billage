@@ -39,6 +39,17 @@ body {
   place-items: center;
   min-width: 100%;
   min-height: 100vh;
+  background-color: var(--color-neutral-100);
+}
+
+/* 스크롤바 숨기기 */
+* {
+  -ms-overflow-style: none; /* IE, Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+*::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
 }
 
 h1 {

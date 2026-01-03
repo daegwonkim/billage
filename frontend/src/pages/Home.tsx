@@ -51,7 +51,7 @@ export function Home() {
   const allRentalItems = rentalItemsData.pages.flatMap(page => page.content)
 
   return (
-    <div className="min-h-screen w-md bg-neutral-50">
+    <div className="min-h-screen w-md">
       <Header />
       <RentalItemCategories />
       <RentalItems

@@ -34,7 +34,7 @@ export function RentalItemDetail() {
   const imageUrls = rentalItemData.imageUrls
 
   return (
-    <div className="min-h-screen w-md pb-[115px]">
+    <div className="min-h-screen w-md bg-white pb-[115px]">
       <RentalItemDetailHeader navigate={navigate} />
       <RentalItemDetailImages imageUrls={imageUrls} />
       <RentalItemDetailSeller rentalItem={rentalItemData} />
