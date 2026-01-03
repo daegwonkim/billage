@@ -15,8 +15,8 @@ kakao:
   geocoding-url: https://dapi.kakao.com
 
 supabase:
-  url: https://jeenwjbvzjvbpmpllepp.supabase.co
-  api-key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImplZW53amJ2emp2YnBtcGxsZXBwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NDYzODk0NywiZXhwIjoyMDgwMjE0OTQ3fQ.I59J4vRq3YrQM4jqWmnJV2HdH1tPbyjVLVJ0DgFtT6k
+  url: ${SUPABASE_URL}
+  api-key: ${SUPABASE_API_KEY}
   storage:
     bucket:
       rental-item-images: rental-item-images
