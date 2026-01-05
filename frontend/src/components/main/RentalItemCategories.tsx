@@ -71,13 +71,13 @@ export function RentalItemCategories() {
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
-        className={`hide-scrollbar overflow-x-auto px-4 py-2 pb-0 select-none ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+        className={`hide-scrollbar overflow-x-auto px-4 py-2 select-none ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
         style={{
           scrollbarWidth: 'none',
           msOverflowStyle: 'none',
           WebkitOverflowScrolling: 'touch'
         }}>
-        <div className="flex min-w-max gap-2 pb-2">
+        <div className="flex min-w-max gap-2">
           {categories.map((cat, idx) => (
             <button
               key={idx}

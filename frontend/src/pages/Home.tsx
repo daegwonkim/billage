@@ -54,12 +54,14 @@ export function Home() {
     <div className="min-h-screen w-md">
       <Header />
       <RentalItemCategories />
+      <div className="bg-white px-4 pt-2 text-xl font-bold">
+        서울특별시 영등포구 당산동6가
+      </div>
       <RentalItems
         rentalItems={allRentalItems}
         onRentalItemClick={onRentalItemClick}
         isFetchingNextPage={isFetchingNextPage}
       />
-
       {/* 무한 스크롤 트리거 요소 */}
       <div
         ref={observerTarget}
