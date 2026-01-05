@@ -6,7 +6,7 @@ export function RentalItemCategories() {
   const [isDragging, setIsDragging] = useState(false)
   const [startX, setStartX] = useState(0)
   const [scrollLeft, setScrollLeft] = useState(0)
-  const [selectedCategory, setSelectedCategory] = useState(0) // 첫 번째 카테고리(인기상품) 선택
+  const [selectedCategory, setSelectedCategory] = useState(0)
   const [hasMoved, setHasMoved] = useState(false)
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -22,7 +22,7 @@ export function RentalItemCategories() {
     e.preventDefault()
     setHasMoved(true)
     const x = e.pageX - scrollRef.current.offsetLeft
-    const walk = (x - startX) * 2
+    const walk = x - startX
     scrollRef.current.scrollLeft = scrollLeft - walk
   }
 
@@ -61,7 +61,7 @@ export function RentalItemCategories() {
   }
 
   return (
-    <div className="sticky top-[52px] z-50 bg-black">
+    <div className="sticky top-[52px] z-50 bg-white">
       <div
         ref={scrollRef}
         onMouseDown={handleMouseDown}
@@ -77,15 +77,15 @@ export function RentalItemCategories() {
           msOverflowStyle: 'none',
           WebkitOverflowScrolling: 'touch'
         }}>
-        <div className="flex min-w-max gap-5">
+        <div className="flex min-w-max gap-2 pb-2">
           {categories.map((cat, idx) => (
             <button
               key={idx}
               onClick={() => handleCategoryClick(idx)}
-              className={`cursor-pointer border-b-[3px] bg-black py-2 text-sm font-extrabold whitespace-nowrap transition-all ${
+              className={`cursor-pointer rounded-full px-4 py-2 text-sm font-semibold whitespace-nowrap transition-all ${
                 selectedCategory === idx
-                  ? 'border-white text-white'
-                  : 'border-black text-neutral-400'
+                  ? 'bg-neutral-800 text-white'
+                  : 'bg-neutral-100 text-neutral-500 hover:bg-neutral-200'
               }`}>
               {cat.label}
             </button>
