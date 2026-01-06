@@ -198,7 +198,7 @@ class AuthService(
         }
     }
 
-    private fun validateRefreshToken(userId: UUID, refreshToken: String) {
+    private fun validateRefreshToken(userId: Long, refreshToken: String) {
         val savedRefreshToken = refreshTokenRedisRepository.find(userId = userId)
 
         when {

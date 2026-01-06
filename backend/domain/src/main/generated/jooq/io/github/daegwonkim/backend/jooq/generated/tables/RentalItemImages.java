@@ -9,10 +9,10 @@ import io.github.daegwonkim.backend.jooq.generated.Public;
 import io.github.daegwonkim.backend.jooq.generated.tables.records.RentalItemImagesRecord;
 
 import java.util.Collection;
-import java.util.UUID;
 
 import org.jooq.Condition;
 import org.jooq.Field;
+import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.PlainSQL;
 import org.jooq.QueryPart;
@@ -53,22 +53,22 @@ public class RentalItemImages extends TableImpl<RentalItemImagesRecord> {
     /**
      * The column <code>public.rental_item_images.id</code>.
      */
-    public final TableField<RentalItemImagesRecord, UUID> ID = createField(DSL.name("id"), SQLDataType.UUID.nullable(false), this, "");
-
-    /**
-     * The column <code>public.rental_item_images.rental_item_id</code>.
-     */
-    public final TableField<RentalItemImagesRecord, UUID> RENTAL_ITEM_ID = createField(DSL.name("rental_item_id"), SQLDataType.UUID.nullable(false), this, "");
-
-    /**
-     * The column <code>public.rental_item_images.sequence</code>.
-     */
-    public final TableField<RentalItemImagesRecord, Integer> SEQUENCE = createField(DSL.name("sequence"), SQLDataType.INTEGER.nullable(false), this, "");
+    public final TableField<RentalItemImagesRecord, Long> ID = createField(DSL.name("id"), SQLDataType.BIGINT.nullable(false).identity(true), this, "");
 
     /**
      * The column <code>public.rental_item_images.key</code>.
      */
     public final TableField<RentalItemImagesRecord, String> KEY = createField(DSL.name("key"), SQLDataType.VARCHAR(255).nullable(false), this, "");
+
+    /**
+     * The column <code>public.rental_item_images.rental_item_id</code>.
+     */
+    public final TableField<RentalItemImagesRecord, Long> RENTAL_ITEM_ID = createField(DSL.name("rental_item_id"), SQLDataType.BIGINT.nullable(false), this, "");
+
+    /**
+     * The column <code>public.rental_item_images.sequence</code>.
+     */
+    public final TableField<RentalItemImagesRecord, Integer> SEQUENCE = createField(DSL.name("sequence"), SQLDataType.INTEGER.nullable(false), this, "");
 
     private RentalItemImages(Name alias, Table<RentalItemImagesRecord> aliased) {
         this(alias, aliased, (Field<?>[]) null, null);
@@ -102,6 +102,11 @@ public class RentalItemImages extends TableImpl<RentalItemImagesRecord> {
     @Override
     public Schema getSchema() {
         return aliased() ? null : Public.PUBLIC;
+    }
+
+    @Override
+    public Identity<RentalItemImagesRecord, Long> getIdentity() {
+        return (Identity<RentalItemImagesRecord, Long>) super.getIdentity();
     }
 
     @Override

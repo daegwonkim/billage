@@ -8,21 +8,19 @@ import jakarta.persistence.Id
 import jakarta.persistence.Table
 import org.springframework.data.annotation.CreatedDate
 import java.time.LocalDateTime
-import java.util.UUID
 
 @Entity
 @Table(name = "rental_item_like_records")
 class RentalItemLikeRecord(
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(columnDefinition = "UUID")
-    val id: UUID? = null,
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long? = null,
 
     @Column(name = "rental_item_id", nullable = false)
-    var rentalItemId: UUID,
+    var rentalItemId: Long,
 
     @Column(name = "user_id", nullable = false)
-    var userId: UUID,
+    var userId: Long,
 
     @CreatedDate
     @Column(name = "created_at", nullable = false)

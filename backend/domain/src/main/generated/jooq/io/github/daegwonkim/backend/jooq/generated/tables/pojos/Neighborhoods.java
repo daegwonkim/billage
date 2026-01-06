@@ -5,7 +5,6 @@ package io.github.daegwonkim.backend.jooq.generated.tables.pojos;
 
 
 import java.io.Serializable;
-import java.util.UUID;
 
 import org.jooq.Geometry;
 
@@ -18,56 +17,86 @@ public class Neighborhoods implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private UUID id;
+    private Long id;
+    private Geometry boundary;
+    private Geometry centroid;
     private String code;
     private String eupmyeondong;
     private String sido;
     private String sigungu;
-    private Geometry boundary;
-    private Geometry centroid;
 
     public Neighborhoods() {}
 
     public Neighborhoods(Neighborhoods value) {
         this.id = value.id;
+        this.boundary = value.boundary;
+        this.centroid = value.centroid;
         this.code = value.code;
         this.eupmyeondong = value.eupmyeondong;
         this.sido = value.sido;
         this.sigungu = value.sigungu;
-        this.boundary = value.boundary;
-        this.centroid = value.centroid;
     }
 
     public Neighborhoods(
-        UUID id,
+        Long id,
+        Geometry boundary,
+        Geometry centroid,
         String code,
         String eupmyeondong,
         String sido,
-        String sigungu,
-        Geometry boundary,
-        Geometry centroid
+        String sigungu
     ) {
         this.id = id;
+        this.boundary = boundary;
+        this.centroid = centroid;
         this.code = code;
         this.eupmyeondong = eupmyeondong;
         this.sido = sido;
         this.sigungu = sigungu;
-        this.boundary = boundary;
-        this.centroid = centroid;
     }
 
     /**
      * Getter for <code>public.neighborhoods.id</code>.
      */
-    public UUID getId() {
+    public Long getId() {
         return this.id;
     }
 
     /**
      * Setter for <code>public.neighborhoods.id</code>.
      */
-    public Neighborhoods setId(UUID id) {
+    public Neighborhoods setId(Long id) {
         this.id = id;
+        return this;
+    }
+
+    /**
+     * Getter for <code>public.neighborhoods.boundary</code>.
+     */
+    public Geometry getBoundary() {
+        return this.boundary;
+    }
+
+    /**
+     * Setter for <code>public.neighborhoods.boundary</code>.
+     */
+    public Neighborhoods setBoundary(Geometry boundary) {
+        this.boundary = boundary;
+        return this;
+    }
+
+    /**
+     * Getter for <code>public.neighborhoods.centroid</code>.
+     */
+    public Geometry getCentroid() {
+        return this.centroid;
+    }
+
+    /**
+     * Setter for <code>public.neighborhoods.centroid</code>.
+     */
+    public Neighborhoods setCentroid(Geometry centroid) {
+        this.centroid = centroid;
         return this;
     }
 
@@ -131,36 +160,6 @@ public class Neighborhoods implements Serializable {
         return this;
     }
 
-    /**
-     * Getter for <code>public.neighborhoods.boundary</code>.
-     */
-    public Geometry getBoundary() {
-        return this.boundary;
-    }
-
-    /**
-     * Setter for <code>public.neighborhoods.boundary</code>.
-     */
-    public Neighborhoods setBoundary(Geometry boundary) {
-        this.boundary = boundary;
-        return this;
-    }
-
-    /**
-     * Getter for <code>public.neighborhoods.centroid</code>.
-     */
-    public Geometry getCentroid() {
-        return this.centroid;
-    }
-
-    /**
-     * Setter for <code>public.neighborhoods.centroid</code>.
-     */
-    public Neighborhoods setCentroid(Geometry centroid) {
-        this.centroid = centroid;
-        return this;
-    }
-
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -175,6 +174,18 @@ public class Neighborhoods implements Serializable {
                 return false;
         }
         else if (!this.id.equals(other.id))
+            return false;
+        if (this.boundary == null) {
+            if (other.boundary != null)
+                return false;
+        }
+        else if (!this.boundary.equals(other.boundary))
+            return false;
+        if (this.centroid == null) {
+            if (other.centroid != null)
+                return false;
+        }
+        else if (!this.centroid.equals(other.centroid))
             return false;
         if (this.code == null) {
             if (other.code != null)
@@ -200,18 +211,6 @@ public class Neighborhoods implements Serializable {
         }
         else if (!this.sigungu.equals(other.sigungu))
             return false;
-        if (this.boundary == null) {
-            if (other.boundary != null)
-                return false;
-        }
-        else if (!this.boundary.equals(other.boundary))
-            return false;
-        if (this.centroid == null) {
-            if (other.centroid != null)
-                return false;
-        }
-        else if (!this.centroid.equals(other.centroid))
-            return false;
         return true;
     }
 
@@ -220,12 +219,12 @@ public class Neighborhoods implements Serializable {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((this.id == null) ? 0 : this.id.hashCode());
+        result = prime * result + ((this.boundary == null) ? 0 : this.boundary.hashCode());
+        result = prime * result + ((this.centroid == null) ? 0 : this.centroid.hashCode());
         result = prime * result + ((this.code == null) ? 0 : this.code.hashCode());
         result = prime * result + ((this.eupmyeondong == null) ? 0 : this.eupmyeondong.hashCode());
         result = prime * result + ((this.sido == null) ? 0 : this.sido.hashCode());
         result = prime * result + ((this.sigungu == null) ? 0 : this.sigungu.hashCode());
-        result = prime * result + ((this.boundary == null) ? 0 : this.boundary.hashCode());
-        result = prime * result + ((this.centroid == null) ? 0 : this.centroid.hashCode());
         return result;
     }
 
@@ -234,12 +233,12 @@ public class Neighborhoods implements Serializable {
         StringBuilder sb = new StringBuilder("Neighborhoods (");
 
         sb.append(id);
+        sb.append(", ").append(boundary);
+        sb.append(", ").append(centroid);
         sb.append(", ").append(code);
         sb.append(", ").append(eupmyeondong);
         sb.append(", ").append(sido);
         sb.append(", ").append(sigungu);
-        sb.append(", ").append(boundary);
-        sb.append(", ").append(centroid);
 
         sb.append(")");
         return sb.toString();

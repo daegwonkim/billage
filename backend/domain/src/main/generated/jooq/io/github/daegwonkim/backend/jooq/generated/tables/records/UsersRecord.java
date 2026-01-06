@@ -7,7 +7,6 @@ package io.github.daegwonkim.backend.jooq.generated.tables.records;
 import io.github.daegwonkim.backend.jooq.generated.tables.Users;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 import org.jooq.Record1;
 import org.jooq.impl.UpdatableRecordImpl;
@@ -22,18 +21,18 @@ public class UsersRecord extends UpdatableRecordImpl<UsersRecord> {
     private static final long serialVersionUID = 1L;
 
     /**
-     * Setter for <code>public.users.is_withdrawn</code>.
+     * Setter for <code>public.users.id</code>.
      */
-    public UsersRecord setIsWithdrawn(Boolean value) {
+    public UsersRecord setId(Long value) {
         set(0, value);
         return this;
     }
 
     /**
-     * Getter for <code>public.users.is_withdrawn</code>.
+     * Getter for <code>public.users.id</code>.
      */
-    public Boolean getIsWithdrawn() {
-        return (Boolean) get(0);
+    public Long getId() {
+        return (Long) get(0);
     }
 
     /**
@@ -67,18 +66,18 @@ public class UsersRecord extends UpdatableRecordImpl<UsersRecord> {
     }
 
     /**
-     * Setter for <code>public.users.id</code>.
+     * Setter for <code>public.users.is_withdrawn</code>.
      */
-    public UsersRecord setId(UUID value) {
+    public UsersRecord setIsWithdrawn(Boolean value) {
         set(3, value);
         return this;
     }
 
     /**
-     * Getter for <code>public.users.id</code>.
+     * Getter for <code>public.users.is_withdrawn</code>.
      */
-    public UUID getId() {
-        return (UUID) get(3);
+    public Boolean getIsWithdrawn() {
+        return (Boolean) get(3);
     }
 
     /**
@@ -131,7 +130,7 @@ public class UsersRecord extends UpdatableRecordImpl<UsersRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Record1<UUID> key() {
+    public Record1<Long> key() {
         return (Record1) super.key();
     }
 
@@ -149,13 +148,13 @@ public class UsersRecord extends UpdatableRecordImpl<UsersRecord> {
     /**
      * Create a detached, initialised UsersRecord
      */
-    public UsersRecord(Boolean isWithdrawn, LocalDateTime createdAt, LocalDateTime modifiedAt, UUID id, String nickname, String phoneNo, String profileImageKey) {
+    public UsersRecord(Long id, LocalDateTime createdAt, LocalDateTime modifiedAt, Boolean isWithdrawn, String nickname, String phoneNo, String profileImageKey) {
         super(Users.USERS);
 
-        setIsWithdrawn(isWithdrawn);
+        setId(id);
         setCreatedAt(createdAt);
         setModifiedAt(modifiedAt);
-        setId(id);
+        setIsWithdrawn(isWithdrawn);
         setNickname(nickname);
         setPhoneNo(phoneNo);
         setProfileImageKey(profileImageKey);
@@ -169,10 +168,10 @@ public class UsersRecord extends UpdatableRecordImpl<UsersRecord> {
         super(Users.USERS);
 
         if (value != null) {
-            setIsWithdrawn(value.getIsWithdrawn());
+            setId(value.getId());
             setCreatedAt(value.getCreatedAt());
             setModifiedAt(value.getModifiedAt());
-            setId(value.getId());
+            setIsWithdrawn(value.getIsWithdrawn());
             setNickname(value.getNickname());
             setPhoneNo(value.getPhoneNo());
             setProfileImageKey(value.getProfileImageKey());

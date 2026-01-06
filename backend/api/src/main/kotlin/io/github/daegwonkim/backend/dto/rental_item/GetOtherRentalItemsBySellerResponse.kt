@@ -1,12 +1,11 @@
 package io.github.daegwonkim.backend.dto.rental_item
 
-import java.util.UUID
 
 data class GetOtherRentalItemsBySellerResponse(
     val rentalItems: List<RentalItem>
 ) {
     data class RentalItem(
-        val id: UUID,
+        val id: Long,
         val thumbnailImageUrl: String,
         val title: String,
         val pricePerDay: Int,

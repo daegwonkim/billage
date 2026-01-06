@@ -10,27 +10,25 @@ import org.locationtech.jts.geom.Coordinate
 import org.locationtech.jts.geom.GeometryFactory
 import org.locationtech.jts.geom.Point
 import org.locationtech.jts.geom.PrecisionModel
-import java.util.UUID
 
 @Entity
 @Table(name = "user_neighborhoods")
 class UserNeighborhood(
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(columnDefinition = "UUID")
-    val id: UUID? = null,
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long? = null,
 
-    @Column(name = "user_id", columnDefinition = "UUID", nullable = false)
-    val userId: UUID,
+    @Column(name = "user_id", nullable = false)
+    val userId: Long,
 
-    @Column(name = "neighborhood_id", columnDefinition = "UUID", nullable = false)
-    val neighborhoodId: UUID,
+    @Column(name = "neighborhood_id", nullable = false)
+    val neighborhoodId: Long,
 
     @Column(columnDefinition = "geometry(Point, 4326)")
     val location: Point
 ) {
     companion object {
-        fun create(userId: UUID, neighborhoodId: UUID, latitude: Double, longitude: Double): UserNeighborhood {
+        fun create(userId: Long, neighborhoodId: Long, latitude: Double, longitude: Double): UserNeighborhood {
             return UserNeighborhood(
                 userId = userId,
                 neighborhoodId = neighborhoodId,

@@ -6,8 +6,6 @@ package io.github.daegwonkim.backend.jooq.generated.tables.records;
 
 import io.github.daegwonkim.backend.jooq.generated.tables.Neighborhoods;
 
-import java.util.UUID;
-
 import org.jooq.Geometry;
 import org.jooq.Record1;
 import org.jooq.impl.UpdatableRecordImpl;
@@ -24,7 +22,7 @@ public class NeighborhoodsRecord extends UpdatableRecordImpl<NeighborhoodsRecord
     /**
      * Setter for <code>public.neighborhoods.id</code>.
      */
-    public NeighborhoodsRecord setId(UUID value) {
+    public NeighborhoodsRecord setId(Long value) {
         set(0, value);
         return this;
     }
@@ -32,75 +30,15 @@ public class NeighborhoodsRecord extends UpdatableRecordImpl<NeighborhoodsRecord
     /**
      * Getter for <code>public.neighborhoods.id</code>.
      */
-    public UUID getId() {
-        return (UUID) get(0);
-    }
-
-    /**
-     * Setter for <code>public.neighborhoods.code</code>.
-     */
-    public NeighborhoodsRecord setCode(String value) {
-        set(1, value);
-        return this;
-    }
-
-    /**
-     * Getter for <code>public.neighborhoods.code</code>.
-     */
-    public String getCode() {
-        return (String) get(1);
-    }
-
-    /**
-     * Setter for <code>public.neighborhoods.eupmyeondong</code>.
-     */
-    public NeighborhoodsRecord setEupmyeondong(String value) {
-        set(2, value);
-        return this;
-    }
-
-    /**
-     * Getter for <code>public.neighborhoods.eupmyeondong</code>.
-     */
-    public String getEupmyeondong() {
-        return (String) get(2);
-    }
-
-    /**
-     * Setter for <code>public.neighborhoods.sido</code>.
-     */
-    public NeighborhoodsRecord setSido(String value) {
-        set(3, value);
-        return this;
-    }
-
-    /**
-     * Getter for <code>public.neighborhoods.sido</code>.
-     */
-    public String getSido() {
-        return (String) get(3);
-    }
-
-    /**
-     * Setter for <code>public.neighborhoods.sigungu</code>.
-     */
-    public NeighborhoodsRecord setSigungu(String value) {
-        set(4, value);
-        return this;
-    }
-
-    /**
-     * Getter for <code>public.neighborhoods.sigungu</code>.
-     */
-    public String getSigungu() {
-        return (String) get(4);
+    public Long getId() {
+        return (Long) get(0);
     }
 
     /**
      * Setter for <code>public.neighborhoods.boundary</code>.
      */
     public NeighborhoodsRecord setBoundary(Geometry value) {
-        set(5, value);
+        set(1, value);
         return this;
     }
 
@@ -108,14 +46,14 @@ public class NeighborhoodsRecord extends UpdatableRecordImpl<NeighborhoodsRecord
      * Getter for <code>public.neighborhoods.boundary</code>.
      */
     public Geometry getBoundary() {
-        return (Geometry) get(5);
+        return (Geometry) get(1);
     }
 
     /**
      * Setter for <code>public.neighborhoods.centroid</code>.
      */
     public NeighborhoodsRecord setCentroid(Geometry value) {
-        set(6, value);
+        set(2, value);
         return this;
     }
 
@@ -123,7 +61,67 @@ public class NeighborhoodsRecord extends UpdatableRecordImpl<NeighborhoodsRecord
      * Getter for <code>public.neighborhoods.centroid</code>.
      */
     public Geometry getCentroid() {
-        return (Geometry) get(6);
+        return (Geometry) get(2);
+    }
+
+    /**
+     * Setter for <code>public.neighborhoods.code</code>.
+     */
+    public NeighborhoodsRecord setCode(String value) {
+        set(3, value);
+        return this;
+    }
+
+    /**
+     * Getter for <code>public.neighborhoods.code</code>.
+     */
+    public String getCode() {
+        return (String) get(3);
+    }
+
+    /**
+     * Setter for <code>public.neighborhoods.eupmyeondong</code>.
+     */
+    public NeighborhoodsRecord setEupmyeondong(String value) {
+        set(4, value);
+        return this;
+    }
+
+    /**
+     * Getter for <code>public.neighborhoods.eupmyeondong</code>.
+     */
+    public String getEupmyeondong() {
+        return (String) get(4);
+    }
+
+    /**
+     * Setter for <code>public.neighborhoods.sido</code>.
+     */
+    public NeighborhoodsRecord setSido(String value) {
+        set(5, value);
+        return this;
+    }
+
+    /**
+     * Getter for <code>public.neighborhoods.sido</code>.
+     */
+    public String getSido() {
+        return (String) get(5);
+    }
+
+    /**
+     * Setter for <code>public.neighborhoods.sigungu</code>.
+     */
+    public NeighborhoodsRecord setSigungu(String value) {
+        set(6, value);
+        return this;
+    }
+
+    /**
+     * Getter for <code>public.neighborhoods.sigungu</code>.
+     */
+    public String getSigungu() {
+        return (String) get(6);
     }
 
     // -------------------------------------------------------------------------
@@ -131,7 +129,7 @@ public class NeighborhoodsRecord extends UpdatableRecordImpl<NeighborhoodsRecord
     // -------------------------------------------------------------------------
 
     @Override
-    public Record1<UUID> key() {
+    public Record1<Long> key() {
         return (Record1) super.key();
     }
 
@@ -149,16 +147,16 @@ public class NeighborhoodsRecord extends UpdatableRecordImpl<NeighborhoodsRecord
     /**
      * Create a detached, initialised NeighborhoodsRecord
      */
-    public NeighborhoodsRecord(UUID id, String code, String eupmyeondong, String sido, String sigungu, Geometry boundary, Geometry centroid) {
+    public NeighborhoodsRecord(Long id, Geometry boundary, Geometry centroid, String code, String eupmyeondong, String sido, String sigungu) {
         super(Neighborhoods.NEIGHBORHOODS);
 
         setId(id);
+        setBoundary(boundary);
+        setCentroid(centroid);
         setCode(code);
         setEupmyeondong(eupmyeondong);
         setSido(sido);
         setSigungu(sigungu);
-        setBoundary(boundary);
-        setCentroid(centroid);
         resetChangedOnNotNull();
     }
 
@@ -170,12 +168,12 @@ public class NeighborhoodsRecord extends UpdatableRecordImpl<NeighborhoodsRecord
 
         if (value != null) {
             setId(value.getId());
+            setBoundary(value.getBoundary());
+            setCentroid(value.getCentroid());
             setCode(value.getCode());
             setEupmyeondong(value.getEupmyeondong());
             setSido(value.getSido());
             setSigungu(value.getSigungu());
-            setBoundary(value.getBoundary());
-            setCentroid(value.getCentroid());
             resetChangedOnNotNull();
         }
     }

@@ -6,8 +6,6 @@ package io.github.daegwonkim.backend.jooq.generated.tables.records;
 
 import io.github.daegwonkim.backend.jooq.generated.tables.RentalItemImages;
 
-import java.util.UUID;
-
 import org.jooq.Record1;
 import org.jooq.impl.UpdatableRecordImpl;
 
@@ -23,7 +21,7 @@ public class RentalItemImagesRecord extends UpdatableRecordImpl<RentalItemImages
     /**
      * Setter for <code>public.rental_item_images.id</code>.
      */
-    public RentalItemImagesRecord setId(UUID value) {
+    public RentalItemImagesRecord setId(Long value) {
         set(0, value);
         return this;
     }
@@ -31,45 +29,15 @@ public class RentalItemImagesRecord extends UpdatableRecordImpl<RentalItemImages
     /**
      * Getter for <code>public.rental_item_images.id</code>.
      */
-    public UUID getId() {
-        return (UUID) get(0);
-    }
-
-    /**
-     * Setter for <code>public.rental_item_images.rental_item_id</code>.
-     */
-    public RentalItemImagesRecord setRentalItemId(UUID value) {
-        set(1, value);
-        return this;
-    }
-
-    /**
-     * Getter for <code>public.rental_item_images.rental_item_id</code>.
-     */
-    public UUID getRentalItemId() {
-        return (UUID) get(1);
-    }
-
-    /**
-     * Setter for <code>public.rental_item_images.sequence</code>.
-     */
-    public RentalItemImagesRecord setSequence(Integer value) {
-        set(2, value);
-        return this;
-    }
-
-    /**
-     * Getter for <code>public.rental_item_images.sequence</code>.
-     */
-    public Integer getSequence() {
-        return (Integer) get(2);
+    public Long getId() {
+        return (Long) get(0);
     }
 
     /**
      * Setter for <code>public.rental_item_images.key</code>.
      */
     public RentalItemImagesRecord setKey(String value) {
-        set(3, value);
+        set(1, value);
         return this;
     }
 
@@ -77,7 +45,37 @@ public class RentalItemImagesRecord extends UpdatableRecordImpl<RentalItemImages
      * Getter for <code>public.rental_item_images.key</code>.
      */
     public String getKey() {
-        return (String) get(3);
+        return (String) get(1);
+    }
+
+    /**
+     * Setter for <code>public.rental_item_images.rental_item_id</code>.
+     */
+    public RentalItemImagesRecord setRentalItemId(Long value) {
+        set(2, value);
+        return this;
+    }
+
+    /**
+     * Getter for <code>public.rental_item_images.rental_item_id</code>.
+     */
+    public Long getRentalItemId() {
+        return (Long) get(2);
+    }
+
+    /**
+     * Setter for <code>public.rental_item_images.sequence</code>.
+     */
+    public RentalItemImagesRecord setSequence(Integer value) {
+        set(3, value);
+        return this;
+    }
+
+    /**
+     * Getter for <code>public.rental_item_images.sequence</code>.
+     */
+    public Integer getSequence() {
+        return (Integer) get(3);
     }
 
     // -------------------------------------------------------------------------
@@ -85,7 +83,7 @@ public class RentalItemImagesRecord extends UpdatableRecordImpl<RentalItemImages
     // -------------------------------------------------------------------------
 
     @Override
-    public Record1<UUID> key() {
+    public Record1<Long> key() {
         return (Record1) super.key();
     }
 
@@ -103,13 +101,13 @@ public class RentalItemImagesRecord extends UpdatableRecordImpl<RentalItemImages
     /**
      * Create a detached, initialised RentalItemImagesRecord
      */
-    public RentalItemImagesRecord(UUID id, UUID rentalItemId, Integer sequence, String key) {
+    public RentalItemImagesRecord(Long id, String key, Long rentalItemId, Integer sequence) {
         super(RentalItemImages.RENTAL_ITEM_IMAGES);
 
         setId(id);
+        setKey(key);
         setRentalItemId(rentalItemId);
         setSequence(sequence);
-        setKey(key);
         resetChangedOnNotNull();
     }
 
@@ -121,9 +119,9 @@ public class RentalItemImagesRecord extends UpdatableRecordImpl<RentalItemImages
 
         if (value != null) {
             setId(value.getId());
+            setKey(value.getKey());
             setRentalItemId(value.getRentalItemId());
             setSequence(value.getSequence());
-            setKey(value.getKey());
             resetChangedOnNotNull();
         }
     }

@@ -1,9 +1,7 @@
 package io.github.daegwonkim.backend.repository.dto
 
-import java.util.UUID
-
 data class Neighborhood(
-    val id: UUID,
+    val id: Long,
     val code: String,
     val sido: String,
     val sigungu: String,

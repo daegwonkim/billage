@@ -10,10 +10,10 @@ import io.github.daegwonkim.backend.jooq.generated.tables.records.RentalItemLike
 
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.UUID;
 
 import org.jooq.Condition;
 import org.jooq.Field;
+import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.PlainSQL;
 import org.jooq.QueryPart;
@@ -54,7 +54,7 @@ public class RentalItemLikeRecords extends TableImpl<RentalItemLikeRecordsRecord
     /**
      * The column <code>public.rental_item_like_records.id</code>.
      */
-    public final TableField<RentalItemLikeRecordsRecord, UUID> ID = createField(DSL.name("id"), SQLDataType.UUID.nullable(false), this, "");
+    public final TableField<RentalItemLikeRecordsRecord, Long> ID = createField(DSL.name("id"), SQLDataType.BIGINT.nullable(false).identity(true), this, "");
 
     /**
      * The column <code>public.rental_item_like_records.created_at</code>.
@@ -64,12 +64,12 @@ public class RentalItemLikeRecords extends TableImpl<RentalItemLikeRecordsRecord
     /**
      * The column <code>public.rental_item_like_records.rental_item_id</code>.
      */
-    public final TableField<RentalItemLikeRecordsRecord, UUID> RENTAL_ITEM_ID = createField(DSL.name("rental_item_id"), SQLDataType.UUID.nullable(false), this, "");
+    public final TableField<RentalItemLikeRecordsRecord, Long> RENTAL_ITEM_ID = createField(DSL.name("rental_item_id"), SQLDataType.BIGINT.nullable(false), this, "");
 
     /**
      * The column <code>public.rental_item_like_records.user_id</code>.
      */
-    public final TableField<RentalItemLikeRecordsRecord, UUID> USER_ID = createField(DSL.name("user_id"), SQLDataType.UUID.nullable(false), this, "");
+    public final TableField<RentalItemLikeRecordsRecord, Long> USER_ID = createField(DSL.name("user_id"), SQLDataType.BIGINT.nullable(false), this, "");
 
     private RentalItemLikeRecords(Name alias, Table<RentalItemLikeRecordsRecord> aliased) {
         this(alias, aliased, (Field<?>[]) null, null);
@@ -105,6 +105,11 @@ public class RentalItemLikeRecords extends TableImpl<RentalItemLikeRecordsRecord
     @Override
     public Schema getSchema() {
         return aliased() ? null : Public.PUBLIC;
+    }
+
+    @Override
+    public Identity<RentalItemLikeRecordsRecord, Long> getIdentity() {
+        return (Identity<RentalItemLikeRecordsRecord, Long>) super.getIdentity();
     }
 
     @Override

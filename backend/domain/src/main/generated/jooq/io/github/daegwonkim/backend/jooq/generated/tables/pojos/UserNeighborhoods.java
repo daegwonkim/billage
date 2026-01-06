@@ -5,7 +5,6 @@ package io.github.daegwonkim.backend.jooq.generated.tables.pojos;
 
 
 import java.io.Serializable;
-import java.util.UUID;
 
 import org.jooq.Geometry;
 
@@ -18,10 +17,10 @@ public class UserNeighborhoods implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private UUID id;
+    private Long id;
     private Geometry location;
-    private UUID neighborhoodId;
-    private UUID userId;
+    private Long neighborhoodId;
+    private Long userId;
 
     public UserNeighborhoods() {}
 
@@ -33,10 +32,10 @@ public class UserNeighborhoods implements Serializable {
     }
 
     public UserNeighborhoods(
-        UUID id,
+        Long id,
         Geometry location,
-        UUID neighborhoodId,
-        UUID userId
+        Long neighborhoodId,
+        Long userId
     ) {
         this.id = id;
         this.location = location;
@@ -47,14 +46,14 @@ public class UserNeighborhoods implements Serializable {
     /**
      * Getter for <code>public.user_neighborhoods.id</code>.
      */
-    public UUID getId() {
+    public Long getId() {
         return this.id;
     }
 
     /**
      * Setter for <code>public.user_neighborhoods.id</code>.
      */
-    public UserNeighborhoods setId(UUID id) {
+    public UserNeighborhoods setId(Long id) {
         this.id = id;
         return this;
     }
@@ -77,14 +76,14 @@ public class UserNeighborhoods implements Serializable {
     /**
      * Getter for <code>public.user_neighborhoods.neighborhood_id</code>.
      */
-    public UUID getNeighborhoodId() {
+    public Long getNeighborhoodId() {
         return this.neighborhoodId;
     }
 
     /**
      * Setter for <code>public.user_neighborhoods.neighborhood_id</code>.
      */
-    public UserNeighborhoods setNeighborhoodId(UUID neighborhoodId) {
+    public UserNeighborhoods setNeighborhoodId(Long neighborhoodId) {
         this.neighborhoodId = neighborhoodId;
         return this;
     }
@@ -92,14 +91,14 @@ public class UserNeighborhoods implements Serializable {
     /**
      * Getter for <code>public.user_neighborhoods.user_id</code>.
      */
-    public UUID getUserId() {
+    public Long getUserId() {
         return this.userId;
     }
 
     /**
      * Setter for <code>public.user_neighborhoods.user_id</code>.
      */
-    public UserNeighborhoods setUserId(UUID userId) {
+    public UserNeighborhoods setUserId(Long userId) {
         this.userId = userId;
         return this;
     }

@@ -1,10 +1,9 @@
 package io.github.daegwonkim.backend.repository.dto
 
 import java.time.LocalDateTime
-import java.util.UUID
 
 data class GetRentalItemsItem(
-    val id: UUID,
+    val id: Long,
     val title: String,
     val thumbnailImageKey: String,
     val address: String,

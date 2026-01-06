@@ -6,8 +6,6 @@ package io.github.daegwonkim.backend.jooq.generated.tables.records;
 
 import io.github.daegwonkim.backend.jooq.generated.tables.UserNeighborhoods;
 
-import java.util.UUID;
-
 import org.jooq.Geometry;
 import org.jooq.Record1;
 import org.jooq.impl.UpdatableRecordImpl;
@@ -24,7 +22,7 @@ public class UserNeighborhoodsRecord extends UpdatableRecordImpl<UserNeighborhoo
     /**
      * Setter for <code>public.user_neighborhoods.id</code>.
      */
-    public UserNeighborhoodsRecord setId(UUID value) {
+    public UserNeighborhoodsRecord setId(Long value) {
         set(0, value);
         return this;
     }
@@ -32,8 +30,8 @@ public class UserNeighborhoodsRecord extends UpdatableRecordImpl<UserNeighborhoo
     /**
      * Getter for <code>public.user_neighborhoods.id</code>.
      */
-    public UUID getId() {
-        return (UUID) get(0);
+    public Long getId() {
+        return (Long) get(0);
     }
 
     /**
@@ -54,7 +52,7 @@ public class UserNeighborhoodsRecord extends UpdatableRecordImpl<UserNeighborhoo
     /**
      * Setter for <code>public.user_neighborhoods.neighborhood_id</code>.
      */
-    public UserNeighborhoodsRecord setNeighborhoodId(UUID value) {
+    public UserNeighborhoodsRecord setNeighborhoodId(Long value) {
         set(2, value);
         return this;
     }
@@ -62,14 +60,14 @@ public class UserNeighborhoodsRecord extends UpdatableRecordImpl<UserNeighborhoo
     /**
      * Getter for <code>public.user_neighborhoods.neighborhood_id</code>.
      */
-    public UUID getNeighborhoodId() {
-        return (UUID) get(2);
+    public Long getNeighborhoodId() {
+        return (Long) get(2);
     }
 
     /**
      * Setter for <code>public.user_neighborhoods.user_id</code>.
      */
-    public UserNeighborhoodsRecord setUserId(UUID value) {
+    public UserNeighborhoodsRecord setUserId(Long value) {
         set(3, value);
         return this;
     }
@@ -77,8 +75,8 @@ public class UserNeighborhoodsRecord extends UpdatableRecordImpl<UserNeighborhoo
     /**
      * Getter for <code>public.user_neighborhoods.user_id</code>.
      */
-    public UUID getUserId() {
-        return (UUID) get(3);
+    public Long getUserId() {
+        return (Long) get(3);
     }
 
     // -------------------------------------------------------------------------
@@ -86,7 +84,7 @@ public class UserNeighborhoodsRecord extends UpdatableRecordImpl<UserNeighborhoo
     // -------------------------------------------------------------------------
 
     @Override
-    public Record1<UUID> key() {
+    public Record1<Long> key() {
         return (Record1) super.key();
     }
 
@@ -104,7 +102,7 @@ public class UserNeighborhoodsRecord extends UpdatableRecordImpl<UserNeighborhoo
     /**
      * Create a detached, initialised UserNeighborhoodsRecord
      */
-    public UserNeighborhoodsRecord(UUID id, Geometry location, UUID neighborhoodId, UUID userId) {
+    public UserNeighborhoodsRecord(Long id, Geometry location, Long neighborhoodId, Long userId) {
         super(UserNeighborhoods.USER_NEIGHBORHOODS);
 
         setId(id);

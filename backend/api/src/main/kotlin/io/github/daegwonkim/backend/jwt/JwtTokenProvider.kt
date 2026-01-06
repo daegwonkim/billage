@@ -7,7 +7,6 @@ import io.jsonwebtoken.security.Keys
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.util.Date
-import java.util.UUID
 import javax.crypto.SecretKey
 
 @Component
@@ -23,14 +22,14 @@ class JwtTokenProvider(
         Keys.hmacShaKeyFor(secret.toByteArray())
     }
 
-    fun generateAccessToken(userId: UUID): String =
+    fun generateAccessToken(userId: Long): String =
         buildToken(userId, accessTokenExpiration, "ACCESS")
 
-    fun generateRefreshToken(userId: UUID): String =
+    fun generateRefreshToken(userId: Long): String =
         buildToken(userId, refreshTokenExpiration, "REFRESH")
 
-    fun getUserIdFromToken(token: String): UUID {
-        return UUID.fromString(getClaims(token).subject)
+    fun getUserIdFromToken(token: String): Long {
+        return getClaims(token).subject.toLong()
     }
 
     fun validateToken(token: String): Boolean {
@@ -45,7 +44,7 @@ class JwtTokenProvider(
 
     // Private helper methods
 
-    private fun buildToken(userId: UUID, expiry: Long, type: String): String {
+    private fun buildToken(userId: Long, expiry: Long, type: String): String {
         val now = Date()
         return Jwts.builder()
             .subject(userId.toString())

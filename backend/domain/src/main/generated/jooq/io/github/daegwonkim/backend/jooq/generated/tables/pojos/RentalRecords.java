@@ -6,7 +6,6 @@ package io.github.daegwonkim.backend.jooq.generated.tables.pojos;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 
 /**
@@ -17,12 +16,12 @@ public class RentalRecords implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private UUID id;
-    private UUID rentalItemId;
+    private Long id;
+    private Long rentalItemId;
     private LocalDateTime rentedAt;
     private LocalDateTime returnedAt;
     private String status;
-    private UUID userId;
+    private Long userId;
 
     public RentalRecords() {}
 
@@ -36,12 +35,12 @@ public class RentalRecords implements Serializable {
     }
 
     public RentalRecords(
-        UUID id,
-        UUID rentalItemId,
+        Long id,
+        Long rentalItemId,
         LocalDateTime rentedAt,
         LocalDateTime returnedAt,
         String status,
-        UUID userId
+        Long userId
     ) {
         this.id = id;
         this.rentalItemId = rentalItemId;
@@ -54,14 +53,14 @@ public class RentalRecords implements Serializable {
     /**
      * Getter for <code>public.rental_records.id</code>.
      */
-    public UUID getId() {
+    public Long getId() {
         return this.id;
     }
 
     /**
      * Setter for <code>public.rental_records.id</code>.
      */
-    public RentalRecords setId(UUID id) {
+    public RentalRecords setId(Long id) {
         this.id = id;
         return this;
     }
@@ -69,14 +68,14 @@ public class RentalRecords implements Serializable {
     /**
      * Getter for <code>public.rental_records.rental_item_id</code>.
      */
-    public UUID getRentalItemId() {
+    public Long getRentalItemId() {
         return this.rentalItemId;
     }
 
     /**
      * Setter for <code>public.rental_records.rental_item_id</code>.
      */
-    public RentalRecords setRentalItemId(UUID rentalItemId) {
+    public RentalRecords setRentalItemId(Long rentalItemId) {
         this.rentalItemId = rentalItemId;
         return this;
     }
@@ -129,14 +128,14 @@ public class RentalRecords implements Serializable {
     /**
      * Getter for <code>public.rental_records.user_id</code>.
      */
-    public UUID getUserId() {
+    public Long getUserId() {
         return this.userId;
     }
 
     /**
      * Setter for <code>public.rental_records.user_id</code>.
      */
-    public RentalRecords setUserId(UUID userId) {
+    public RentalRecords setUserId(Long userId) {
         this.userId = userId;
         return this;
     }

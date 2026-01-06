@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import java.util.UUID
 
 @RestController
 @RequestMapping("/api/rental-items")
@@ -52,15 +51,15 @@ class RentalItemController(
     @Operation(summary = "대여 상품 상세 조회", description = "특정 상품의 상세 정보를 조회합니다")
     @GetMapping("/{id}")
     fun getRentalItem(
-        @PathVariable("id") id: UUID
+        @PathVariable("id") id: Long
     ): GetRentalItemResponse {
-        return rentalItemService.getRentalItem(userId = UUID.randomUUID(), rentalItemId = id)
+        return rentalItemService.getRentalItem(userId = 0L, rentalItemId = id)
     }
 
     @Operation(summary = "비슷한 상품 목록 조회", description = "현재 보고있는 상품과 비슷한 상품 목록을 조회합니다")
     @GetMapping("/{id}/similar")
     fun getSimilarRentalItems(
-        @PathVariable("id") id: UUID
+        @PathVariable("id") id: Long
     ): GetSimilarRentalItemsResponse {
         return rentalItemService.getSimilarRentalItems(id = id)
     }
@@ -68,8 +67,8 @@ class RentalItemController(
     @Operation(summary = "판매자 상품 목록 조회", description = "현재 보고있는 상품 판매자의 다른 상품 목록을 조회합니다")
     @GetMapping("/{id}/other/{sellerId}")
     fun getOtherRentalItemsBySeller(
-        @PathVariable("id") id: UUID,
-        @PathVariable("sellerId") sellerId: UUID
+        @PathVariable("id") id: Long,
+        @PathVariable("sellerId") sellerId: Long
     ): GetOtherRentalItemsBySellerResponse {
         return rentalItemService.getOtherRentalItemsBySeller(id = id, sellerId = sellerId)
     }
@@ -79,19 +78,19 @@ class RentalItemController(
     fun register(
         @RequestBody request: RegisterRentalItemRequest
     ): RegisterRentalItemResponse {
-        return rentalItemService.register(userId = UUID.randomUUID(), request = request)
+        return rentalItemService.register(userId = 0L, request = request)
     }
 
     @Operation(summary = "수정 전 데이터 조회", description = "대여 상품 수정 전 데이터를 조회합니다")
     @GetMapping("/modify/{id}")
-    fun getForModify(@PathVariable("id") id: UUID): GetRentalItemForModifyResponse {
+    fun getForModify(@PathVariable("id") id: Long): GetRentalItemForModifyResponse {
         return rentalItemService.getForModify(id)
     }
 
     @Operation(summary = "상품 정보 수정", description = "기존의 대여 상품 정보를 수정합니다")
     @PutMapping("/{id}")
     fun modify(
-        @PathVariable("id") id: UUID,
+        @PathVariable("id") id: Long,
         @RequestBody modifiedInfo: ModifyRentalItemRequest
     ): ModifyRentalItemResponse {
         return rentalItemService.modify(id = id, modifiedInfo = modifiedInfo)

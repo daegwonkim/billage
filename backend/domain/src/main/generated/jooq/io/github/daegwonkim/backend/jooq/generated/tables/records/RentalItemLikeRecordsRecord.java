@@ -7,7 +7,6 @@ package io.github.daegwonkim.backend.jooq.generated.tables.records;
 import io.github.daegwonkim.backend.jooq.generated.tables.RentalItemLikeRecords;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 import org.jooq.Record1;
 import org.jooq.impl.UpdatableRecordImpl;
@@ -24,7 +23,7 @@ public class RentalItemLikeRecordsRecord extends UpdatableRecordImpl<RentalItemL
     /**
      * Setter for <code>public.rental_item_like_records.id</code>.
      */
-    public RentalItemLikeRecordsRecord setId(UUID value) {
+    public RentalItemLikeRecordsRecord setId(Long value) {
         set(0, value);
         return this;
     }
@@ -32,8 +31,8 @@ public class RentalItemLikeRecordsRecord extends UpdatableRecordImpl<RentalItemL
     /**
      * Getter for <code>public.rental_item_like_records.id</code>.
      */
-    public UUID getId() {
-        return (UUID) get(0);
+    public Long getId() {
+        return (Long) get(0);
     }
 
     /**
@@ -54,7 +53,7 @@ public class RentalItemLikeRecordsRecord extends UpdatableRecordImpl<RentalItemL
     /**
      * Setter for <code>public.rental_item_like_records.rental_item_id</code>.
      */
-    public RentalItemLikeRecordsRecord setRentalItemId(UUID value) {
+    public RentalItemLikeRecordsRecord setRentalItemId(Long value) {
         set(2, value);
         return this;
     }
@@ -62,14 +61,14 @@ public class RentalItemLikeRecordsRecord extends UpdatableRecordImpl<RentalItemL
     /**
      * Getter for <code>public.rental_item_like_records.rental_item_id</code>.
      */
-    public UUID getRentalItemId() {
-        return (UUID) get(2);
+    public Long getRentalItemId() {
+        return (Long) get(2);
     }
 
     /**
      * Setter for <code>public.rental_item_like_records.user_id</code>.
      */
-    public RentalItemLikeRecordsRecord setUserId(UUID value) {
+    public RentalItemLikeRecordsRecord setUserId(Long value) {
         set(3, value);
         return this;
     }
@@ -77,8 +76,8 @@ public class RentalItemLikeRecordsRecord extends UpdatableRecordImpl<RentalItemL
     /**
      * Getter for <code>public.rental_item_like_records.user_id</code>.
      */
-    public UUID getUserId() {
-        return (UUID) get(3);
+    public Long getUserId() {
+        return (Long) get(3);
     }
 
     // -------------------------------------------------------------------------
@@ -86,7 +85,7 @@ public class RentalItemLikeRecordsRecord extends UpdatableRecordImpl<RentalItemL
     // -------------------------------------------------------------------------
 
     @Override
-    public Record1<UUID> key() {
+    public Record1<Long> key() {
         return (Record1) super.key();
     }
 
@@ -104,7 +103,7 @@ public class RentalItemLikeRecordsRecord extends UpdatableRecordImpl<RentalItemL
     /**
      * Create a detached, initialised RentalItemLikeRecordsRecord
      */
-    public RentalItemLikeRecordsRecord(UUID id, LocalDateTime createdAt, UUID rentalItemId, UUID userId) {
+    public RentalItemLikeRecordsRecord(Long id, LocalDateTime createdAt, Long rentalItemId, Long userId) {
         super(RentalItemLikeRecords.RENTAL_ITEM_LIKE_RECORDS);
 
         setId(id);

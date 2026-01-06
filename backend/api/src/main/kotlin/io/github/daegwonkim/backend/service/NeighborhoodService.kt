@@ -11,7 +11,6 @@ import io.github.daegwonkim.backend.repository.NeighborhoodJooqRepository
 import io.github.daegwonkim.backend.repository.NeighborhoodRepository
 import io.github.daegwonkim.backend.repository.UserNeighborhoodRepository
 import org.springframework.stereotype.Service
-import java.util.UUID
 
 @Service
 class NeighborhoodService(
@@ -57,7 +56,7 @@ class NeighborhoodService(
         }
     }
 
-    fun saveNeighborhood(userId: UUID, latitude: Double, longitude: Double, code: String) {
+    fun saveNeighborhood(userId: Long, latitude: Double, longitude: Double, code: String) {
         val neighborhood = neighborhoodRepository.findByCode(code = code)
             ?: throw NotFoundException(errorCode = ErrorCode.NEIGHBORHOOD_NOT_FOUND)
         val neighborhoodId = requireNotNull(value = neighborhood.id) { "Neighborhood ID should not be null" }

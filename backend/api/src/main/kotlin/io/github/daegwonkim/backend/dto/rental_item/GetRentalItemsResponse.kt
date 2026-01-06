@@ -1,7 +1,6 @@
 package io.github.daegwonkim.backend.dto.rental_item
 
 import java.time.LocalDateTime
-import java.util.UUID
 
 data class GetRentalItemsResponse(
     val content: List<RentalItem>,
@@ -13,7 +12,7 @@ data class GetRentalItemsResponse(
     val hasPrevious: Boolean
 ) {
     data class RentalItem(
-        val id: UUID,
+        val id: Long,
         val title: String,
         val thumbnailImageUrl: String,
         val address: String,

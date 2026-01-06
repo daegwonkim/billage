@@ -11,11 +11,11 @@ import io.github.daegwonkim.backend.jooq.generated.tables.records.NeighborhoodsR
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 
 import org.jooq.Condition;
 import org.jooq.Field;
 import org.jooq.Geometry;
+import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.PlainSQL;
 import org.jooq.QueryPart;
@@ -56,7 +56,17 @@ public class Neighborhoods extends TableImpl<NeighborhoodsRecord> {
     /**
      * The column <code>public.neighborhoods.id</code>.
      */
-    public final TableField<NeighborhoodsRecord, UUID> ID = createField(DSL.name("id"), SQLDataType.UUID.nullable(false).defaultValue(DSL.field(DSL.raw("gen_random_uuid()"), SQLDataType.UUID)), this, "");
+    public final TableField<NeighborhoodsRecord, Long> ID = createField(DSL.name("id"), SQLDataType.BIGINT.nullable(false).identity(true), this, "");
+
+    /**
+     * The column <code>public.neighborhoods.boundary</code>.
+     */
+    public final TableField<NeighborhoodsRecord, Geometry> BOUNDARY = createField(DSL.name("boundary"), SQLDataType.GEOMETRY, this, "");
+
+    /**
+     * The column <code>public.neighborhoods.centroid</code>.
+     */
+    public final TableField<NeighborhoodsRecord, Geometry> CENTROID = createField(DSL.name("centroid"), SQLDataType.GEOMETRY, this, "");
 
     /**
      * The column <code>public.neighborhoods.code</code>.
@@ -77,16 +87,6 @@ public class Neighborhoods extends TableImpl<NeighborhoodsRecord> {
      * The column <code>public.neighborhoods.sigungu</code>.
      */
     public final TableField<NeighborhoodsRecord, String> SIGUNGU = createField(DSL.name("sigungu"), SQLDataType.VARCHAR(255).nullable(false), this, "");
-
-    /**
-     * The column <code>public.neighborhoods.boundary</code>.
-     */
-    public final TableField<NeighborhoodsRecord, Geometry> BOUNDARY = createField(DSL.name("boundary"), SQLDataType.GEOMETRY, this, "");
-
-    /**
-     * The column <code>public.neighborhoods.centroid</code>.
-     */
-    public final TableField<NeighborhoodsRecord, Geometry> CENTROID = createField(DSL.name("centroid"), SQLDataType.GEOMETRY, this, "");
 
     private Neighborhoods(Name alias, Table<NeighborhoodsRecord> aliased) {
         this(alias, aliased, (Field<?>[]) null, null);
@@ -120,6 +120,11 @@ public class Neighborhoods extends TableImpl<NeighborhoodsRecord> {
     @Override
     public Schema getSchema() {
         return aliased() ? null : Public.PUBLIC;
+    }
+
+    @Override
+    public Identity<NeighborhoodsRecord, Long> getIdentity() {
+        return (Identity<NeighborhoodsRecord, Long>) super.getIdentity();
     }
 
     @Override

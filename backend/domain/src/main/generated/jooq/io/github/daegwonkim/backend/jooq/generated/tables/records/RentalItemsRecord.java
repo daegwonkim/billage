@@ -7,7 +7,6 @@ package io.github.daegwonkim.backend.jooq.generated.tables.records;
 import io.github.daegwonkim.backend.jooq.generated.tables.RentalItems;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 import org.jooq.Record1;
 import org.jooq.impl.UpdatableRecordImpl;
@@ -24,7 +23,7 @@ public class RentalItemsRecord extends UpdatableRecordImpl<RentalItemsRecord> {
     /**
      * Setter for <code>public.rental_items.id</code>.
      */
-    public RentalItemsRecord setId(UUID value) {
+    public RentalItemsRecord setId(Long value) {
         set(0, value);
         return this;
     }
@@ -32,8 +31,8 @@ public class RentalItemsRecord extends UpdatableRecordImpl<RentalItemsRecord> {
     /**
      * Getter for <code>public.rental_items.id</code>.
      */
-    public UUID getId() {
-        return (UUID) get(0);
+    public Long getId() {
+        return (Long) get(0);
     }
 
     /**
@@ -144,7 +143,7 @@ public class RentalItemsRecord extends UpdatableRecordImpl<RentalItemsRecord> {
     /**
      * Setter for <code>public.rental_items.user_id</code>.
      */
-    public RentalItemsRecord setUserId(UUID value) {
+    public RentalItemsRecord setUserId(Long value) {
         set(8, value);
         return this;
     }
@@ -152,8 +151,8 @@ public class RentalItemsRecord extends UpdatableRecordImpl<RentalItemsRecord> {
     /**
      * Getter for <code>public.rental_items.user_id</code>.
      */
-    public UUID getUserId() {
-        return (UUID) get(8);
+    public Long getUserId() {
+        return (Long) get(8);
     }
 
     /**
@@ -176,7 +175,7 @@ public class RentalItemsRecord extends UpdatableRecordImpl<RentalItemsRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Record1<UUID> key() {
+    public Record1<Long> key() {
         return (Record1) super.key();
     }
 
@@ -194,7 +193,7 @@ public class RentalItemsRecord extends UpdatableRecordImpl<RentalItemsRecord> {
     /**
      * Create a detached, initialised RentalItemsRecord
      */
-    public RentalItemsRecord(UUID id, LocalDateTime createdAt, LocalDateTime modifiedAt, String category, String description, Integer pricePerDay, Integer pricePerWeek, String title, UUID userId, Integer viewCount) {
+    public RentalItemsRecord(Long id, LocalDateTime createdAt, LocalDateTime modifiedAt, String category, String description, Integer pricePerDay, Integer pricePerWeek, String title, Long userId, Integer viewCount) {
         super(RentalItems.RENTAL_ITEMS);
 
         setId(id);

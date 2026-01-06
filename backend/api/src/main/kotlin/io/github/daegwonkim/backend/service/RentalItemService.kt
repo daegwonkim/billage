@@ -27,7 +27,7 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.util.UUID
+import kotlin.random.Random
 
 @Service
 class RentalItemService(
@@ -96,7 +96,7 @@ class RentalItemService(
     }
 
     @Transactional(readOnly = true)
-    fun getRentalItem(userId: UUID, rentalItemId: UUID): GetRentalItemResponse {
+    fun getRentalItem(userId: Long, rentalItemId: Long): GetRentalItemResponse {
         val rentalItem = rentalItemJooqRepository.getRentalItem(rentalItemId = rentalItemId, userId = userId)
             ?: throw NotFoundException(ErrorCode.RENTAL_ITEM_NOT_FOUND)
 
@@ -137,74 +137,74 @@ class RentalItemService(
     }
 
     @Transactional(readOnly = true)
-    fun getSimilarRentalItems(id: UUID): GetSimilarRentalItemsResponse {
+    fun getSimilarRentalItems(id: Long): GetSimilarRentalItemsResponse {
         return GetSimilarRentalItemsResponse(
             rentalItems = listOf(
                 GetSimilarRentalItemsResponse.RentalItem(
-                    id = UUID.randomUUID(),
+                    id = Random.nextLong(),
                     thumbnailImageUrl = "https://picsum.photos/seed/item1/400/300",
                     title = "캠핑 텐트 4인용",
                     pricePerDay = 15000,
                     pricePerWeek = 80000
                 ),
                 GetSimilarRentalItemsResponse.RentalItem(
-                    id = UUID.randomUUID(),
+                    id = Random.nextLong(),
                     thumbnailImageUrl = "https://picsum.photos/seed/item2/400/300",
                     title = "소니 A7M4 미러리스 카메라",
                     pricePerDay = 50000,
                     pricePerWeek = 280000
                 ),
                 GetSimilarRentalItemsResponse.RentalItem(
-                    id = UUID.randomUUID(),
+                    id = Random.nextLong(),
                     thumbnailImageUrl = "https://picsum.photos/seed/item3/400/300",
                     title = "전동 킥보드 샤오미",
                     pricePerDay = 10000,
                     pricePerWeek = 55000
                 ),
                 GetSimilarRentalItemsResponse.RentalItem(
-                    id = UUID.randomUUID(),
+                    id = Random.nextLong(),
                     thumbnailImageUrl = "https://picsum.photos/seed/item4/400/300",
                     title = "빔프로젝터 엡손 EH-TW7100",
                     pricePerDay = 25000,
                     pricePerWeek = 140000
                 ),
                 GetSimilarRentalItemsResponse.RentalItem(
-                    id = UUID.randomUUID(),
+                    id = Random.nextLong(),
                     thumbnailImageUrl = "https://picsum.photos/seed/item5/400/300",
                     title = "드론 DJI Mini 3 Pro",
                     pricePerDay = 35000,
                     pricePerWeek = 200000
                 ),
                 GetSimilarRentalItemsResponse.RentalItem(
-                    id = UUID.randomUUID(),
+                    id = Random.nextLong(),
                     thumbnailImageUrl = "https://picsum.photos/seed/item6/400/300",
                     title = "닌텐도 스위치 OLED",
                     pricePerDay = 8000,
                     pricePerWeek = 45000
                 ),
                 GetSimilarRentalItemsResponse.RentalItem(
-                    id = UUID.randomUUID(),
+                    id = Random.nextLong(),
                     thumbnailImageUrl = "https://picsum.photos/seed/item7/400/300",
                     title = "캠핑 의자 세트 (4개)",
                     pricePerDay = 5000,
                     pricePerWeek = 28000
                 ),
                 GetSimilarRentalItemsResponse.RentalItem(
-                    id = UUID.randomUUID(),
+                    id = Random.nextLong(),
                     thumbnailImageUrl = "https://picsum.photos/seed/item8/400/300",
                     title = "고프로 히어로 12",
                     pricePerDay = 20000,
                     pricePerWeek = 110000
                 ),
                 GetSimilarRentalItemsResponse.RentalItem(
-                    id = UUID.randomUUID(),
+                    id = Random.nextLong(),
                     thumbnailImageUrl = "https://picsum.photos/seed/item9/400/300",
                     title = "무선 마이크 로데 와이어리스 고",
                     pricePerDay = 12000,
                     pricePerWeek = 65000
                 ),
                 GetSimilarRentalItemsResponse.RentalItem(
-                    id = UUID.randomUUID(),
+                    id = Random.nextLong(),
                     thumbnailImageUrl = "https://picsum.photos/seed/item10/400/300",
                     title = "스탠딩 조명 세트",
                     pricePerDay = 18000,
@@ -216,8 +216,8 @@ class RentalItemService(
 
     @Transactional(readOnly = true)
     fun getOtherRentalItemsBySeller(
-        id: UUID,
-        sellerId: UUID
+        id: Long,
+        sellerId: Long
     ): GetOtherRentalItemsBySellerResponse {
         val otherRentalItems = rentalItemJooqRepository.getOtherRentalItemsBySeller(
             rentalItemId = id,
@@ -240,7 +240,7 @@ class RentalItemService(
 
     @Transactional
     fun register(
-        userId: UUID,
+        userId: Long,
         request: RegisterRentalItemRequest
     ): RegisterRentalItemResponse {
         val newRentalItem = rentalItemRepository.save(
@@ -267,7 +267,7 @@ class RentalItemService(
     }
 
     @Transactional(readOnly = true)
-    fun getForModify(id: UUID): GetRentalItemForModifyResponse {
+    fun getForModify(id: Long): GetRentalItemForModifyResponse {
         val rentalItem = rentalItemRepository.findById(id)
             .orElseThrow { NotFoundException(errorCode = ErrorCode.RENTAL_ITEM_NOT_FOUND) }
 
@@ -292,7 +292,7 @@ class RentalItemService(
 
     @Transactional
     fun modify(
-        id: UUID,
+        id: Long,
         modifiedInfo: ModifyRentalItemRequest
     ): ModifyRentalItemResponse {
         val rentalItem = rentalItemRepository.findById(id)

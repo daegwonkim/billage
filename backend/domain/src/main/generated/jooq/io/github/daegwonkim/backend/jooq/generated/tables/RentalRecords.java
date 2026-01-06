@@ -12,11 +12,11 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 
 import org.jooq.Check;
 import org.jooq.Condition;
 import org.jooq.Field;
+import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.PlainSQL;
 import org.jooq.QueryPart;
@@ -58,12 +58,12 @@ public class RentalRecords extends TableImpl<RentalRecordsRecord> {
     /**
      * The column <code>public.rental_records.id</code>.
      */
-    public final TableField<RentalRecordsRecord, UUID> ID = createField(DSL.name("id"), SQLDataType.UUID.nullable(false), this, "");
+    public final TableField<RentalRecordsRecord, Long> ID = createField(DSL.name("id"), SQLDataType.BIGINT.nullable(false).identity(true), this, "");
 
     /**
      * The column <code>public.rental_records.rental_item_id</code>.
      */
-    public final TableField<RentalRecordsRecord, UUID> RENTAL_ITEM_ID = createField(DSL.name("rental_item_id"), SQLDataType.UUID.nullable(false), this, "");
+    public final TableField<RentalRecordsRecord, Long> RENTAL_ITEM_ID = createField(DSL.name("rental_item_id"), SQLDataType.BIGINT.nullable(false), this, "");
 
     /**
      * The column <code>public.rental_records.rented_at</code>.
@@ -83,7 +83,7 @@ public class RentalRecords extends TableImpl<RentalRecordsRecord> {
     /**
      * The column <code>public.rental_records.user_id</code>.
      */
-    public final TableField<RentalRecordsRecord, UUID> USER_ID = createField(DSL.name("user_id"), SQLDataType.UUID.nullable(false), this, "");
+    public final TableField<RentalRecordsRecord, Long> USER_ID = createField(DSL.name("user_id"), SQLDataType.BIGINT.nullable(false), this, "");
 
     private RentalRecords(Name alias, Table<RentalRecordsRecord> aliased) {
         this(alias, aliased, (Field<?>[]) null, null);
@@ -117,6 +117,11 @@ public class RentalRecords extends TableImpl<RentalRecordsRecord> {
     @Override
     public Schema getSchema() {
         return aliased() ? null : Public.PUBLIC;
+    }
+
+    @Override
+    public Identity<RentalRecordsRecord, Long> getIdentity() {
+        return (Identity<RentalRecordsRecord, Long>) super.getIdentity();
     }
 
     @Override

@@ -9,11 +9,11 @@ import io.github.daegwonkim.backend.jooq.generated.Public;
 import io.github.daegwonkim.backend.jooq.generated.tables.records.UserNeighborhoodsRecord;
 
 import java.util.Collection;
-import java.util.UUID;
 
 import org.jooq.Condition;
 import org.jooq.Field;
 import org.jooq.Geometry;
+import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.PlainSQL;
 import org.jooq.QueryPart;
@@ -54,7 +54,7 @@ public class UserNeighborhoods extends TableImpl<UserNeighborhoodsRecord> {
     /**
      * The column <code>public.user_neighborhoods.id</code>.
      */
-    public final TableField<UserNeighborhoodsRecord, UUID> ID = createField(DSL.name("id"), SQLDataType.UUID.nullable(false).defaultValue(DSL.field(DSL.raw("gen_random_uuid()"), SQLDataType.UUID)), this, "");
+    public final TableField<UserNeighborhoodsRecord, Long> ID = createField(DSL.name("id"), SQLDataType.BIGINT.nullable(false).identity(true), this, "");
 
     /**
      * The column <code>public.user_neighborhoods.location</code>.
@@ -64,12 +64,12 @@ public class UserNeighborhoods extends TableImpl<UserNeighborhoodsRecord> {
     /**
      * The column <code>public.user_neighborhoods.neighborhood_id</code>.
      */
-    public final TableField<UserNeighborhoodsRecord, UUID> NEIGHBORHOOD_ID = createField(DSL.name("neighborhood_id"), SQLDataType.UUID.nullable(false), this, "");
+    public final TableField<UserNeighborhoodsRecord, Long> NEIGHBORHOOD_ID = createField(DSL.name("neighborhood_id"), SQLDataType.BIGINT.nullable(false), this, "");
 
     /**
      * The column <code>public.user_neighborhoods.user_id</code>.
      */
-    public final TableField<UserNeighborhoodsRecord, UUID> USER_ID = createField(DSL.name("user_id"), SQLDataType.UUID.nullable(false), this, "");
+    public final TableField<UserNeighborhoodsRecord, Long> USER_ID = createField(DSL.name("user_id"), SQLDataType.BIGINT.nullable(false), this, "");
 
     private UserNeighborhoods(Name alias, Table<UserNeighborhoodsRecord> aliased) {
         this(alias, aliased, (Field<?>[]) null, null);
@@ -103,6 +103,11 @@ public class UserNeighborhoods extends TableImpl<UserNeighborhoodsRecord> {
     @Override
     public Schema getSchema() {
         return aliased() ? null : Public.PUBLIC;
+    }
+
+    @Override
+    public Identity<UserNeighborhoodsRecord, Long> getIdentity() {
+        return (Identity<UserNeighborhoodsRecord, Long>) super.getIdentity();
     }
 
     @Override

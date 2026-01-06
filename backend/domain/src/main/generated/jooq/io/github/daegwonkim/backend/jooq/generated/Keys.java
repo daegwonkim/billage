@@ -43,6 +43,6 @@ public class Keys {
     public static final UniqueKey<RentalItemsRecord> RENTAL_ITEMS_PKEY = Internal.createUniqueKey(RentalItems.RENTAL_ITEMS, DSL.name("rental_items_pkey"), new TableField[] { RentalItems.RENTAL_ITEMS.ID }, true);
     public static final UniqueKey<RentalRecordsRecord> RENTAL_RECORDS_PKEY = Internal.createUniqueKey(RentalRecords.RENTAL_RECORDS, DSL.name("rental_records_pkey"), new TableField[] { RentalRecords.RENTAL_RECORDS.ID }, true);
     public static final UniqueKey<UserNeighborhoodsRecord> USER_NEIGHBORHOODS_PKEY = Internal.createUniqueKey(UserNeighborhoods.USER_NEIGHBORHOODS, DSL.name("user_neighborhoods_pkey"), new TableField[] { UserNeighborhoods.USER_NEIGHBORHOODS.ID }, true);
-    public static final UniqueKey<UsersRecord> USERS_PHONE_NO_KEY = Internal.createUniqueKey(Users.USERS, DSL.name("users_phone_no_key"), new TableField[] { Users.USERS.PHONE_NO }, true);
+    public static final UniqueKey<UsersRecord> UKSIXQ0FU6TSXV2XT6L8NIVM4WM = Internal.createUniqueKey(Users.USERS, DSL.name("uksixq0fu6tsxv2xt6l8nivm4wm"), new TableField[] { Users.USERS.PHONE_NO }, true);
     public static final UniqueKey<UsersRecord> USERS_PKEY = Internal.createUniqueKey(Users.USERS, DSL.name("users_pkey"), new TableField[] { Users.USERS.ID }, true);
 }

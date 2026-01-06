@@ -6,7 +6,6 @@ package io.github.daegwonkim.backend.jooq.generated.tables.pojos;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 
 /**
@@ -17,7 +16,7 @@ public class RentalItems implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private UUID id;
+    private Long id;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
     private String category;
@@ -25,7 +24,7 @@ public class RentalItems implements Serializable {
     private Integer pricePerDay;
     private Integer pricePerWeek;
     private String title;
-    private UUID userId;
+    private Long userId;
     private Integer viewCount;
 
     public RentalItems() {}
@@ -44,7 +43,7 @@ public class RentalItems implements Serializable {
     }
 
     public RentalItems(
-        UUID id,
+        Long id,
         LocalDateTime createdAt,
         LocalDateTime modifiedAt,
         String category,
@@ -52,7 +51,7 @@ public class RentalItems implements Serializable {
         Integer pricePerDay,
         Integer pricePerWeek,
         String title,
-        UUID userId,
+        Long userId,
         Integer viewCount
     ) {
         this.id = id;
@@ -70,14 +69,14 @@ public class RentalItems implements Serializable {
     /**
      * Getter for <code>public.rental_items.id</code>.
      */
-    public UUID getId() {
+    public Long getId() {
         return this.id;
     }
 
     /**
      * Setter for <code>public.rental_items.id</code>.
      */
-    public RentalItems setId(UUID id) {
+    public RentalItems setId(Long id) {
         this.id = id;
         return this;
     }
@@ -190,14 +189,14 @@ public class RentalItems implements Serializable {
     /**
      * Getter for <code>public.rental_items.user_id</code>.
      */
-    public UUID getUserId() {
+    public Long getUserId() {
         return this.userId;
     }
 
     /**
      * Setter for <code>public.rental_items.user_id</code>.
      */
-    public RentalItems setUserId(UUID userId) {
+    public RentalItems setUserId(Long userId) {
         this.userId = userId;
         return this;
     }

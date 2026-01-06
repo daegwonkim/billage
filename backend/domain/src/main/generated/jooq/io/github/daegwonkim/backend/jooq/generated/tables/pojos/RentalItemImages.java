@@ -5,7 +5,6 @@ package io.github.daegwonkim.backend.jooq.generated.tables.pojos;
 
 
 import java.io.Serializable;
-import java.util.UUID;
 
 
 /**
@@ -16,58 +15,73 @@ public class RentalItemImages implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private UUID id;
-    private UUID rentalItemId;
-    private Integer sequence;
+    private Long id;
     private String key;
+    private Long rentalItemId;
+    private Integer sequence;
 
     public RentalItemImages() {}
 
     public RentalItemImages(RentalItemImages value) {
         this.id = value.id;
+        this.key = value.key;
         this.rentalItemId = value.rentalItemId;
         this.sequence = value.sequence;
-        this.key = value.key;
     }
 
     public RentalItemImages(
-        UUID id,
-        UUID rentalItemId,
-        Integer sequence,
-        String key
+        Long id,
+        String key,
+        Long rentalItemId,
+        Integer sequence
     ) {
         this.id = id;
+        this.key = key;
         this.rentalItemId = rentalItemId;
         this.sequence = sequence;
-        this.key = key;
     }
 
     /**
      * Getter for <code>public.rental_item_images.id</code>.
      */
-    public UUID getId() {
+    public Long getId() {
         return this.id;
     }
 
     /**
      * Setter for <code>public.rental_item_images.id</code>.
      */
-    public RentalItemImages setId(UUID id) {
+    public RentalItemImages setId(Long id) {
         this.id = id;
+        return this;
+    }
+
+    /**
+     * Getter for <code>public.rental_item_images.key</code>.
+     */
+    public String getKey() {
+        return this.key;
+    }
+
+    /**
+     * Setter for <code>public.rental_item_images.key</code>.
+     */
+    public RentalItemImages setKey(String key) {
+        this.key = key;
         return this;
     }
 
     /**
      * Getter for <code>public.rental_item_images.rental_item_id</code>.
      */
-    public UUID getRentalItemId() {
+    public Long getRentalItemId() {
         return this.rentalItemId;
     }
 
     /**
      * Setter for <code>public.rental_item_images.rental_item_id</code>.
      */
-    public RentalItemImages setRentalItemId(UUID rentalItemId) {
+    public RentalItemImages setRentalItemId(Long rentalItemId) {
         this.rentalItemId = rentalItemId;
         return this;
     }
@@ -87,21 +101,6 @@ public class RentalItemImages implements Serializable {
         return this;
     }
 
-    /**
-     * Getter for <code>public.rental_item_images.key</code>.
-     */
-    public String getKey() {
-        return this.key;
-    }
-
-    /**
-     * Setter for <code>public.rental_item_images.key</code>.
-     */
-    public RentalItemImages setKey(String key) {
-        this.key = key;
-        return this;
-    }
-
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -117,6 +116,12 @@ public class RentalItemImages implements Serializable {
         }
         else if (!this.id.equals(other.id))
             return false;
+        if (this.key == null) {
+            if (other.key != null)
+                return false;
+        }
+        else if (!this.key.equals(other.key))
+            return false;
         if (this.rentalItemId == null) {
             if (other.rentalItemId != null)
                 return false;
@@ -129,12 +134,6 @@ public class RentalItemImages implements Serializable {
         }
         else if (!this.sequence.equals(other.sequence))
             return false;
-        if (this.key == null) {
-            if (other.key != null)
-                return false;
-        }
-        else if (!this.key.equals(other.key))
-            return false;
         return true;
     }
 
@@ -143,9 +142,9 @@ public class RentalItemImages implements Serializable {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((this.id == null) ? 0 : this.id.hashCode());
+        result = prime * result + ((this.key == null) ? 0 : this.key.hashCode());
         result = prime * result + ((this.rentalItemId == null) ? 0 : this.rentalItemId.hashCode());
         result = prime * result + ((this.sequence == null) ? 0 : this.sequence.hashCode());
-        result = prime * result + ((this.key == null) ? 0 : this.key.hashCode());
         return result;
     }
 
@@ -154,9 +153,9 @@ public class RentalItemImages implements Serializable {
         StringBuilder sb = new StringBuilder("RentalItemImages (");
 
         sb.append(id);
+        sb.append(", ").append(key);
         sb.append(", ").append(rentalItemId);
         sb.append(", ").append(sequence);
-        sb.append(", ").append(key);
 
         sb.append(")");
         return sb.toString();

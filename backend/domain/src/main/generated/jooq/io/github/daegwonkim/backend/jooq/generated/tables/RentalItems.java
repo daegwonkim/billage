@@ -12,11 +12,11 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 
 import org.jooq.Check;
 import org.jooq.Condition;
 import org.jooq.Field;
+import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.PlainSQL;
 import org.jooq.QueryPart;
@@ -58,7 +58,7 @@ public class RentalItems extends TableImpl<RentalItemsRecord> {
     /**
      * The column <code>public.rental_items.id</code>.
      */
-    public final TableField<RentalItemsRecord, UUID> ID = createField(DSL.name("id"), SQLDataType.UUID.nullable(false), this, "");
+    public final TableField<RentalItemsRecord, Long> ID = createField(DSL.name("id"), SQLDataType.BIGINT.nullable(false).identity(true), this, "");
 
     /**
      * The column <code>public.rental_items.created_at</code>.
@@ -98,12 +98,12 @@ public class RentalItems extends TableImpl<RentalItemsRecord> {
     /**
      * The column <code>public.rental_items.user_id</code>.
      */
-    public final TableField<RentalItemsRecord, UUID> USER_ID = createField(DSL.name("user_id"), SQLDataType.UUID.nullable(false), this, "");
+    public final TableField<RentalItemsRecord, Long> USER_ID = createField(DSL.name("user_id"), SQLDataType.BIGINT.nullable(false), this, "");
 
     /**
      * The column <code>public.rental_items.view_count</code>.
      */
-    public final TableField<RentalItemsRecord, Integer> VIEW_COUNT = createField(DSL.name("view_count"), SQLDataType.INTEGER.nullable(false).defaultValue(DSL.field(DSL.raw("0"), SQLDataType.INTEGER)), this, "");
+    public final TableField<RentalItemsRecord, Integer> VIEW_COUNT = createField(DSL.name("view_count"), SQLDataType.INTEGER.nullable(false), this, "");
 
     private RentalItems(Name alias, Table<RentalItemsRecord> aliased) {
         this(alias, aliased, (Field<?>[]) null, null);
@@ -140,6 +140,11 @@ public class RentalItems extends TableImpl<RentalItemsRecord> {
     }
 
     @Override
+    public Identity<RentalItemsRecord, Long> getIdentity() {
+        return (Identity<RentalItemsRecord, Long>) super.getIdentity();
+    }
+
+    @Override
     public UniqueKey<RentalItemsRecord> getPrimaryKey() {
         return Keys.RENTAL_ITEMS_PKEY;
     }
@@ -147,7 +152,7 @@ public class RentalItems extends TableImpl<RentalItemsRecord> {
     @Override
     public List<Check<RentalItemsRecord>> getChecks() {
         return Arrays.asList(
-            Internal.createCheck(this, DSL.name("rental_items_category_check"), "(((category)::text = ANY ((ARRAY['HOUSEHOLD'::character varying, 'TRAVEL'::character varying, 'FASHION'::character varying, 'ELECTRONIC'::character varying, 'SPORTS'::character varying, 'CHILDCARE'::character varying])::text[])))", true)
+            Internal.createCheck(this, DSL.name("rental_items_category_check"), "(((category)::text = ANY ((ARRAY['HOUSEHOLD'::character varying, 'TRAVEL'::character varying, 'SPORTS'::character varying, 'ELECTRONIC'::character varying, 'FASHION'::character varying, 'CHILDCARE'::character varying])::text[])))", true)
         );
     }
 

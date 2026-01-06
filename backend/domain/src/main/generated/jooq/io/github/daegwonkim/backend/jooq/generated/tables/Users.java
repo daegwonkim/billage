@@ -12,10 +12,10 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 
 import org.jooq.Condition;
 import org.jooq.Field;
+import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.PlainSQL;
 import org.jooq.QueryPart;
@@ -54,9 +54,9 @@ public class Users extends TableImpl<UsersRecord> {
     }
 
     /**
-     * The column <code>public.users.is_withdrawn</code>.
+     * The column <code>public.users.id</code>.
      */
-    public final TableField<UsersRecord, Boolean> IS_WITHDRAWN = createField(DSL.name("is_withdrawn"), SQLDataType.BOOLEAN.nullable(false), this, "");
+    public final TableField<UsersRecord, Long> ID = createField(DSL.name("id"), SQLDataType.BIGINT.nullable(false).identity(true), this, "");
 
     /**
      * The column <code>public.users.created_at</code>.
@@ -69,9 +69,9 @@ public class Users extends TableImpl<UsersRecord> {
     public final TableField<UsersRecord, LocalDateTime> MODIFIED_AT = createField(DSL.name("modified_at"), SQLDataType.LOCALDATETIME(6).nullable(false), this, "");
 
     /**
-     * The column <code>public.users.id</code>.
+     * The column <code>public.users.is_withdrawn</code>.
      */
-    public final TableField<UsersRecord, UUID> ID = createField(DSL.name("id"), SQLDataType.UUID.nullable(false).defaultValue(DSL.field(DSL.raw("gen_random_uuid()"), SQLDataType.UUID)), this, "");
+    public final TableField<UsersRecord, Boolean> IS_WITHDRAWN = createField(DSL.name("is_withdrawn"), SQLDataType.BOOLEAN.nullable(false), this, "");
 
     /**
      * The column <code>public.users.nickname</code>.
@@ -123,13 +123,18 @@ public class Users extends TableImpl<UsersRecord> {
     }
 
     @Override
+    public Identity<UsersRecord, Long> getIdentity() {
+        return (Identity<UsersRecord, Long>) super.getIdentity();
+    }
+
+    @Override
     public UniqueKey<UsersRecord> getPrimaryKey() {
         return Keys.USERS_PKEY;
     }
 
     @Override
     public List<UniqueKey<UsersRecord>> getUniqueKeys() {
-        return Arrays.asList(Keys.USERS_PHONE_NO_KEY);
+        return Arrays.asList(Keys.UKSIXQ0FU6TSXV2XT6L8NIVM4WM);
     }
 
     @Override

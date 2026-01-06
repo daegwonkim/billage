@@ -6,7 +6,6 @@ package io.github.daegwonkim.backend.jooq.generated.tables.pojos;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 
 /**
@@ -17,10 +16,10 @@ public class Users implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private Boolean isWithdrawn;
+    private Long id;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
-    private UUID id;
+    private Boolean isWithdrawn;
     private String nickname;
     private String phoneNo;
     private String profileImageKey;
@@ -28,45 +27,45 @@ public class Users implements Serializable {
     public Users() {}
 
     public Users(Users value) {
-        this.isWithdrawn = value.isWithdrawn;
+        this.id = value.id;
         this.createdAt = value.createdAt;
         this.modifiedAt = value.modifiedAt;
-        this.id = value.id;
+        this.isWithdrawn = value.isWithdrawn;
         this.nickname = value.nickname;
         this.phoneNo = value.phoneNo;
         this.profileImageKey = value.profileImageKey;
     }
 
     public Users(
-        Boolean isWithdrawn,
+        Long id,
         LocalDateTime createdAt,
         LocalDateTime modifiedAt,
-        UUID id,
+        Boolean isWithdrawn,
         String nickname,
         String phoneNo,
         String profileImageKey
     ) {
-        this.isWithdrawn = isWithdrawn;
+        this.id = id;
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
-        this.id = id;
+        this.isWithdrawn = isWithdrawn;
         this.nickname = nickname;
         this.phoneNo = phoneNo;
         this.profileImageKey = profileImageKey;
     }
 
     /**
-     * Getter for <code>public.users.is_withdrawn</code>.
+     * Getter for <code>public.users.id</code>.
      */
-    public Boolean getIsWithdrawn() {
-        return this.isWithdrawn;
+    public Long getId() {
+        return this.id;
     }
 
     /**
-     * Setter for <code>public.users.is_withdrawn</code>.
+     * Setter for <code>public.users.id</code>.
      */
-    public Users setIsWithdrawn(Boolean isWithdrawn) {
-        this.isWithdrawn = isWithdrawn;
+    public Users setId(Long id) {
+        this.id = id;
         return this;
     }
 
@@ -101,17 +100,17 @@ public class Users implements Serializable {
     }
 
     /**
-     * Getter for <code>public.users.id</code>.
+     * Getter for <code>public.users.is_withdrawn</code>.
      */
-    public UUID getId() {
-        return this.id;
+    public Boolean getIsWithdrawn() {
+        return this.isWithdrawn;
     }
 
     /**
-     * Setter for <code>public.users.id</code>.
+     * Setter for <code>public.users.is_withdrawn</code>.
      */
-    public Users setId(UUID id) {
-        this.id = id;
+    public Users setIsWithdrawn(Boolean isWithdrawn) {
+        this.isWithdrawn = isWithdrawn;
         return this;
     }
 
@@ -169,11 +168,11 @@ public class Users implements Serializable {
         if (getClass() != obj.getClass())
             return false;
         final Users other = (Users) obj;
-        if (this.isWithdrawn == null) {
-            if (other.isWithdrawn != null)
+        if (this.id == null) {
+            if (other.id != null)
                 return false;
         }
-        else if (!this.isWithdrawn.equals(other.isWithdrawn))
+        else if (!this.id.equals(other.id))
             return false;
         if (this.createdAt == null) {
             if (other.createdAt != null)
@@ -187,11 +186,11 @@ public class Users implements Serializable {
         }
         else if (!this.modifiedAt.equals(other.modifiedAt))
             return false;
-        if (this.id == null) {
-            if (other.id != null)
+        if (this.isWithdrawn == null) {
+            if (other.isWithdrawn != null)
                 return false;
         }
-        else if (!this.id.equals(other.id))
+        else if (!this.isWithdrawn.equals(other.isWithdrawn))
             return false;
         if (this.nickname == null) {
             if (other.nickname != null)
@@ -218,10 +217,10 @@ public class Users implements Serializable {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((this.isWithdrawn == null) ? 0 : this.isWithdrawn.hashCode());
+        result = prime * result + ((this.id == null) ? 0 : this.id.hashCode());
         result = prime * result + ((this.createdAt == null) ? 0 : this.createdAt.hashCode());
         result = prime * result + ((this.modifiedAt == null) ? 0 : this.modifiedAt.hashCode());
-        result = prime * result + ((this.id == null) ? 0 : this.id.hashCode());
+        result = prime * result + ((this.isWithdrawn == null) ? 0 : this.isWithdrawn.hashCode());
         result = prime * result + ((this.nickname == null) ? 0 : this.nickname.hashCode());
         result = prime * result + ((this.phoneNo == null) ? 0 : this.phoneNo.hashCode());
         result = prime * result + ((this.profileImageKey == null) ? 0 : this.profileImageKey.hashCode());
@@ -232,10 +231,10 @@ public class Users implements Serializable {
     public String toString() {
         StringBuilder sb = new StringBuilder("Users (");
 
-        sb.append(isWithdrawn);
+        sb.append(id);
         sb.append(", ").append(createdAt);
         sb.append(", ").append(modifiedAt);
-        sb.append(", ").append(id);
+        sb.append(", ").append(isWithdrawn);
         sb.append(", ").append(nickname);
         sb.append(", ").append(phoneNo);
         sb.append(", ").append(profileImageKey);

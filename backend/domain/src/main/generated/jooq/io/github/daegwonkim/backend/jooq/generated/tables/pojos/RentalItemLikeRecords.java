@@ -6,7 +6,6 @@ package io.github.daegwonkim.backend.jooq.generated.tables.pojos;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 
 /**
@@ -17,10 +16,10 @@ public class RentalItemLikeRecords implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private UUID id;
+    private Long id;
     private LocalDateTime createdAt;
-    private UUID rentalItemId;
-    private UUID userId;
+    private Long rentalItemId;
+    private Long userId;
 
     public RentalItemLikeRecords() {}
 
@@ -32,10 +31,10 @@ public class RentalItemLikeRecords implements Serializable {
     }
 
     public RentalItemLikeRecords(
-        UUID id,
+        Long id,
         LocalDateTime createdAt,
-        UUID rentalItemId,
-        UUID userId
+        Long rentalItemId,
+        Long userId
     ) {
         this.id = id;
         this.createdAt = createdAt;
@@ -46,14 +45,14 @@ public class RentalItemLikeRecords implements Serializable {
     /**
      * Getter for <code>public.rental_item_like_records.id</code>.
      */
-    public UUID getId() {
+    public Long getId() {
         return this.id;
     }
 
     /**
      * Setter for <code>public.rental_item_like_records.id</code>.
      */
-    public RentalItemLikeRecords setId(UUID id) {
+    public RentalItemLikeRecords setId(Long id) {
         this.id = id;
         return this;
     }
@@ -76,14 +75,14 @@ public class RentalItemLikeRecords implements Serializable {
     /**
      * Getter for <code>public.rental_item_like_records.rental_item_id</code>.
      */
-    public UUID getRentalItemId() {
+    public Long getRentalItemId() {
         return this.rentalItemId;
     }
 
     /**
      * Setter for <code>public.rental_item_like_records.rental_item_id</code>.
      */
-    public RentalItemLikeRecords setRentalItemId(UUID rentalItemId) {
+    public RentalItemLikeRecords setRentalItemId(Long rentalItemId) {
         this.rentalItemId = rentalItemId;
         return this;
     }
@@ -91,14 +90,14 @@ public class RentalItemLikeRecords implements Serializable {
     /**
      * Getter for <code>public.rental_item_like_records.user_id</code>.
      */
-    public UUID getUserId() {
+    public Long getUserId() {
         return this.userId;
     }
 
     /**
      * Setter for <code>public.rental_item_like_records.user_id</code>.
      */
-    public RentalItemLikeRecords setUserId(UUID userId) {
+    public RentalItemLikeRecords setUserId(Long userId) {
         this.userId = userId;
         return this;
     }

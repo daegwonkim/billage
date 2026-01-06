@@ -1,10 +1,9 @@
 package io.github.daegwonkim.backend.dto.rental_item
 
 import java.time.LocalDateTime
-import java.util.UUID
 
 data class GetRentalItemResponse(
-    val id: UUID,
+    val id: Long,
     val seller: Seller,
     val category: String,
     val title: String,
@@ -19,7 +18,7 @@ data class GetRentalItemResponse(
     val createdAt: LocalDateTime
 ) {
     data class Seller(
-        val id: UUID,
+        val id: Long,
         val nickname: String,
         val address: String,
         val profileImageUrl: String?

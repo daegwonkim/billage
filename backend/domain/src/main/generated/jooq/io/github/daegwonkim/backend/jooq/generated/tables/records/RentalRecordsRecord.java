@@ -7,7 +7,6 @@ package io.github.daegwonkim.backend.jooq.generated.tables.records;
 import io.github.daegwonkim.backend.jooq.generated.tables.RentalRecords;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 import org.jooq.Record1;
 import org.jooq.impl.UpdatableRecordImpl;
@@ -24,7 +23,7 @@ public class RentalRecordsRecord extends UpdatableRecordImpl<RentalRecordsRecord
     /**
      * Setter for <code>public.rental_records.id</code>.
      */
-    public RentalRecordsRecord setId(UUID value) {
+    public RentalRecordsRecord setId(Long value) {
         set(0, value);
         return this;
     }
@@ -32,14 +31,14 @@ public class RentalRecordsRecord extends UpdatableRecordImpl<RentalRecordsRecord
     /**
      * Getter for <code>public.rental_records.id</code>.
      */
-    public UUID getId() {
-        return (UUID) get(0);
+    public Long getId() {
+        return (Long) get(0);
     }
 
     /**
      * Setter for <code>public.rental_records.rental_item_id</code>.
      */
-    public RentalRecordsRecord setRentalItemId(UUID value) {
+    public RentalRecordsRecord setRentalItemId(Long value) {
         set(1, value);
         return this;
     }
@@ -47,8 +46,8 @@ public class RentalRecordsRecord extends UpdatableRecordImpl<RentalRecordsRecord
     /**
      * Getter for <code>public.rental_records.rental_item_id</code>.
      */
-    public UUID getRentalItemId() {
-        return (UUID) get(1);
+    public Long getRentalItemId() {
+        return (Long) get(1);
     }
 
     /**
@@ -99,7 +98,7 @@ public class RentalRecordsRecord extends UpdatableRecordImpl<RentalRecordsRecord
     /**
      * Setter for <code>public.rental_records.user_id</code>.
      */
-    public RentalRecordsRecord setUserId(UUID value) {
+    public RentalRecordsRecord setUserId(Long value) {
         set(5, value);
         return this;
     }
@@ -107,8 +106,8 @@ public class RentalRecordsRecord extends UpdatableRecordImpl<RentalRecordsRecord
     /**
      * Getter for <code>public.rental_records.user_id</code>.
      */
-    public UUID getUserId() {
-        return (UUID) get(5);
+    public Long getUserId() {
+        return (Long) get(5);
     }
 
     // -------------------------------------------------------------------------
@@ -116,7 +115,7 @@ public class RentalRecordsRecord extends UpdatableRecordImpl<RentalRecordsRecord
     // -------------------------------------------------------------------------
 
     @Override
-    public Record1<UUID> key() {
+    public Record1<Long> key() {
         return (Record1) super.key();
     }
 
@@ -134,7 +133,7 @@ public class RentalRecordsRecord extends UpdatableRecordImpl<RentalRecordsRecord
     /**
      * Create a detached, initialised RentalRecordsRecord
      */
-    public RentalRecordsRecord(UUID id, UUID rentalItemId, LocalDateTime rentedAt, LocalDateTime returnedAt, String status, UUID userId) {
+    public RentalRecordsRecord(Long id, Long rentalItemId, LocalDateTime rentedAt, LocalDateTime returnedAt, String status, Long userId) {
         super(RentalRecords.RENTAL_RECORDS);
 
         setId(id);

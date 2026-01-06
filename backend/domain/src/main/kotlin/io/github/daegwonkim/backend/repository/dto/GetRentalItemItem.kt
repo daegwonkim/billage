@@ -1,11 +1,10 @@
 package io.github.daegwonkim.backend.repository.dto
 
 import java.time.LocalDateTime
-import java.util.UUID
 
 data class GetRentalItemItem(
-    val id: UUID,
-    val sellerId: UUID,
+    val id: Long,
+    val sellerId: Long,
     val sellerNickname: String,
     val sellerProfileImageKey: String?,
     val address: String,

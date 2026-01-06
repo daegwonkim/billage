@@ -23,7 +23,6 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
-import java.util.UUID
 
 @Repository
 class RentalItemJooqRepository(
@@ -68,7 +67,7 @@ class RentalItemJooqRepository(
         return PageImpl(results, pageable, totalCount)
     }
 
-    fun getRentalItem(rentalItemId: UUID, userId: UUID): GetRentalItemItem? {
+    fun getRentalItem(rentalItemId: Long, userId: Long): GetRentalItemItem? {
         return dslContext.select(
             USERS.ID.`as`("seller_id"),
             USERS.NICKNAME.`as`("seller_nickname"),
@@ -94,8 +93,8 @@ class RentalItemJooqRepository(
     }
 
     fun getOtherRentalItemsBySeller(
-        rentalItemId: UUID,
-        sellerId: UUID
+        rentalItemId: Long,
+        sellerId: Long
     ): List<GetOtherRentalItemsBySellerItem> {
         return dslContext.select(
             RENTAL_ITEMS.ID,
@@ -132,7 +131,7 @@ class RentalItemJooqRepository(
             .where(RENTAL_ITEM_LIKE_RECORDS.RENTAL_ITEM_ID.eq(RENTAL_ITEMS.ID))
             .asField<Int>("like_count")
 
-    private fun likedSubquery(userId: UUID) =
+    private fun likedSubquery(userId: Long) =
         DSL.exists(
             dslContext.selectOne()
                 .from(RENTAL_ITEM_LIKE_RECORDS)
