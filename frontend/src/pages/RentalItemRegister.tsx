@@ -7,6 +7,7 @@ import type { RegisterRentalItemRequest } from '@/api/rentall_item/dto/RegisterR
 import { register } from '@/api/rentall_item/rentalItem'
 import { generateUploadSignedUrl, removeFile } from '@/api/storage/storage'
 import { formatPrice } from '@/utils/utils'
+import { useNavigate } from 'react-router-dom'
 
 interface FormData {
   category: string
@@ -33,6 +34,7 @@ interface RentalItemRegisterProps {
 export default function RentalItemRegister({
   onClose
 }: RentalItemRegisterProps) {
+  const navigate = useNavigate()
   const [isOpen, setIsOpen] = useState(false)
   const [isClosing, setIsClosing] = useState(false)
   const [images, setImages] = useState<ImageData[]>([])
@@ -59,7 +61,15 @@ export default function RentalItemRegister({
   const [pricePerWeekError, setPricePerWeekError] = useState<boolean>(false)
 
   const registerMutation = useMutation({
-    mutationFn: (request: RegisterRentalItemRequest) => register(request)
+    mutationFn: (request: RegisterRentalItemRequest) => register(request),
+    onSuccess: data => {
+      toast.success('물품이 등록되었습니다.')
+      navigate(`/rental-items/${data.id}`)
+      setIsClosing(true)
+    },
+    onError: () => {
+      toast.error('물품 등록에 실패했습니다. 잠시 후 다시 시도해주세요.')
+    }
   })
 
   // 닫기 애니메이션 처리
