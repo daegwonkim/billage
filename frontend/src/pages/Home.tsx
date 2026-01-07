@@ -44,24 +44,53 @@ export function Home() {
     }
   }, [fetchNextPage, hasNextPage, isFetchingNextPage])
 
-  if (!rentalItemsData) {
-    return
-  }
-
-  const allRentalItems = rentalItemsData.pages.flatMap(page => page.content)
+  const allRentalItems =
+    rentalItemsData?.pages.flatMap(page => page.content) ?? []
 
   return (
-    <div className="min-h-screen w-md">
+    <div className="min-h-screen w-md bg-white">
       <Header />
       <RentalItemCategories />
-      <div className="bg-white px-4 pt-2 text-xl font-bold">
+      <div className="px-4 pt-2 text-xl font-bold">
         서울특별시 영등포구 당산동6가
       </div>
-      <RentalItems
-        rentalItems={allRentalItems}
-        onRentalItemClick={onRentalItemClick}
-        isFetchingNextPage={isFetchingNextPage}
-      />
+
+      {rentalItemsError && (
+        <div className="flex flex-col items-center justify-center px-4 py-20">
+          <div className="text-center">
+            <p className="mb-2 text-lg font-semibold text-neutral-800">
+              데이터를 불러오지 못했습니다
+            </p>
+            <p className="text-sm text-neutral-500">
+              네트워크 연결을 확인하고 다시 시도해주세요
+            </p>
+          </div>
+        </div>
+      )}
+
+      {!rentalItemsError &&
+        !rentalItemsLoading &&
+        allRentalItems.length === 0 && (
+          <div className="flex flex-col items-center justify-center px-4 py-20">
+            <div className="text-center">
+              <p className="mb-2 text-lg font-semibold text-neutral-800">
+                등록된 대여 물품이 없습니다
+              </p>
+              <p className="text-sm text-neutral-500">
+                첫 번째로 물품을 등록해보세요
+              </p>
+            </div>
+          </div>
+        )}
+
+      {allRentalItems.length > 0 && (
+        <RentalItems
+          rentalItems={allRentalItems}
+          onRentalItemClick={onRentalItemClick}
+          isFetchingNextPage={isFetchingNextPage}
+        />
+      )}
+
       {/* 무한 스크롤 트리거 요소 */}
       <div
         ref={observerTarget}
