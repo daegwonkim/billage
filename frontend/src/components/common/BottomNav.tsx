@@ -4,6 +4,7 @@ import type { NavTab } from '../../types'
 interface BottomNavProps {
   activeTab: NavTab
   onTabChange: (tab: NavTab) => void
+  onRegisterClick: () => void
 }
 
 const NAV_ITEMS = [
@@ -14,14 +15,22 @@ const NAV_ITEMS = [
   { id: 'my' as NavTab, icon: User, label: 'My 빌리지' }
 ]
 
-export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
+export function BottomNav({ activeTab, onTabChange, onRegisterClick }: BottomNavProps) {
+  const handleTabClick = (tab: NavTab) => {
+    if (tab === 'add') {
+      onRegisterClick()
+    } else {
+      onTabChange(tab)
+    }
+  }
+
   return (
     <nav className="fixed bottom-0 left-1/2 w-full max-w-md -translate-x-1/2 border-t border-gray-200 bg-white">
       <div className="grid h-16 grid-cols-5">
         {NAV_ITEMS.map(({ id, icon: Icon, label }) => (
           <button
             key={id}
-            onClick={() => onTabChange(id)}
+            onClick={() => handleTabClick(id)}
             className={`flex cursor-pointer flex-col items-center justify-center gap-1 border-none bg-transparent transition-colors ${
               activeTab === id ? 'text-black' : 'text-gray-500'
             }`}>

@@ -17,6 +17,7 @@ const queryClient = new QueryClient()
 
 function AppContent() {
   const [activeTab, setActiveTab] = useState<NavTab>('home')
+  const [showRegisterModal, setShowRegisterModal] = useState(false)
 
   const location = useLocation()
   const hideBottomNavPaths = ['/rental-items/', '/onboarding']
@@ -73,16 +74,16 @@ function AppContent() {
             path="/rental-items/:id"
             element={<RentalItemDetail />}
           />
-          <Route
-            path="/rental-items/register"
-            element={<RentalItemRegister />}
-          />
         </Routes>
         {showBottomNav && (
           <BottomNav
             activeTab={activeTab}
             onTabChange={setActiveTab}
+            onRegisterClick={() => setShowRegisterModal(true)}
           />
+        )}
+        {showRegisterModal && (
+          <RentalItemRegister onClose={() => setShowRegisterModal(false)} />
         )}
       </div>
     </div>
