@@ -46,7 +46,7 @@ class RentalItemController(
     fun getRentalItem(
         @PathVariable("id") id: Long
     ): GetRentalItemResponse {
-        return rentalItemService.getRentalItem(0L, id)
+        return rentalItemService.getRentalItem(1L, id)
     }
 
     @Operation(summary = "비슷한 상품 목록 조회", description = "현재 보고있는 상품과 비슷한 상품 목록을 조회합니다")
@@ -71,7 +71,7 @@ class RentalItemController(
     fun register(
         @RequestBody request: RegisterRentalItemRequest
     ): RegisterRentalItemResponse {
-        return rentalItemService.register(0L, request)
+        return rentalItemService.register(1L, request)
     }
 
     @Operation(summary = "수정 전 데이터 조회", description = "대여 상품 수정 전 데이터를 조회합니다")
