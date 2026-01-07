@@ -15,7 +15,7 @@ import jakarta.persistence.Table
 class RentalItem(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null,
+    val id: Long = 0L,
 
     @Column(name = "user_id", nullable = false)
     var userId: Long,

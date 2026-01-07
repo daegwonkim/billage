@@ -12,7 +12,7 @@ import jakarta.persistence.Table
 class RentalItemImage(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null,
+    val id: Long = 0L,
 
     @Column(name = "rental_item_id", nullable = false)
     var rentalItemId: Long,

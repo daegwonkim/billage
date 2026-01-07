@@ -16,7 +16,7 @@ import org.locationtech.jts.geom.PrecisionModel
 class UserNeighborhood(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null,
+    val id: Long = 0L,
 
     @Column(name = "user_id", nullable = false)
     val userId: Long,
