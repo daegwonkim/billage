@@ -97,19 +97,18 @@ class AuthService(
                 nickname = nicknameGenerator.generate()
             )
         )
-        val userId = requireNotNull(user.id) { "User ID should not be null" }
 
         neighborhoodService.saveNeighborhood(
-            userId,
+            user.id,
             request.neighborhood.latitude,
             request.neighborhood.longitude,
             request.neighborhood.code
         )
 
-        val accessToken = jwtTokenProvider.generateAccessToken(userId)
-        val refreshToken = jwtTokenProvider.generateRefreshToken(userId)
+        val accessToken = jwtTokenProvider.generateAccessToken(user.id)
+        val refreshToken = jwtTokenProvider.generateRefreshToken(user.id)
 
-        eventPublisher.publishEvent(RefreshTokenSaveEvent(userId, refreshToken))
+        eventPublisher.publishEvent(RefreshTokenSaveEvent(user.id, refreshToken))
         eventPublisher.publishEvent(VerifiedTokenDeleteEvent(request.phoneNo))
 
         return SignUpResponse(accessToken, refreshToken)
@@ -122,12 +121,10 @@ class AuthService(
 
         validateVerifiedToken(request.phoneNo, request.verifiedToken)
 
-        val userId = requireNotNull(user.id) { "User ID should not be null" }
+        val accessToken = jwtTokenProvider.generateAccessToken(user.id)
+        val refreshToken = jwtTokenProvider.generateRefreshToken(user.id)
 
-        val accessToken = jwtTokenProvider.generateAccessToken(userId)
-        val refreshToken = jwtTokenProvider.generateRefreshToken(userId)
-
-        eventPublisher.publishEvent(RefreshTokenSaveEvent(userId, refreshToken))
+        eventPublisher.publishEvent(RefreshTokenSaveEvent(user.id, refreshToken))
         eventPublisher.publishEvent(VerifiedTokenDeleteEvent(request.phoneNo))
 
         return SignInResponse(accessToken, refreshToken)

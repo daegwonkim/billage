@@ -240,14 +240,14 @@ class RentalItemService(
 
         val rentalItemImages = request.imageKeys.mapIndexed { index, key ->
             RentalItemImage(
-                rentalItemId = newRentalItem.id!!,
+                rentalItemId = newRentalItem.id,
                 key = key,
                 sequence = index
             )
         }
         rentalItemImageRepository.saveAll(rentalItemImages)
 
-        return RegisterRentalItemResponse(newRentalItem.id!!)
+        return RegisterRentalItemResponse(newRentalItem.id)
     }
 
     @Transactional(readOnly = true)
@@ -255,11 +255,11 @@ class RentalItemService(
         val rentalItem = rentalItemRepository.findById(id)
             .orElseThrow { ResourceNotFoundException("RentalItem", id) }
 
-        val rentalItemImages = rentalItemImageRepository.findAllByRentalItemIdOrderBySequence(rentalItem.id!!)
+        val rentalItemImages = rentalItemImageRepository.findAllByRentalItemIdOrderBySequence(rentalItem.id)
         val images = rentalItemImages.map { image -> GetRentalItemForModifyResponse.RentalItemImage(image.key, image.sequence) }
 
         return GetRentalItemForModifyResponse(
-            rentalItem.id!!,
+            rentalItem.id,
             rentalItem.title,
             rentalItem.description,
             rentalItem.category,

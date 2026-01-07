@@ -48,8 +48,6 @@ class NeighborhoodService(
         val neighborhood = neighborhoodRepository.findByCode(code)
             ?: throw ResourceNotFoundException("Neighborhood", "code=$code")
 
-        val neighborhoodId = requireNotNull(neighborhood.id) { "Neighborhood ID should not be null" }
-
-        userNeighborhoodRepository.save(UserNeighborhood.create(userId, neighborhoodId, latitude, longitude))
+        userNeighborhoodRepository.save(UserNeighborhood.create(userId, neighborhood.id, latitude, longitude))
     }
 }
