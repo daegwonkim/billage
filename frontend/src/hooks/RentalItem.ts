@@ -17,10 +17,11 @@ export function useGetRentalItem(id: string) {
   })
 }
 
-export function useGetRentalItems() {
+export function useGetRentalItems(category?: string) {
   return useInfiniteQuery<GetRentalItemsResponse>({
-    queryKey: ['rentalItems'],
-    queryFn: ({ pageParam }) => getRentalItems(pageParam as number),
+    queryKey: ['rentalItems', category],
+    queryFn: ({ pageParam }) =>
+      getRentalItems(pageParam as number, 10, 'CREATED_AT', 'DESC', category),
     getNextPageParam: lastPage => {
       if (lastPage.hasNext) {
         return lastPage.currentPage + 1

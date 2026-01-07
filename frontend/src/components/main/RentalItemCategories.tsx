@@ -1,12 +1,19 @@
 import { categories } from '@/types'
 import { useRef, useState } from 'react'
 
-export function RentalItemCategories() {
+interface RentalItemCategoriesProps {
+  selectedCategory?: string
+  onCategoryChange: (category: string) => void
+}
+
+export function RentalItemCategories({
+  selectedCategory,
+  onCategoryChange
+}: RentalItemCategoriesProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const [isDragging, setIsDragging] = useState(false)
   const [startX, setStartX] = useState(0)
   const [scrollLeft, setScrollLeft] = useState(0)
-  const [selectedCategory, setSelectedCategory] = useState(0)
   const [hasMoved, setHasMoved] = useState(false)
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -54,9 +61,9 @@ export function RentalItemCategories() {
     setIsDragging(false)
   }
 
-  const handleCategoryClick = (idx: number) => {
+  const handleCategoryClick = (categoryValue: string) => {
     if (!hasMoved) {
-      setSelectedCategory(idx)
+      onCategoryChange(categoryValue)
     }
   }
 
@@ -78,18 +85,23 @@ export function RentalItemCategories() {
           WebkitOverflowScrolling: 'touch'
         }}>
         <div className="flex min-w-max gap-2">
-          {categories.map((cat, idx) => (
-            <button
-              key={idx}
-              onClick={() => handleCategoryClick(idx)}
-              className={`cursor-pointer rounded-full px-4 py-2 text-sm font-semibold whitespace-nowrap transition-all ${
-                selectedCategory === idx
-                  ? 'bg-neutral-800 text-white'
-                  : 'bg-neutral-100 text-neutral-500 hover:bg-neutral-200'
-              }`}>
-              {cat.label}
-            </button>
-          ))}
+          {categories.map(cat => {
+            const isSelected =
+              selectedCategory === cat.value ||
+              (!selectedCategory && cat.value === 'ALL')
+            return (
+              <button
+                key={cat.value}
+                onClick={() => handleCategoryClick(cat.value)}
+                className={`cursor-pointer rounded-full px-4 py-2 text-sm font-semibold whitespace-nowrap transition-all ${
+                  isSelected
+                    ? 'bg-neutral-800 text-white'
+                    : 'bg-neutral-100 text-neutral-500 hover:bg-neutral-200'
+                }`}>
+                {cat.label}
+              </button>
+            )
+          })}
         </div>
       </div>
     </div>

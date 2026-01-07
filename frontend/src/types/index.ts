@@ -10,7 +10,7 @@ export const categories: Category[] = [
   { label: '가정용품', value: 'HOUSEHOLD' },
   { label: '여행용품', value: 'TRAVEL' },
   { label: '스포츠/운동', value: 'SPORTS' },
-  { label: '전자기기', value: 'ELECTRONICS' },
+  { label: '전자기기', value: 'ELECTRONIC' },
   { label: '패션잡화', value: 'FASHION' },
   { label: '육아/교육', value: 'CHILDCARE' }
 ]

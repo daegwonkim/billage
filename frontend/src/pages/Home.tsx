@@ -2,15 +2,23 @@ import { RentalItems } from '@/components/main/RentalItems'
 import { Header } from '../components/common/Header'
 import { RentalItemCategories } from '../components/main/RentalItemCategories'
 import { useNavigate } from 'react-router-dom'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useGetRentalItems } from '@/hooks/RentalItem'
 
 export function Home() {
   const navigate = useNavigate()
   const observerTarget = useRef<HTMLDivElement>(null)
+  const [selectedCategory, setSelectedCategory] = useState<string | undefined>(
+    undefined
+  )
 
   const onRentalItemClick = (rentalItemId: string) => {
     navigate(`/rental-items/${rentalItemId}`)
+  }
+
+  const handleCategoryChange = (category: string) => {
+    // 'ALL'이면 undefined로 설정 (필터 없음)
+    setSelectedCategory(category === 'ALL' ? undefined : category)
   }
 
   const {
@@ -20,7 +28,7 @@ export function Home() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage
-  } = useGetRentalItems()
+  } = useGetRentalItems(selectedCategory)
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -50,7 +58,10 @@ export function Home() {
   return (
     <div className="min-h-screen w-md bg-white">
       <Header />
-      <RentalItemCategories />
+      <RentalItemCategories
+        selectedCategory={selectedCategory}
+        onCategoryChange={handleCategoryChange}
+      />
       <div className="px-4 pt-2 text-xl font-bold">
         서울특별시 영등포구 당산동6가
       </div>

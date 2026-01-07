@@ -14,7 +14,8 @@ export async function getRentalItems(
   page = 0,
   size = 10,
   sortBy = 'CREATED_AT',
-  sortDirection = 'DESC'
+  sortDirection = 'DESC',
+  category?: string
 ): Promise<GetRentalItemsResponse> {
   const params = new URLSearchParams({
     page: page.toString(),
@@ -22,6 +23,9 @@ export async function getRentalItems(
     sortBy,
     sortDirection
   })
+  if (category) {
+    params.append('category', category)
+  }
   const response = await fetch(`${API_BASE_URL}/api/rental-items?${params}`)
   if (!response.ok) throw new Error('Failed to fetch rental items')
   return response.json()
