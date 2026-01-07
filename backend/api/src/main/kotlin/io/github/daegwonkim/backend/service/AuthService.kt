@@ -13,12 +13,9 @@ import io.github.daegwonkim.backend.dto.auth.ConfirmVerificationCodeResponse
 import io.github.daegwonkim.backend.dto.auth.SendVerificationCodeRequest
 import io.github.daegwonkim.backend.entity.User
 import io.github.daegwonkim.backend.dto.auth.ConfirmPhoneNoResponse
-import io.github.daegwonkim.backend.exception.ExternalServiceException
-import io.github.daegwonkim.backend.exception.InvalidValueException
-import io.github.daegwonkim.backend.exception.NotFoundException
-import io.github.daegwonkim.backend.exception.data.ErrorCode
+import io.github.daegwonkim.backend.exception.business.AuthenticationException
+import io.github.daegwonkim.backend.exception.infra.ExternalApiException
 import io.github.daegwonkim.backend.jwt.JwtTokenProvider
-import io.github.daegwonkim.backend.logger
 import io.github.daegwonkim.backend.redis.RefreshTokenRedisRepository
 import io.github.daegwonkim.backend.redis.VerificationCodeRedisRepository
 import io.github.daegwonkim.backend.redis.VerifiedTokenRedisRepository
@@ -51,55 +48,47 @@ class AuthService(
 ) {
 
     companion object {
-        private const val COOLSMS_SUCCESS_CODE = "2000"
         private const val VERIFICATION_CODE_LENGTH = 6
     }
 
     fun sendVerificationCode(request: SendVerificationCodeRequest) {
         val verificationCode = generateVerificationCode()
 
-        verificationCodeRedisRepository.save(phoneNo = request.phoneNo, verificationCode = verificationCode)
+        verificationCodeRedisRepository.save(request.phoneNo, verificationCode)
 
-        val smsResponse = coolsmsService.sendSms(
-            phoneNo = request.phoneNo,
-            message = buildVerificationCodeMessage(verificationCode)
-        )
-
-        if (smsResponse.statusCode != COOLSMS_SUCCESS_CODE) {
-            logger.error {
-                "SMS 발송 실패: statusCode=${smsResponse.statusCode}, message=${smsResponse.statusMessage}, " +
-                        "phoneNo=${request.phoneNo}"
-            }
-            verificationCodeRedisRepository.delete(phoneNo = request.phoneNo)
-            throw ExternalServiceException(errorCode = ErrorCode.SMS_SEND_FAILED)
+        try {
+            coolsmsService.sendSms(request.phoneNo, buildVerificationCodeMessage(verificationCode))
+        } catch (e: ExternalApiException) {
+            verificationCodeRedisRepository.delete(request.phoneNo)
+            throw e
         }
     }
 
     fun confirmVerificationCode(request: ConfirmVerificationCodeRequest): ConfirmVerificationCodeResponse {
-        validateVerificationCode(phoneNo = request.phoneNo, verificationCode = request.verificationCode)
+        validateVerificationCode(request.phoneNo, request.verificationCode)
 
         val verifiedToken = UUID.randomUUID().toString()
 
-        verifiedTokenRedisRepository.save(phoneNo = request.phoneNo, verifiedToken = verifiedToken)
-        verificationCodeRedisRepository.delete(phoneNo = request.phoneNo)
+        verifiedTokenRedisRepository.save(request.phoneNo, verifiedToken)
+        verificationCodeRedisRepository.delete(request.phoneNo)
 
-        return ConfirmVerificationCodeResponse(verifiedToken = verifiedToken)
+        return ConfirmVerificationCodeResponse(verifiedToken)
     }
 
     @Transactional(readOnly = true)
     fun confirmPhoneNo(request: ConfirmPhoneNoRequest): ConfirmPhoneNoResponse {
-        val exists = userRepository.existsByPhoneNoAndIsWithdrawnFalse(phoneNo = request.phoneNo)
+        val exists = userRepository.existsByPhoneNoAndIsWithdrawnFalse(request.phoneNo)
         return ConfirmPhoneNoResponse(exists)
     }
 
     @Transactional
     fun signUp(request: SignUpRequest): SignUpResponse {
-        validateVerifiedToken(phoneNo = request.phoneNo, verifiedToken = request.verifiedToken)
+        validateVerifiedToken(request.phoneNo, request.verifiedToken)
 
         neighborhoodService.validateNeighborhood(
-            latitude = request.neighborhood.latitude,
-            longitude = request.neighborhood.longitude,
-            inputCode = request.neighborhood.code
+            request.neighborhood.latitude,
+            request.neighborhood.longitude,
+            request.neighborhood.code
         )
 
         val user = userRepository.save(
@@ -111,105 +100,83 @@ class AuthService(
         val userId = requireNotNull(user.id) { "User ID should not be null" }
 
         neighborhoodService.saveNeighborhood(
-            userId = userId,
-            latitude = request.neighborhood.latitude,
-            longitude = request.neighborhood.longitude,
-            code = request.neighborhood.code
+            userId,
+            request.neighborhood.latitude,
+            request.neighborhood.longitude,
+            request.neighborhood.code
         )
 
-        val accessToken = jwtTokenProvider.generateAccessToken(userId = userId)
-        val refreshToken = jwtTokenProvider.generateRefreshToken(userId = userId)
+        val accessToken = jwtTokenProvider.generateAccessToken(userId)
+        val refreshToken = jwtTokenProvider.generateRefreshToken(userId)
 
-        eventPublisher.publishEvent(RefreshTokenSaveEvent(userId = userId, refreshToken = refreshToken))
-        eventPublisher.publishEvent(VerifiedTokenDeleteEvent(phoneNo = request.phoneNo))
+        eventPublisher.publishEvent(RefreshTokenSaveEvent(userId, refreshToken))
+        eventPublisher.publishEvent(VerifiedTokenDeleteEvent(request.phoneNo))
 
-        return SignUpResponse(accessToken = accessToken, refreshToken = refreshToken)
+        return SignUpResponse(accessToken, refreshToken)
     }
 
     @Transactional(readOnly = true)
     fun signIn(request: SignInRequest): SignInResponse {
-        val user = userRepository.findByPhoneNoAndIsWithdrawnFalse(phoneNo = request.phoneNo)
-            ?: throw NotFoundException(errorCode = ErrorCode.USER_NOT_FOUND)
+        val user = userRepository.findByPhoneNoAndIsWithdrawnFalse(request.phoneNo)
+            ?: throw AuthenticationException(AuthenticationException.Reason.USER_NOT_FOUND)
 
-        validateVerifiedToken(phoneNo = request.phoneNo, verifiedToken = request.verifiedToken)
+        validateVerifiedToken(request.phoneNo, request.verifiedToken)
 
         val userId = requireNotNull(user.id) { "User ID should not be null" }
 
-        val accessToken = jwtTokenProvider.generateAccessToken(userId = userId)
-        val refreshToken = jwtTokenProvider.generateRefreshToken(userId = userId)
+        val accessToken = jwtTokenProvider.generateAccessToken(userId)
+        val refreshToken = jwtTokenProvider.generateRefreshToken(userId)
 
-        eventPublisher.publishEvent(RefreshTokenSaveEvent(userId = userId, refreshToken = refreshToken))
-        eventPublisher.publishEvent(VerifiedTokenDeleteEvent(phoneNo = request.phoneNo))
+        eventPublisher.publishEvent(RefreshTokenSaveEvent(userId, refreshToken))
+        eventPublisher.publishEvent(VerifiedTokenDeleteEvent(request.phoneNo))
 
-        return SignInResponse(accessToken = accessToken, refreshToken = refreshToken)
+        return SignInResponse(accessToken, refreshToken)
     }
 
     @Transactional(readOnly = true)
     fun reissueToken(request: ReissueTokenRequest): ReissueTokenResponse {
-        if (!jwtTokenProvider.validateToken(token = request.refreshToken)) {
-            throw InvalidValueException(errorCode = ErrorCode.INVALID_REFRESH_TOKEN)
-        }
+        val userId = jwtTokenProvider.validateAndGetUserId(request.refreshToken)
 
-        val userId = jwtTokenProvider.getUserIdFromToken(token = request.refreshToken)
+        userRepository.findByIdOrNull(userId)
+            ?: throw AuthenticationException(AuthenticationException.Reason.USER_NOT_FOUND)
 
-        userRepository.findByIdOrNull(id = userId)
-            ?: throw NotFoundException(errorCode = ErrorCode.USER_NOT_FOUND)
+        validateRefreshToken(userId, request.refreshToken)
 
-        validateRefreshToken(userId = userId, refreshToken = request.refreshToken)
+        val newAccessToken = jwtTokenProvider.generateAccessToken(userId)
+        val newRefreshToken = jwtTokenProvider.generateRefreshToken(userId)
 
-        val newAccessToken = jwtTokenProvider.generateAccessToken(userId = userId)
-        val newRefreshToken = jwtTokenProvider.generateRefreshToken(userId = userId)
+        eventPublisher.publishEvent(RefreshTokenDeleteEvent(userId))
+        eventPublisher.publishEvent(RefreshTokenSaveEvent(userId, newRefreshToken))
 
-        eventPublisher.publishEvent(RefreshTokenDeleteEvent(userId = userId))
-        eventPublisher.publishEvent(RefreshTokenSaveEvent(userId = userId, refreshToken = newRefreshToken))
-
-        return ReissueTokenResponse(accessToken = newAccessToken, refreshToken = newRefreshToken)
+        return ReissueTokenResponse(newAccessToken, newRefreshToken)
     }
 
     // Private helper methods
 
     private fun validateVerificationCode(phoneNo: String, verificationCode: String) {
-        val savedCode = verificationCodeRedisRepository.find(phoneNo = phoneNo)
+        val savedCode = verificationCodeRedisRepository.find(phoneNo)
 
         when {
-            savedCode == null -> {
-                logger.warn { "존재하지 않는 인증 코드 조회 시도: phoneNo=$phoneNo" }
-                throw NotFoundException(errorCode = ErrorCode.VERIFICATION_CODE_NOT_FOUND)
-            }
-            savedCode != verificationCode -> {
-                logger.warn { "인증 코드 불일치: phoneNo=$phoneNo" }
-                throw InvalidValueException(errorCode = ErrorCode.VERIFICATION_CODE_MISMATCH)
-            }
+            savedCode == null -> throw AuthenticationException(AuthenticationException.Reason.VERIFICATION_CODE_NOT_FOUND)
+            savedCode != verificationCode -> throw AuthenticationException(AuthenticationException.Reason.VERIFICATION_CODE_MISMATCH)
         }
     }
 
     private fun validateVerifiedToken(phoneNo: String, verifiedToken: String) {
-        val savedToken = verifiedTokenRedisRepository.find(phoneNo = phoneNo)
+        val savedToken = verifiedTokenRedisRepository.find(phoneNo)
 
         when {
-            savedToken == null -> {
-                logger.warn { "존재하지 않는 인증 토큰 조회 시도: phoneNo=$phoneNo" }
-                throw NotFoundException(errorCode = ErrorCode.VERIFIED_TOKEN_NOT_FOUND)
-            }
-            savedToken != verifiedToken -> {
-                logger.warn { "인증 토큰 불일치: phoneNo=$phoneNo" }
-                throw InvalidValueException(errorCode = ErrorCode.VERIFIED_TOKEN_MISMATCH)
-            }
+            savedToken == null -> throw AuthenticationException(AuthenticationException.Reason.VERIFIED_TOKEN_NOT_FOUND)
+            savedToken != verifiedToken -> throw AuthenticationException(AuthenticationException.Reason.VERIFIED_TOKEN_MISMATCH)
         }
     }
 
     private fun validateRefreshToken(userId: Long, refreshToken: String) {
-        val savedRefreshToken = refreshTokenRedisRepository.find(userId = userId)
+        val savedRefreshToken = refreshTokenRedisRepository.find(userId)
 
         when {
-            savedRefreshToken == null -> {
-                logger.warn { "존재하지 않는 RefreshToken 조회 시도: userId=$userId" }
-                throw NotFoundException(errorCode = ErrorCode.REFRESH_TOKEN_NOT_FOUND)
-            }
-            savedRefreshToken != refreshToken -> {
-                logger.warn { "RefreshToken 불일치: userId=$userId" }
-                throw InvalidValueException(errorCode = ErrorCode.REFRESH_TOKEN_MISMATCH)
-            }
+            savedRefreshToken == null -> throw AuthenticationException(AuthenticationException.Reason.REFRESH_TOKEN_NOT_FOUND)
+            savedRefreshToken != refreshToken -> throw AuthenticationException(AuthenticationException.Reason.REFRESH_TOKEN_MISMATCH)
         }
     }
 

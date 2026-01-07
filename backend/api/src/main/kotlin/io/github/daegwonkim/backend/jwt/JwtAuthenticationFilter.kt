@@ -20,19 +20,12 @@ class JwtAuthenticationFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        try {
-            val token = cookieUtil.getTokenFromCookie(request, "accessToken")
+        val token = cookieUtil.getTokenFromCookie(request, "accessToken")
 
-            if (token != null && jwtTokenProvider.validateToken(token)) {
-                val userId = jwtTokenProvider.getUserIdFromToken(token)
-
-                val authentication = UsernamePasswordAuthenticationToken(userId, null, emptyList())
-                authentication.details = WebAuthenticationDetailsSource().buildDetails(request)
-
-                SecurityContextHolder.getContext().authentication = authentication
-            }
-        } catch (e: Exception) {
-            logger.error("Could not set user authentication in security context", e)
+        token?.let { jwtTokenProvider.validateAndGetUserIdOrNull(it) }?.let { userId ->
+            val authentication = UsernamePasswordAuthenticationToken(userId, null, emptyList())
+            authentication.details = WebAuthenticationDetailsSource().buildDetails(request)
+            SecurityContextHolder.getContext().authentication = authentication
         }
 
         filterChain.doFilter(request, response)

@@ -2,8 +2,6 @@ package io.github.daegwonkim.backend.service
 
 import io.github.daegwonkim.backend.dto.storage.GenerateSignedUrlResponse
 import io.github.daegwonkim.backend.dto.storage.GenerateUploadSignedUrlResponse
-import io.github.daegwonkim.backend.exception.ExternalServiceException
-import io.github.daegwonkim.backend.exception.data.ErrorCode
 import io.github.daegwonkim.backend.supabase.SupabaseStorageClient
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
@@ -23,16 +21,9 @@ class StorageService(
     ): GenerateUploadSignedUrlResponse {
         val fileKey = generateFileKey(originalFileName)
 
-        try {
-            val signedUrl = supabaseStorageClient.createUploadSignedUrl(bucket = bucket, fileKey = fileKey)
+        val signedUrl = supabaseStorageClient.createUploadSignedUrl(bucket, fileKey)
 
-            return GenerateUploadSignedUrlResponse(
-                fileKey = fileKey,
-                signedUrl = signedUrl
-            )
-        } catch (e: Exception) {
-            throw ExternalServiceException(ErrorCode.SIGNED_URL_CREATE_FAILED, e)
-        }
+        return GenerateUploadSignedUrlResponse(fileKey, signedUrl)
     }
 
     /**
@@ -42,20 +33,16 @@ class StorageService(
         bucket: String,
         fileKey: String
     ): GenerateSignedUrlResponse {
-        try {
-            val signedUrl = supabaseStorageClient.createSignedUrl(bucket = bucket, fileKey = fileKey)
+        val signedUrl = supabaseStorageClient.createSignedUrl(bucket, fileKey)
 
-            return GenerateSignedUrlResponse(signedUrl = signedUrl)
-        } catch (e: Exception) {
-            throw ExternalServiceException(ErrorCode.SIGNED_URL_CREATE_FAILED, e)
-        }
+        return GenerateSignedUrlResponse(signedUrl)
     }
 
     /**
      * 스토리지 파일 삭제
      */
     fun removeFile(bucket: String, fileKey: String) {
-        supabaseStorageClient.removeFile(bucket = bucket, fileKey = fileKey)
+        supabaseStorageClient.removeFile(bucket, fileKey)
     }
 
     /**

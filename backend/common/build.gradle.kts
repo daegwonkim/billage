@@ -14,13 +14,6 @@ repositories {
 }
 
 dependencies {
-    implementation(project(":common"))
-
-    implementation("org.springframework.boot:spring-boot-starter-data-redis")
-
-    // coolsms
-    implementation("net.nurigo:sdk:4.3.0")
-
     testImplementation(kotlin("test"))
 }
 

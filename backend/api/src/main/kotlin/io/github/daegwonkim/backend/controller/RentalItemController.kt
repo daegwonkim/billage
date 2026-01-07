@@ -38,14 +38,7 @@ class RentalItemController(
         @RequestParam(defaultValue = "CREATED_AT") sortBy: RentalItemSortBy,
         @RequestParam(defaultValue = "DESC") sortDirection: SortDirection
     ): GetRentalItemsResponse {
-        return rentalItemService.getRentalItems(
-            category = category,
-            keyword = keyword,
-            page = page,
-            size = size,
-            sortBy = sortBy,
-            sortDirection = sortDirection
-        )
+        return rentalItemService.getRentalItems(category, keyword, page, size, sortBy, sortDirection)
     }
 
     @Operation(summary = "대여 상품 상세 조회", description = "특정 상품의 상세 정보를 조회합니다")
@@ -53,7 +46,7 @@ class RentalItemController(
     fun getRentalItem(
         @PathVariable("id") id: Long
     ): GetRentalItemResponse {
-        return rentalItemService.getRentalItem(userId = 0L, rentalItemId = id)
+        return rentalItemService.getRentalItem(0L, id)
     }
 
     @Operation(summary = "비슷한 상품 목록 조회", description = "현재 보고있는 상품과 비슷한 상품 목록을 조회합니다")
@@ -61,7 +54,7 @@ class RentalItemController(
     fun getSimilarRentalItems(
         @PathVariable("id") id: Long
     ): GetSimilarRentalItemsResponse {
-        return rentalItemService.getSimilarRentalItems(id = id)
+        return rentalItemService.getSimilarRentalItems(id)
     }
 
     @Operation(summary = "판매자 상품 목록 조회", description = "현재 보고있는 상품 판매자의 다른 상품 목록을 조회합니다")
@@ -70,7 +63,7 @@ class RentalItemController(
         @PathVariable("id") id: Long,
         @PathVariable("sellerId") sellerId: Long
     ): GetOtherRentalItemsBySellerResponse {
-        return rentalItemService.getOtherRentalItemsBySeller(id = id, sellerId = sellerId)
+        return rentalItemService.getOtherRentalItemsBySeller(id, sellerId)
     }
 
     @Operation(summary = "대여 상품 등록", description = "새로운 대여 상품을 등록합니다")
@@ -78,7 +71,7 @@ class RentalItemController(
     fun register(
         @RequestBody request: RegisterRentalItemRequest
     ): RegisterRentalItemResponse {
-        return rentalItemService.register(userId = 0L, request = request)
+        return rentalItemService.register(0L, request)
     }
 
     @Operation(summary = "수정 전 데이터 조회", description = "대여 상품 수정 전 데이터를 조회합니다")
@@ -93,6 +86,6 @@ class RentalItemController(
         @PathVariable("id") id: Long,
         @RequestBody modifiedInfo: ModifyRentalItemRequest
     ): ModifyRentalItemResponse {
-        return rentalItemService.modify(id = id, modifiedInfo = modifiedInfo)
+        return rentalItemService.modify(id, modifiedInfo)
     }
 }

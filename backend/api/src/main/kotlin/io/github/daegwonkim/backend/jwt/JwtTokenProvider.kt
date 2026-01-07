@@ -1,6 +1,7 @@
 package io.github.daegwonkim.backend.jwt
 
-import io.github.daegwonkim.backend.logger
+import io.github.daegwonkim.backend.exception.business.AuthenticationException
+import io.github.daegwonkim.backend.log.logger
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
@@ -18,7 +19,7 @@ class JwtTokenProvider(
     @Value($$"${jwt.refresh-token-expiration.milliseconds}")
     private val refreshTokenExpiration: Long
 ) {
-    private val secretKey : SecretKey by lazy {
+    private val secretKey: SecretKey by lazy {
         Keys.hmacShaKeyFor(secret.toByteArray())
     }
 
@@ -28,18 +29,15 @@ class JwtTokenProvider(
     fun generateRefreshToken(userId: Long): String =
         buildToken(userId, refreshTokenExpiration, "REFRESH")
 
-    fun getUserIdFromToken(token: String): Long {
-        return getClaims(token).subject.toLong()
+    fun validateAndGetUserId(token: String): Long {
+        return runCatching { getClaims(token).subject.toLong() }
+            .getOrElse { throw AuthenticationException(AuthenticationException.Reason.INVALID_TOKEN) }
     }
 
-    fun validateToken(token: String): Boolean {
-        return try {
-            getClaims(token)
-            true
-        } catch (e: Exception) {
-            logger.warn { "Invalid JWT: ${e.message}" }
-            false
-        }
+    fun validateAndGetUserIdOrNull(token: String): Long? {
+        return runCatching { getClaims(token).subject.toLong() }
+            .onFailure { logger.warn { "Invalid JWT: ${it.message}" } }
+            .getOrNull()
     }
 
     // Private helper methods

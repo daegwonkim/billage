@@ -27,10 +27,7 @@ class StorageController(
     fun generateUploadSignedUrl(
         @RequestBody request: GenerateUploadSignedUrlRequest
     ): GenerateUploadSignedUrlResponse {
-        return storageService.generateUploadSignedUrl(
-            bucket = request.bucket,
-            originalFileName = request.fileName
-        )
+        return storageService.generateUploadSignedUrl(request.bucket, request.fileName)
     }
 
     @Operation(
@@ -41,18 +38,12 @@ class StorageController(
     fun generateSignedUrl(
         @RequestBody request: GenerateSignedUrlRequest
     ): GenerateSignedUrlResponse {
-        return storageService.generateSignedUrl(
-            bucket = request.bucket,
-            fileKey = request.fileKey
-        )
+        return storageService.generateSignedUrl(request.bucket, request.fileKey)
     }
 
     @Operation(summary = "스토리지 파일 삭제", description = "스토리지에 저장된 파일을 삭제합니다")
     @DeleteMapping("/file")
     fun removeFile(@RequestBody request: RemoveStorageFileRequest) {
-        storageService.removeFile(
-            bucket = request.bucket,
-            fileKey = request.fileKey
-        )
+        storageService.removeFile(request.bucket, request.fileKey)
     }
 }

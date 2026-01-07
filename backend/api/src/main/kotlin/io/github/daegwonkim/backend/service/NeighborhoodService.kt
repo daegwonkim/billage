@@ -3,10 +3,8 @@ package io.github.daegwonkim.backend.service
 import io.github.daegwonkim.backend.dto.neighborhood.LocateNeighborhoodResponse
 import io.github.daegwonkim.backend.dto.neighborhood.NearbyNeighborhoodsResponse
 import io.github.daegwonkim.backend.entity.UserNeighborhood
-import io.github.daegwonkim.backend.exception.InvalidValueException
-import io.github.daegwonkim.backend.exception.NotFoundException
-import io.github.daegwonkim.backend.exception.data.ErrorCode
-import io.github.daegwonkim.backend.logger
+import io.github.daegwonkim.backend.exception.business.InvalidRequestException
+import io.github.daegwonkim.backend.exception.business.ResourceNotFoundException
 import io.github.daegwonkim.backend.repository.NeighborhoodJooqRepository
 import io.github.daegwonkim.backend.repository.NeighborhoodRepository
 import io.github.daegwonkim.backend.repository.UserNeighborhoodRepository
@@ -19,55 +17,39 @@ class NeighborhoodService(
     private val userNeighborhoodRepository: UserNeighborhoodRepository
 ) {
     fun locate(latitude: Double, longitude: Double): LocateNeighborhoodResponse {
-        val neighborhood = neighborhoodJooqRepository.findByCoordinate(
-            latitude = latitude,
-            longitude = longitude
-        ) ?: throw NotFoundException(ErrorCode.NEIGHBORHOOD_NOT_FOUND)
+        val neighborhood = neighborhoodJooqRepository.findByCoordinate(latitude, longitude)
+            ?: throw ResourceNotFoundException("Neighborhood", "lat=$latitude, lng=$longitude")
 
-        return LocateNeighborhoodResponse(code = neighborhood.code)
+        return LocateNeighborhoodResponse(neighborhood.code)
     }
 
     fun nearby(latitude: Double, longitude: Double): NearbyNeighborhoodsResponse {
-        val neighborhoods = neighborhoodJooqRepository.findNearbyNeighborhoods(
-            latitude = latitude,
-            longitude = longitude
-        ).map { neighborhood ->
-            NearbyNeighborhoodsResponse.Neighborhood(
-                name = "${neighborhood.sido} ${neighborhood.sigungu} ${neighborhood.eupmyeondong}",
-                code = neighborhood.code
-            )
-        }
+        val neighborhoods = neighborhoodJooqRepository.findNearbyNeighborhoods(latitude, longitude)
+            .map { neighborhood ->
+                NearbyNeighborhoodsResponse.Neighborhood(
+                    "${neighborhood.sido} ${neighborhood.sigungu} ${neighborhood.eupmyeondong}",
+                    neighborhood.code
+                )
+            }
 
         return NearbyNeighborhoodsResponse(neighborhoods)
     }
 
     fun validateNeighborhood(latitude: Double, longitude: Double, inputCode: String) {
         val neighborhood = neighborhoodJooqRepository.findByCoordinate(latitude, longitude)
+            ?: throw ResourceNotFoundException("Neighborhood", "lat=$latitude, lng=$longitude")
 
-        when {
-            neighborhood == null -> {
-                logger.warn { "존재하지 않는 위치값: latitude: $latitude, longitude: $longitude" }
-                throw NotFoundException(errorCode = ErrorCode.NEIGHBORHOOD_NOT_FOUND)
-            }
-            inputCode != neighborhood.code -> {
-                logger.warn { "사용자 동네 정보 불일치: inputCode=${inputCode}, code=${neighborhood.code}" }
-                throw InvalidValueException(errorCode = ErrorCode.NEIGHBORHOOD_MISMATCH)
-            }
+        if (inputCode != neighborhood.code) {
+            throw InvalidRequestException("동네 정보가 일치하지 않습니다")
         }
     }
 
     fun saveNeighborhood(userId: Long, latitude: Double, longitude: Double, code: String) {
-        val neighborhood = neighborhoodRepository.findByCode(code = code)
-            ?: throw NotFoundException(errorCode = ErrorCode.NEIGHBORHOOD_NOT_FOUND)
-        val neighborhoodId = requireNotNull(value = neighborhood.id) { "Neighborhood ID should not be null" }
+        val neighborhood = neighborhoodRepository.findByCode(code)
+            ?: throw ResourceNotFoundException("Neighborhood", "code=$code")
 
-        userNeighborhoodRepository.save(
-            UserNeighborhood.create(
-                userId = userId,
-                neighborhoodId = neighborhoodId,
-                latitude = latitude,
-                longitude = longitude
-            )
-        )
+        val neighborhoodId = requireNotNull(neighborhood.id) { "Neighborhood ID should not be null" }
+
+        userNeighborhoodRepository.save(UserNeighborhood.create(userId, neighborhoodId, latitude, longitude))
     }
 }
