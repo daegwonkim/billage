@@ -1,5 +1,7 @@
 package io.github.daegwonkim.backend.dto.rental_item
 
+import io.github.daegwonkim.backend.repository.projection.GetRentalItemsProjection
+import org.springframework.data.domain.Page
 import java.time.LocalDateTime
 
 data class GetRentalItemsResponse(
@@ -23,4 +25,17 @@ data class GetRentalItemsResponse(
         val viewCount: Int,
         val createdAt: LocalDateTime
     )
+
+    companion object {
+        fun from(result: Page<GetRentalItemsProjection>, content: List<RentalItem>): GetRentalItemsResponse =
+            GetRentalItemsResponse(
+                content,
+                result.number,
+                result.size,
+                result.totalElements,
+                result.totalPages,
+                result.hasNext(),
+                result.hasPrevious()
+            )
+    }
 }

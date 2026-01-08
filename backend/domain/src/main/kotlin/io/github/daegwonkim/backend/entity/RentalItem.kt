@@ -38,4 +38,19 @@ class RentalItem(
 
     @Column(name = "view_count", nullable = false)
     var viewCount: Int = 0
-) : BaseEntity()
+) : BaseEntity() {
+
+    fun modify(
+        category: RentalItemCategory,
+        title: String,
+        description: String,
+        pricePerDay: Int?,
+        pricePerWeek: Int?
+    ) {
+        this.category = category
+        this.title = title
+        this.description = description
+        this.pricePerDay = pricePerDay
+        this.pricePerWeek = pricePerWeek
+    }
+}

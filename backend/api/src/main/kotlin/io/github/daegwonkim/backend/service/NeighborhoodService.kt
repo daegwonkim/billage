@@ -28,7 +28,7 @@ class NeighborhoodService(
 
     fun nearby(latitude: Double, longitude: Double): NearbyNeighborhoodsResponse {
         val nearbyNeighborhoods = neighborhoodJooqRepository.findNearbyNeighborhoods(latitude, longitude)
-            .map { neighborhood -> toNearbyNeighborhoodResponse(neighborhood) }
+            .map(::toNearbyNeighborhoodResponse)
 
         return NearbyNeighborhoodsResponse(nearbyNeighborhoods)
     }

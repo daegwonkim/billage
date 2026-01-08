@@ -3,6 +3,7 @@ package io.github.daegwonkim.backend.controller
 import io.github.daegwonkim.backend.dto.rental_item.GetOtherRentalItemsBySellerResponse
 import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemResponse
 import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemForModifyResponse
+import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemsRequest
 import io.github.daegwonkim.backend.dto.rental_item.ModifyRentalItemRequest
 import io.github.daegwonkim.backend.dto.rental_item.ModifyRentalItemResponse
 import io.github.daegwonkim.backend.dto.rental_item.RegisterRentalItemRequest
@@ -38,7 +39,8 @@ class RentalItemController(
         @RequestParam(defaultValue = "CREATED_AT") sortBy: RentalItemSortBy,
         @RequestParam(defaultValue = "DESC") sortDirection: SortDirection
     ): GetRentalItemsResponse {
-        return rentalItemService.getRentalItems(category, keyword, page, size, sortBy, sortDirection)
+        val request = GetRentalItemsRequest(category, keyword, page, size, sortBy, sortDirection)
+        return rentalItemService.getRentalItems(request)
     }
 
     @Operation(summary = "대여 상품 상세 조회", description = "특정 상품의 상세 정보를 조회합니다")

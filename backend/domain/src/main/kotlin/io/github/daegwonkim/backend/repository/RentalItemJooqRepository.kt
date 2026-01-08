@@ -9,9 +9,9 @@ import io.github.daegwonkim.backend.jooq.generated.Tables.RENTAL_ITEM_IMAGES
 import io.github.daegwonkim.backend.jooq.generated.Tables.RENTAL_ITEM_LIKE_RECORDS
 import io.github.daegwonkim.backend.jooq.generated.Tables.RENTAL_RECORDS
 import io.github.daegwonkim.backend.jooq.generated.Tables.USER_NEIGHBORHOODS
-import io.github.daegwonkim.backend.repository.projection.GetOtherRentalItemsBySellerItem
-import io.github.daegwonkim.backend.repository.projection.GetRentalItemItem
-import io.github.daegwonkim.backend.repository.projection.GetRentalItemsItem
+import io.github.daegwonkim.backend.repository.projection.GetOtherRentalItemsBySellerItemProjection
+import io.github.daegwonkim.backend.repository.projection.GetRentalItemProjection
+import io.github.daegwonkim.backend.repository.projection.GetRentalItemsProjection
 import org.jooq.DSLContext
 import org.jooq.impl.DSL
 import org.jooq.impl.DSL.concat
@@ -34,7 +34,7 @@ class RentalItemJooqRepository(
         category: RentalItemCategory?,
         keyword: String?,
         pageable: Pageable
-    ): Page<GetRentalItemsItem> {
+    ): Page<GetRentalItemsProjection> {
         val baseQuery = dslContext.select(
             RENTAL_ITEMS.ID,
             RENTAL_ITEMS.TITLE,
@@ -62,12 +62,12 @@ class RentalItemJooqRepository(
         val results = baseQuery
             .limit(pageable.pageSize)
             .offset(pageable.offset)
-            .fetchInto(GetRentalItemsItem::class.java)
+            .fetchInto(GetRentalItemsProjection::class.java)
 
         return PageImpl(results, pageable, totalCount)
     }
 
-    fun getRentalItem(rentalItemId: Long, userId: Long): GetRentalItemItem? {
+    fun getRentalItem(rentalItemId: Long, userId: Long): GetRentalItemProjection? {
         return dslContext.select(
             USERS.ID.`as`("seller_id"),
             USERS.NICKNAME.`as`("seller_nickname"),
@@ -89,13 +89,13 @@ class RentalItemJooqRepository(
             .join(USER_NEIGHBORHOODS).on(USER_NEIGHBORHOODS.USER_ID.eq(RENTAL_ITEMS.USER_ID))
             .join(NEIGHBORHOODS).on(NEIGHBORHOODS.ID.eq(USER_NEIGHBORHOODS.NEIGHBORHOOD_ID))
             .where(RENTAL_ITEMS.ID.eq(rentalItemId))
-            .fetchOneInto(GetRentalItemItem::class.java)
+            .fetchOneInto(GetRentalItemProjection::class.java)
     }
 
     fun getOtherRentalItemsBySeller(
         rentalItemId: Long,
         sellerId: Long
-    ): List<GetOtherRentalItemsBySellerItem> {
+    ): List<GetOtherRentalItemsBySellerItemProjection> {
         return dslContext.select(
             RENTAL_ITEMS.ID,
             RENTAL_ITEMS.TITLE,
@@ -107,7 +107,7 @@ class RentalItemJooqRepository(
             .where(RENTAL_ITEMS.ID.ne(rentalItemId)
                 .and(USERS.ID.eq(sellerId)))
             .limit(10)
-            .fetchInto(GetOtherRentalItemsBySellerItem::class.java)
+            .fetchInto(GetOtherRentalItemsBySellerItemProjection::class.java)
     }
 
     private fun thumbnailImageUrlSubquery() =

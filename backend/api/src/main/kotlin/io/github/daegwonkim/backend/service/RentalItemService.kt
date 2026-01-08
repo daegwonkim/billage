@@ -3,6 +3,7 @@ package io.github.daegwonkim.backend.service
 import io.github.daegwonkim.backend.dto.rental_item.GetOtherRentalItemsBySellerResponse
 import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemResponse
 import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemForModifyResponse
+import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemsRequest
 import io.github.daegwonkim.backend.dto.rental_item.ModifyRentalItemRequest
 import io.github.daegwonkim.backend.dto.rental_item.ModifyRentalItemResponse
 import io.github.daegwonkim.backend.dto.rental_item.RegisterRentalItemRequest
@@ -11,14 +12,17 @@ import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemsResponse
 import io.github.daegwonkim.backend.dto.rental_item.GetSimilarRentalItemsResponse
 import io.github.daegwonkim.backend.entity.RentalItem
 import io.github.daegwonkim.backend.entity.RentalItemImage
-import io.github.daegwonkim.backend.enumerate.RentalItemCategory
 import io.github.daegwonkim.backend.enumerate.RentalItemSortBy
 import io.github.daegwonkim.backend.enumerate.SortDirection
+import io.github.daegwonkim.backend.enumerate.SortDirection.ASC
+import io.github.daegwonkim.backend.enumerate.SortDirection.DESC
 import io.github.daegwonkim.backend.event.dto.StorageFileDeleteEvent
 import io.github.daegwonkim.backend.exception.business.ResourceNotFoundException
 import io.github.daegwonkim.backend.repository.RentalItemImageRepository
 import io.github.daegwonkim.backend.repository.RentalItemJooqRepository
 import io.github.daegwonkim.backend.repository.RentalItemRepository
+import io.github.daegwonkim.backend.repository.projection.GetOtherRentalItemsBySellerItemProjection
+import io.github.daegwonkim.backend.repository.projection.GetRentalItemsProjection
 import io.github.daegwonkim.backend.supabase.SupabaseStorageClient
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationEventPublisher
@@ -43,47 +47,13 @@ class RentalItemService(
 ) {
 
     @Transactional(readOnly = true)
-    fun getRentalItems(
-        category: RentalItemCategory?,
-        keyword: String?,
-        page: Int,
-        size: Int,
-        sortBy: RentalItemSortBy,
-        sortDirection: SortDirection
-    ): GetRentalItemsResponse {
-        val sort = when (sortDirection) {
-            SortDirection.ASC -> Sort.by(Sort.Direction.ASC, sortBy.name)
-            SortDirection.DESC -> Sort.by(Sort.Direction.DESC, sortBy.name)
-        }
+    fun getRentalItems(request: GetRentalItemsRequest): GetRentalItemsResponse {
+        val sort = toSort(request.sortDirection, request.sortBy)
+        val pageable = PageRequest.of(request.page, request.size, sort)
+        val result = rentalItemJooqRepository.getRentalItems(request.category, request.keyword, pageable)
+        val content = result.content.map(::toGetRentalItemsResponse)
 
-        val pageable = PageRequest.of(page, size, sort)
-
-        val result = rentalItemJooqRepository.getRentalItems(category, keyword, pageable)
-
-        val content = result.content.map { rentalItem ->
-            GetRentalItemsResponse.RentalItem(
-                rentalItem.id,
-                rentalItem.title,
-                supabaseStorageClient.getPublicUrl(rentalItemImagesBucket, rentalItem.thumbnailImageKey),
-                rentalItem.address,
-                rentalItem.pricePerDay,
-                rentalItem.pricePerWeek,
-                rentalItem.rentalCount,
-                rentalItem.likeCount,
-                rentalItem.viewCount,
-                rentalItem.createdAt
-            )
-        }
-
-        return GetRentalItemsResponse(
-            content,
-            result.number,
-            result.size,
-            result.totalElements,
-            result.totalPages,
-            result.hasNext(),
-            result.hasPrevious()
-        )
+        return GetRentalItemsResponse.from(result, content)
     }
 
     @Transactional(readOnly = true)
@@ -91,36 +61,12 @@ class RentalItemService(
         val rentalItem = rentalItemJooqRepository.getRentalItem(rentalItemId, userId)
             ?: throw ResourceNotFoundException("RentalItem", rentalItemId)
 
-        val imageUrls = rentalItemImageRepository
-            .findAllByRentalItemIdOrderBySequence(rentalItem.id)
-            .map { image ->
-                supabaseStorageClient.getPublicUrl(
-                    rentalItemImagesBucket,
-                    image.key
-                )
+        return GetRentalItemResponse.from(
+            item = rentalItem,
+            imageUrls = getRentalItemImageUrls(rentalItem.id),
+            sellerProfileImageUrl = rentalItem.sellerProfileImageKey?.let {
+                supabaseStorageClient.getPublicUrl(userProfileImagesBucket, it)
             }
-
-        return GetRentalItemResponse(
-            rentalItem.id,
-            GetRentalItemResponse.Seller(
-                rentalItem.sellerId,
-                rentalItem.sellerNickname,
-                rentalItem.address,
-                rentalItem.sellerProfileImageKey?.let {
-                    supabaseStorageClient.getPublicUrl(userProfileImagesBucket, it)
-                }
-            ),
-            rentalItem.category,
-            rentalItem.title,
-            rentalItem.description,
-            imageUrls,
-            rentalItem.pricePerDay,
-            rentalItem.pricePerWeek,
-            rentalItem.rentalCount,
-            rentalItem.likeCount,
-            rentalItem.viewCount,
-            rentalItem.liked,
-            rentalItem.createdAt
         )
     }
 
@@ -130,20 +76,9 @@ class RentalItemService(
     }
 
     @Transactional(readOnly = true)
-    fun getOtherRentalItemsBySeller(
-        id: Long,
-        sellerId: Long
-    ): GetOtherRentalItemsBySellerResponse {
+    fun getOtherRentalItemsBySeller(id: Long, sellerId: Long): GetOtherRentalItemsBySellerResponse {
         val otherRentalItems = rentalItemJooqRepository.getOtherRentalItemsBySeller(id, sellerId)
-            .map { rentalItem ->
-                GetOtherRentalItemsBySellerResponse.RentalItem(
-                    rentalItem.id,
-                    supabaseStorageClient.getPublicUrl(rentalItemImagesBucket, rentalItem.thumbnailImageKey),
-                    rentalItem.title,
-                    rentalItem.pricePerDay,
-                    rentalItem.pricePerWeek
-                )
-            }
+            .map(::toGetOtherRentalItemsBySellerResponse)
 
         return GetOtherRentalItemsBySellerResponse(otherRentalItems)
     }
@@ -163,15 +98,7 @@ class RentalItemService(
                 pricePerWeek = request.pricePerWeek
             )
         )
-
-        val rentalItemImages = request.imageKeys.mapIndexed { index, key ->
-            RentalItemImage(
-                rentalItemId = newRentalItem.id,
-                key = key,
-                sequence = index
-            )
-        }
-        rentalItemImageRepository.saveAll(rentalItemImages)
+        saveRentalItemImages(newRentalItem.id, request.imageKeys)
 
         return RegisterRentalItemResponse(newRentalItem.id)
     }
@@ -180,19 +107,9 @@ class RentalItemService(
     fun getForModify(id: Long): GetRentalItemForModifyResponse {
         val rentalItem = rentalItemRepository.findById(id)
             .orElseThrow { ResourceNotFoundException("RentalItem", id) }
+        val rentalItemImages = getRentalItemImages(rentalItem.id)
 
-        val rentalItemImages = rentalItemImageRepository.findAllByRentalItemIdOrderBySequence(rentalItem.id)
-        val images = rentalItemImages.map { image -> GetRentalItemForModifyResponse.RentalItemImage(image.key, image.sequence) }
-
-        return GetRentalItemForModifyResponse(
-            rentalItem.id,
-            rentalItem.title,
-            rentalItem.description,
-            rentalItem.category,
-            rentalItem.pricePerDay,
-            rentalItem.pricePerWeek,
-            images
-        )
+        return GetRentalItemForModifyResponse.from(rentalItem, rentalItemImages)
     }
 
     @Transactional
@@ -202,32 +119,87 @@ class RentalItemService(
     ): ModifyRentalItemResponse {
         val rentalItem = rentalItemRepository.findById(id)
             .orElseThrow { ResourceNotFoundException("RentalItem", id) }
+        rentalItem.modify(modifiedInfo.category, modifiedInfo.title, modifiedInfo.description,
+            modifiedInfo.pricePerDay, modifiedInfo.pricePerWeek)
 
-        rentalItem.title = modifiedInfo.title
-        rentalItem.description = modifiedInfo.description
-        rentalItem.category = modifiedInfo.category
-        rentalItem.pricePerDay = modifiedInfo.pricePerDay
-        rentalItem.pricePerWeek = modifiedInfo.pricePerWeek
-
-        if (modifiedInfo.deleteImageKeys.isNotEmpty()) {
-            rentalItemImageRepository.deleteAllByKeyIn(modifiedInfo.deleteImageKeys)
-
-            modifiedInfo.deleteImageKeys.forEach { key ->
-                eventPublisher.publishEvent(StorageFileDeleteEvent(rentalItemImagesBucket, key))
-            }
-        }
-
-        if (modifiedInfo.newImageKeys.isNotEmpty()) {
-            val newRentalItemImages = modifiedInfo.newImageKeys.mapIndexed { index, key ->
-                RentalItemImage(
-                    rentalItemId = id,
-                    key = key,
-                    sequence = index
-                )
-            }
-            rentalItemImageRepository.saveAll(newRentalItemImages)
-        }
+        deleteRemovedImages(modifiedInfo.deleteImageKeys)
+        saveNewImages(rentalItem.id, modifiedInfo.newImageKeys)
 
         return ModifyRentalItemResponse(id)
+    }
+
+    private fun saveNewImages(rentalItemId: Long, newImageKeys: List<String>) {
+        if (newImageKeys.isEmpty()) return
+
+        val newRentalItemImages = newImageKeys.mapIndexed { index, key ->
+            RentalItemImage(
+                rentalItemId = rentalItemId,
+                key = key,
+                sequence = index
+            )
+        }
+        rentalItemImageRepository.saveAll(newRentalItemImages)
+    }
+
+    private fun toSort(sortDirection: SortDirection, sortBy: RentalItemSortBy): Sort =
+        when (sortDirection) {
+            ASC -> Sort.by(Sort.Direction.ASC, sortBy.name)
+            DESC -> Sort.by(Sort.Direction.DESC, sortBy.name)
+        }
+
+    private fun toGetRentalItemsResponse(rentalItem: GetRentalItemsProjection): GetRentalItemsResponse.RentalItem =
+        GetRentalItemsResponse.RentalItem(
+            rentalItem.id,
+            rentalItem.title,
+            supabaseStorageClient.getPublicUrl(rentalItemImagesBucket, rentalItem.thumbnailImageKey),
+            rentalItem.address,
+            rentalItem.pricePerDay,
+            rentalItem.pricePerWeek,
+            rentalItem.rentalCount,
+            rentalItem.likeCount,
+            rentalItem.viewCount,
+            rentalItem.createdAt
+        )
+
+    private fun getRentalItemImageUrls(rentalItemId: Long): List<String> =
+        rentalItemImageRepository
+            .findAllByRentalItemIdOrderBySequence(rentalItemId)
+            .map { image -> supabaseStorageClient.getPublicUrl(rentalItemImagesBucket, image.key) }
+
+    private fun toGetOtherRentalItemsBySellerResponse(rentalItem: GetOtherRentalItemsBySellerItemProjection): GetOtherRentalItemsBySellerResponse.RentalItem =
+        GetOtherRentalItemsBySellerResponse.RentalItem(
+            rentalItem.id,
+            supabaseStorageClient.getPublicUrl(rentalItemImagesBucket, rentalItem.thumbnailImageKey),
+            rentalItem.title,
+            rentalItem.pricePerDay,
+            rentalItem.pricePerWeek
+        )
+
+    private fun saveRentalItemImages(rentalItemId: Long, imageKeys: List<String>) {
+        val rentalItemImages = imageKeys.mapIndexed { index, key ->
+            RentalItemImage(
+                rentalItemId = rentalItemId,
+                key = key,
+                sequence = index
+            )
+        }
+        rentalItemImageRepository.saveAll(rentalItemImages)
+    }
+
+    private fun getRentalItemImages(rentalItemId: Long): List<GetRentalItemForModifyResponse.RentalItemImage> {
+        val rentalItemImages = rentalItemImageRepository.findAllByRentalItemIdOrderBySequence(rentalItemId)
+
+        return rentalItemImages.map { image ->
+            GetRentalItemForModifyResponse.RentalItemImage(image.key, image.sequence)
+        }
+    }
+
+    private fun deleteRemovedImages(deleteImageKeys: List<String>) {
+        if (deleteImageKeys.isEmpty()) return
+
+        rentalItemImageRepository.deleteAllByKeyIn(deleteImageKeys)
+        deleteImageKeys.forEach { key ->
+            eventPublisher.publishEvent(StorageFileDeleteEvent(rentalItemImagesBucket, key))
+        }
     }
 }

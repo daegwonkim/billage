@@ -2,7 +2,7 @@ package io.github.daegwonkim.backend.repository.projection
 
 import java.time.LocalDateTime
 
-data class GetRentalItemItem(
+data class GetRentalItemProjection(
     val id: Long,
     val sellerId: Long,
     val sellerNickname: String,

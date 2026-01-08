@@ -2,7 +2,7 @@ package io.github.daegwonkim.backend.repository.projection
 
 import java.time.LocalDateTime
 
-data class GetRentalItemsItem(
+data class GetRentalItemsProjection(
     val id: Long,
     val title: String,
     val thumbnailImageKey: String,
