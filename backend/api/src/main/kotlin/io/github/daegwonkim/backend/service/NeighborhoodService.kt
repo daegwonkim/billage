@@ -3,12 +3,13 @@ package io.github.daegwonkim.backend.service
 import io.github.daegwonkim.backend.dto.neighborhood.LocateNeighborhoodResponse
 import io.github.daegwonkim.backend.dto.neighborhood.NearbyNeighborhoodsResponse
 import io.github.daegwonkim.backend.entity.UserNeighborhood
+import io.github.daegwonkim.backend.entity.command.CreateUserNeighborhoodCommand
 import io.github.daegwonkim.backend.exception.business.AuthenticationException
-import io.github.daegwonkim.backend.exception.business.InvalidRequestException
 import io.github.daegwonkim.backend.exception.business.ResourceNotFoundException
 import io.github.daegwonkim.backend.repository.NeighborhoodJooqRepository
 import io.github.daegwonkim.backend.repository.NeighborhoodRepository
 import io.github.daegwonkim.backend.repository.UserNeighborhoodRepository
+import io.github.daegwonkim.backend.repository.projection.NeighborhoodProjection
 import io.github.daegwonkim.backend.vo.Neighborhood
 import org.springframework.stereotype.Service
 
@@ -26,15 +27,10 @@ class NeighborhoodService(
     }
 
     fun nearby(latitude: Double, longitude: Double): NearbyNeighborhoodsResponse {
-        val neighborhoods = neighborhoodJooqRepository.findNearbyNeighborhoods(latitude, longitude)
-            .map { neighborhood ->
-                NearbyNeighborhoodsResponse.Neighborhood(
-                    "${neighborhood.sido} ${neighborhood.sigungu} ${neighborhood.eupmyeondong}",
-                    neighborhood.code
-                )
-            }
+        val nearbyNeighborhoods = neighborhoodJooqRepository.findNearbyNeighborhoods(latitude, longitude)
+            .map { neighborhood -> toNearbyNeighborhoodResponse(neighborhood) }
 
-        return NearbyNeighborhoodsResponse(neighborhoods)
+        return NearbyNeighborhoodsResponse(nearbyNeighborhoods)
     }
 
     fun validateNeighborhood(requestedNeighborhood: Neighborhood) {
@@ -55,12 +51,20 @@ class NeighborhoodService(
         val neighborhood = neighborhoodRepository.findByCode(requestedNeighborhood.code)
             ?: throw ResourceNotFoundException("Neighborhood", "code=${requestedNeighborhood.code}")
 
-        userNeighborhoodRepository.save(
-            UserNeighborhood.create(
-                userId,
-                neighborhood.id,
-                requestedNeighborhood.latitude,
-                requestedNeighborhood.longitude)
+        val command = CreateUserNeighborhoodCommand(
+            userId = userId,
+            neighborhoodId = neighborhood.id,
+            latitude = requestedNeighborhood.latitude,
+            longitude = requestedNeighborhood.longitude
         )
+        userNeighborhoodRepository.save(UserNeighborhood.create(command))
     }
+
+    private fun toNearbyNeighborhoodResponse(
+        neighborhood: NeighborhoodProjection
+    ): NearbyNeighborhoodsResponse.Neighborhood =
+        NearbyNeighborhoodsResponse.Neighborhood(
+            "${neighborhood.sido} ${neighborhood.sigungu} ${neighborhood.eupmyeondong}",
+            neighborhood.code
+        )
 }

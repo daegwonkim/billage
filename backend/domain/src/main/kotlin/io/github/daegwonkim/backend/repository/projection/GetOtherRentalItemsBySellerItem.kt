@@ -1,4 +1,4 @@
-package io.github.daegwonkim.backend.repository.dto
+package io.github.daegwonkim.backend.repository.projection
 
 
 data class GetOtherRentalItemsBySellerItem(

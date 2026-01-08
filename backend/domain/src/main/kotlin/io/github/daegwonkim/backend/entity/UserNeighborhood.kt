@@ -1,5 +1,6 @@
 package io.github.daegwonkim.backend.entity
 
+import io.github.daegwonkim.backend.entity.command.CreateUserNeighborhoodCommand
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
@@ -28,12 +29,12 @@ class UserNeighborhood(
     val location: Point
 ) {
     companion object {
-        fun create(userId: Long, neighborhoodId: Long, latitude: Double, longitude: Double): UserNeighborhood {
+        fun create(command: CreateUserNeighborhoodCommand): UserNeighborhood {
             return UserNeighborhood(
-                userId = userId,
-                neighborhoodId = neighborhoodId,
+                userId = command.userId,
+                neighborhoodId = command.neighborhoodId,
                 location = GeometryFactory(PrecisionModel(), 4326)
-                    .createPoint(Coordinate(longitude, latitude))
+                    .createPoint(Coordinate(command.longitude, command.latitude))
             )
         }
     }

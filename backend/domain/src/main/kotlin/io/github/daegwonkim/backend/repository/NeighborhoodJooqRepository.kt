@@ -1,7 +1,7 @@
 package io.github.daegwonkim.backend.repository
 
 import io.github.daegwonkim.backend.jooq.generated.Tables.NEIGHBORHOODS
-import io.github.daegwonkim.backend.repository.dto.Neighborhood
+import io.github.daegwonkim.backend.repository.projection.NeighborhoodProjection
 import org.jooq.DSLContext
 import org.jooq.impl.DSL
 import org.springframework.stereotype.Repository
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository
 class NeighborhoodJooqRepository(
     private val dslContext: DSLContext
 ) {
-    fun findByCoordinate(latitude: Double, longitude: Double): Neighborhood? {
+    fun findByCoordinate(latitude: Double, longitude: Double): NeighborhoodProjection? {
         return dslContext.select(
             NEIGHBORHOODS.ID,
             NEIGHBORHOODS.CODE,
@@ -33,10 +33,10 @@ class NeighborhoodJooqRepository(
                 )
             )
             .limit(1)
-            .fetchOneInto(Neighborhood::class.java)
+            .fetchOneInto(NeighborhoodProjection::class.java)
     }
 
-    fun findNearbyNeighborhoods(latitude: Double, longitude: Double): List<Neighborhood> {
+    fun findNearbyNeighborhoods(latitude: Double, longitude: Double): List<NeighborhoodProjection> {
         return dslContext.select(
             NEIGHBORHOODS.ID,
             NEIGHBORHOODS.CODE,
@@ -66,6 +66,6 @@ class NeighborhoodJooqRepository(
                 )
             )
             .limit(15)
-            .fetchInto(Neighborhood::class.java)
+            .fetchInto(NeighborhoodProjection::class.java)
     }
 }

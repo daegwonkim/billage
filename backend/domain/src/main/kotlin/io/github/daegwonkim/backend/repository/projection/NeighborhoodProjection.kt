@@ -1,6 +1,6 @@
-package io.github.daegwonkim.backend.repository.dto
+package io.github.daegwonkim.backend.repository.projection
 
-data class Neighborhood(
+data class NeighborhoodProjection(
     val id: Long,
     val code: String,
     val sido: String,

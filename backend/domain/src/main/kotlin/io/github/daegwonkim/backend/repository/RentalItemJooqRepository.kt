@@ -9,9 +9,9 @@ import io.github.daegwonkim.backend.jooq.generated.Tables.RENTAL_ITEM_IMAGES
 import io.github.daegwonkim.backend.jooq.generated.Tables.RENTAL_ITEM_LIKE_RECORDS
 import io.github.daegwonkim.backend.jooq.generated.Tables.RENTAL_RECORDS
 import io.github.daegwonkim.backend.jooq.generated.Tables.USER_NEIGHBORHOODS
-import io.github.daegwonkim.backend.repository.dto.GetOtherRentalItemsBySellerItem
-import io.github.daegwonkim.backend.repository.dto.GetRentalItemItem
-import io.github.daegwonkim.backend.repository.dto.GetRentalItemsItem
+import io.github.daegwonkim.backend.repository.projection.GetOtherRentalItemsBySellerItem
+import io.github.daegwonkim.backend.repository.projection.GetRentalItemItem
+import io.github.daegwonkim.backend.repository.projection.GetRentalItemsItem
 import org.jooq.DSLContext
 import org.jooq.impl.DSL
 import org.jooq.impl.DSL.concat
