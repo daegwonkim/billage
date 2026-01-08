@@ -20,19 +20,31 @@ export function Home() {
   const [location, setLocation] = useState<{
     latitude: string
     longitude: string
-  } | null>(null)
+  } | null>(() => {
+    // localStorage에서 저장된 위치 정보 불러오기
+    const savedLocation = localStorage.getItem('userLocation')
+    return savedLocation ? JSON.parse(savedLocation) : null
+  })
   const [showLocationPermissionModal, setShowLocationPermissionModal] =
     useState(false)
 
   // 현재 위치 가져오기
   useEffect(() => {
+    // 이미 저장된 위치 정보가 있으면 스킵
+    if (location) {
+      return
+    }
+
     const requestLocation = () => {
       navigator.geolocation.getCurrentPosition(
         position => {
-          setLocation({
+          const newLocation = {
             latitude: position.coords.latitude.toString(),
             longitude: position.coords.longitude.toString()
-          })
+          }
+          setLocation(newLocation)
+          // localStorage에 저장
+          localStorage.setItem('userLocation', JSON.stringify(newLocation))
           setShowLocationPermissionModal(false)
         },
         error => {
@@ -52,7 +64,7 @@ export function Home() {
         requestLocation()
       }
     }) ?? requestLocation()
-  }, [])
+  }, [location])
 
   const { data: neighborhoodData } = useLocateNeighborhood(
     {
