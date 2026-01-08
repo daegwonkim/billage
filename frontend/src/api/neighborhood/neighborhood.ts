@@ -1,15 +1,18 @@
-import type { LocateNeighborhoodQueryRequest } from './dto/LocateNeighborhoodQuery'
 import type {
-  NearbyNeighborhoodsQueryRequest,
-  NearbyNeighborhoodsQueryResponse
-} from './dto/NearbyNeighborhoodsQuery'
+  LocateNeighborhoodRequest,
+  LocateNeighborhoodResponse
+} from './dto/LocateNeighborhood'
+import type {
+  NearbyNeighborhoodsRequest,
+  NearbyNeighborhoodsResponse
+} from './dto/NearbyNeighborhoods'
 import { ApiError, type ApiErrorResponse } from '../error'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL!
 
 export async function nearbyNeighborhoods(
-  request: NearbyNeighborhoodsQueryRequest
-): Promise<NearbyNeighborhoodsQueryResponse> {
+  request: NearbyNeighborhoodsRequest
+): Promise<NearbyNeighborhoodsResponse> {
   const params = new URLSearchParams({
     latitude: request.latitude,
     longitude: request.longitude
@@ -35,8 +38,8 @@ export async function nearbyNeighborhoods(
 }
 
 export async function locateNeighborhood(
-  request: LocateNeighborhoodQueryRequest
-) {
+  request: LocateNeighborhoodRequest
+): Promise<LocateNeighborhoodResponse> {
   const params = new URLSearchParams({
     latitude: request.latitude,
     longitude: request.longitude

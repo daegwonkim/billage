@@ -1,9 +1,9 @@
-export interface NearbyNeighborhoodsQueryRequest {
+export interface NearbyNeighborhoodsRequest {
   latitude: string
   longitude: string
 }
 
-export interface NearbyNeighborhoodsQueryResponse {
+export interface NearbyNeighborhoodsResponse {
   neighborhoods: Neighborhood[]
 }
 

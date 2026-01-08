@@ -4,12 +4,57 @@ import { RentalItemCategories } from '../components/main/RentalItemCategories'
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useRef, useState } from 'react'
 import { useGetRentalItems } from '@/hooks/RentalItem'
+import { useLocateNeighborhood } from '@/hooks/Neighborhood'
 
 export function Home() {
   const navigate = useNavigate()
   const observerTarget = useRef<HTMLDivElement>(null)
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>(
     undefined
+  )
+  const [location, setLocation] = useState<{
+    latitude: string
+    longitude: string
+  } | null>(null)
+  const [showLocationPermissionModal, setShowLocationPermissionModal] =
+    useState(false)
+
+  // 현재 위치 가져오기
+  useEffect(() => {
+    const requestLocation = () => {
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          setLocation({
+            latitude: position.coords.latitude.toString(),
+            longitude: position.coords.longitude.toString()
+          })
+          setShowLocationPermissionModal(false)
+        },
+        error => {
+          console.error('위치 정보를 가져올 수 없습니다:', error)
+          if (error.code === error.PERMISSION_DENIED) {
+            setShowLocationPermissionModal(true)
+          }
+        }
+      )
+    }
+
+    // 권한 상태 확인 후 요청
+    navigator.permissions?.query({ name: 'geolocation' }).then(result => {
+      if (result.state === 'denied') {
+        setShowLocationPermissionModal(true)
+      } else {
+        requestLocation()
+      }
+    }) ?? requestLocation()
+  }, [])
+
+  const { data: neighborhoodData } = useLocateNeighborhood(
+    {
+      latitude: location?.latitude ?? '',
+      longitude: location?.longitude ?? ''
+    },
+    !!location
   )
 
   const onRentalItemClick = (rentalItemId: string) => {
@@ -62,9 +107,13 @@ export function Home() {
         selectedCategory={selectedCategory}
         onCategoryChange={handleCategoryChange}
       />
-      <div className="px-4 pt-2 text-xl font-bold">
-        서울특별시 영등포구 당산동6가
-      </div>
+
+      {neighborhoodData && (
+        <div className="px-4 pt-2 text-xl font-bold">
+          {neighborhoodData.sido} {neighborhoodData.sigungu}{' '}
+          {neighborhoodData.eupmyeondong}
+        </div>
+      )}
 
       {rentalItemsError && (
         <div className="flex flex-col items-center justify-center px-4 py-20">
@@ -107,6 +156,26 @@ export function Home() {
         ref={observerTarget}
         className="h-5"
       />
+
+      {/* 위치 권한 요청 모달 */}
+      {showLocationPermissionModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="mx-4 w-full max-w-sm rounded-2xl bg-white p-6">
+            <h3 className="mb-2 text-lg font-bold">위치 권한이 필요합니다</h3>
+            <p className="mb-4 text-sm text-neutral-600">
+              내 주변의 대여 물품을 보려면 위치 권한을 허용해주세요. 브라우저
+              설정에서 위치 권한을 허용한 후 새로고침해주세요.
+            </p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => window.location.reload()}
+                className="flex-1 rounded-lg bg-black py-2 font-medium text-white">
+                새로고침
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

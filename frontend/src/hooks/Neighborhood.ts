@@ -3,20 +3,20 @@ import {
   nearbyNeighborhoods
 } from '@/api/neighborhood/neighborhood'
 import type {
-  LocateNeighborhoodQueryRequest,
-  LocateNeighborhoodQueryResponse
-} from '@/api/neighborhood/dto/LocateNeighborhoodQuery'
+  LocateNeighborhoodRequest,
+  LocateNeighborhoodResponse
+} from '@/api/neighborhood/dto/LocateNeighborhood'
 import type {
-  NearbyNeighborhoodsQueryRequest,
-  NearbyNeighborhoodsQueryResponse
-} from '@/api/neighborhood/dto/NearbyNeighborhoodsQuery'
+  NearbyNeighborhoodsRequest,
+  NearbyNeighborhoodsResponse
+} from '@/api/neighborhood/dto/NearbyNeighborhoods'
 import { useQuery } from '@tanstack/react-query'
 
 export function useNearbyNeighborhoods(
-  request: NearbyNeighborhoodsQueryRequest,
+  request: NearbyNeighborhoodsRequest,
   enabled: boolean = true
 ) {
-  return useQuery<NearbyNeighborhoodsQueryResponse>({
+  return useQuery<NearbyNeighborhoodsResponse>({
     queryKey: ['neighborhoods', request.latitude, request.longitude],
     queryFn: () => nearbyNeighborhoods(request),
     staleTime: 5 * 60 * 1000,
@@ -25,10 +25,10 @@ export function useNearbyNeighborhoods(
 }
 
 export function useLocateNeighborhood(
-  request: LocateNeighborhoodQueryRequest,
+  request: LocateNeighborhoodRequest,
   enabled: boolean = true
 ) {
-  return useQuery<LocateNeighborhoodQueryResponse>({
+  return useQuery<LocateNeighborhoodResponse>({
     queryKey: ['neighborhood', request.latitude, request.longitude],
     queryFn: () => locateNeighborhood(request),
     staleTime: 5 * 60 * 1000,
