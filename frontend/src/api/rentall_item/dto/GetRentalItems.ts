@@ -1,3 +1,11 @@
+export interface GetRentalItemsRequest {
+  category: string
+  page: number
+  size: number
+  sortBy: string
+  sortDirection: string
+}
+
 export interface GetRentalItemsResponse {
   content: RentalItem[]
   currentPage: number

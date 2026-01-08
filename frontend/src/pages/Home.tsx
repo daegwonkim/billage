@@ -1,6 +1,8 @@
 import { RentalItems } from '@/components/main/RentalItems'
 import { Header } from '../components/common/Header'
-import { RentalItemCategories } from '../components/main/RentalItemCategories'
+import { FilterSortBar } from '../components/main/FilterSortBar'
+import { FilterModal } from '../components/main/FilterModal'
+import { SortBottomSheet } from '../components/main/SortBottomSheet'
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useRef, useState } from 'react'
 import { useGetRentalItems } from '@/hooks/RentalItem'
@@ -12,6 +14,9 @@ export function Home() {
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>(
     undefined
   )
+  const [selectedSort, setSelectedSort] = useState<string>('latest')
+  const [showFilterModal, setShowFilterModal] = useState(false)
+  const [showSortBottomSheet, setShowSortBottomSheet] = useState(false)
   const [location, setLocation] = useState<{
     latitude: string
     longitude: string
@@ -61,9 +66,21 @@ export function Home() {
     navigate(`/rental-items/${rentalItemId}`)
   }
 
-  const handleCategoryChange = (category: string) => {
-    // 'ALL'이면 undefined로 설정 (필터 없음)
-    setSelectedCategory(category === 'ALL' ? undefined : category)
+  const handleFilterClick = () => {
+    setShowFilterModal(true)
+  }
+
+  const handleSortClick = () => {
+    setShowSortBottomSheet(true)
+  }
+
+  const handleFilterApply = (category?: string) => {
+    setSelectedCategory(category)
+  }
+
+  const handleSortChange = (sort: string) => {
+    setSelectedSort(sort)
+    console.log('정렬 변경:', sort)
   }
 
   const {
@@ -103,17 +120,18 @@ export function Home() {
   return (
     <div className="min-h-screen w-md bg-white">
       <Header />
-      <RentalItemCategories
-        selectedCategory={selectedCategory}
-        onCategoryChange={handleCategoryChange}
+      <FilterSortBar
+        onFilterClick={handleFilterClick}
+        onSortClick={handleSortClick}
+        neighborhood={
+          neighborhoodData
+            ? {
+                sigungu: neighborhoodData.sigungu,
+                eupmyeondong: neighborhoodData.eupmyeondong
+              }
+            : undefined
+        }
       />
-
-      {neighborhoodData && (
-        <div className="px-4 pt-2 text-xl font-bold">
-          {neighborhoodData.sido} {neighborhoodData.sigungu}{' '}
-          {neighborhoodData.eupmyeondong}
-        </div>
-      )}
 
       {rentalItemsError && (
         <div className="flex flex-col items-center justify-center px-4 py-20">
@@ -176,6 +194,22 @@ export function Home() {
           </div>
         </div>
       )}
+
+      {/* 필터 모달 */}
+      <FilterModal
+        isOpen={showFilterModal}
+        onClose={() => setShowFilterModal(false)}
+        selectedCategory={selectedCategory}
+        onApply={handleFilterApply}
+      />
+
+      {/* 정렬 바텀시트 */}
+      <SortBottomSheet
+        isOpen={showSortBottomSheet}
+        onClose={() => setShowSortBottomSheet(false)}
+        selectedSort={selectedSort}
+        onSortChange={handleSortChange}
+      />
     </div>
   )
 }

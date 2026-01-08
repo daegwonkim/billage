@@ -12,11 +12,11 @@ import OnboardingVerification from './pages/OnboardingVerification'
 import OnboardingSignin from './pages/OnboardingSignin'
 import { ProtectedOnboardingRoute } from './ProtectedOnboardingRoute'
 import RentalItemRegister from './pages/RentalItemRegister'
+import { MyBillage } from './pages/MyBillage'
 
 const queryClient = new QueryClient()
 
 function AppContent() {
-  const [activeTab, setActiveTab] = useState<NavTab>('home')
   const [showRegisterModal, setShowRegisterModal] = useState(false)
 
   const location = useLocation()
@@ -24,6 +24,17 @@ function AppContent() {
   const showBottomNav = !hideBottomNavPaths.some(path =>
     location.pathname.includes(path)
   )
+
+  // URL 기반으로 activeTab 결정
+  const activeTab: NavTab = location.pathname === '/my' ? 'my' : 'home'
+
+  const handleTabChange = (tab: NavTab) => {
+    if (tab === 'home') {
+      window.location.href = '/'
+    } else if (tab === 'my') {
+      window.location.href = '/my'
+    }
+  }
 
   return (
     <div className="flex justify-center shadow-[0_0_60px_rgba(0,0,0,0.2)]">
@@ -71,6 +82,10 @@ function AppContent() {
             element={<Home />}
           />
           <Route
+            path="/my"
+            element={<MyBillage />}
+          />
+          <Route
             path="/rental-items/:id"
             element={<RentalItemDetail />}
           />
@@ -78,7 +93,7 @@ function AppContent() {
         {showBottomNav && (
           <BottomNav
             activeTab={activeTab}
-            onTabChange={setActiveTab}
+            onTabChange={handleTabChange}
             onRegisterClick={() => setShowRegisterModal(true)}
           />
         )}
