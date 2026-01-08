@@ -5,6 +5,7 @@ import { RentalItemDetailInfo } from '@/components/detail/RentalItemDetailInfo'
 import { RentalItemDetailSellerItems } from '@/components/detail/RentalItemDetailSellerItems'
 import { RentalItemDetailSimilarItems } from '@/components/detail/RentalItemDetailSimilarItems'
 import { RentalItemDetailSeller } from '@/components/detail/RentalItemDetailSeller'
+import { RentalItemDetailSkeleton } from '@/components/detail/RentalItemDetailSkeleton'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useGetRentalItem } from '@/hooks/RentalItem'
 
@@ -14,7 +15,23 @@ export function RentalItemDetail() {
   const { id } = useParams<{ id: string }>()
 
   if (!id) {
-    return <div>상품 정보를 불러오는데 실패했습니다.</div>
+    return (
+      <div className="flex min-h-screen w-md items-center justify-center bg-white">
+        <div className="text-center">
+          <p className="mb-2 text-lg font-semibold text-neutral-800">
+            상품 정보를 불러오는데 실패했습니다
+          </p>
+          <p className="mb-4 text-sm text-neutral-500">
+            잠시 후 다시 시도해주세요
+          </p>
+          <button
+            onClick={() => navigate(-1)}
+            className="rounded-lg bg-black px-6 py-2 font-medium text-white transition-colors hover:bg-gray-800">
+            돌아가기
+          </button>
+        </div>
+      </div>
+    )
   }
 
   const {
@@ -24,11 +41,27 @@ export function RentalItemDetail() {
   } = useGetRentalItem(id)
 
   if (rentalItemLoading) {
-    return <div>상품 정보를 불러오는 중입니다...</div>
+    return <RentalItemDetailSkeleton />
   }
 
   if (rentalItemError || !rentalItemData) {
-    return <div>상품 정보를 불러오는데 실패했습니다.</div>
+    return (
+      <div className="flex min-h-screen w-md items-center justify-center bg-white">
+        <div className="text-center">
+          <p className="mb-2 text-lg font-semibold text-neutral-800">
+            상품 정보를 불러오는데 실패했습니다
+          </p>
+          <p className="mb-4 text-sm text-neutral-500">
+            잠시 후 다시 시도해주세요
+          </p>
+          <button
+            onClick={() => navigate(-1)}
+            className="rounded-lg bg-black px-6 py-2 font-medium text-white transition-colors hover:bg-gray-800">
+            돌아가기
+          </button>
+        </div>
+      </div>
+    )
   }
 
   const imageUrls = rentalItemData.imageUrls
