@@ -3,6 +3,7 @@ import { Header } from '../components/common/Header'
 import { FilterSortBar } from '../components/main/FilterSortBar'
 import { FilterModal } from '../components/main/FilterModal'
 import { SortBottomSheet } from '../components/main/SortBottomSheet'
+import { HomeSkeleton } from '../components/main/HomeSkeleton'
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useRef, useState } from 'react'
 import { useGetRentalItems } from '@/hooks/RentalItem'
@@ -127,6 +128,10 @@ export function Home() {
 
   const allRentalItems =
     rentalItemsData?.pages.flatMap(page => page.content) ?? []
+
+  if (rentalItemsLoading) {
+    return <HomeSkeleton />
+  }
 
   return (
     <div className="min-h-screen w-md bg-white">

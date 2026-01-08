@@ -1,5 +1,6 @@
 import { Header } from '@/components/common/Header'
-import { User, ChevronRight, Settings } from 'lucide-react'
+import { ChevronRight, Settings } from 'lucide-react'
+import defaultProfileImage from '@/assets/default-profile.png'
 
 export function MyBillage() {
   // Mock 데이터
@@ -29,18 +30,15 @@ export function MyBillage() {
         <div className="flex items-center gap-4">
           {/* 프로필 이미지 */}
           <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gray-100">
-            {mockUser.profileImage ? (
-              <img
-                src={mockUser.profileImage}
-                alt="프로필"
-                className="h-full w-full rounded-full object-cover"
-              />
-            ) : (
-              <User
-                size={40}
-                className="text-gray-400"
-              />
-            )}
+            <img
+              src={
+                mockUser.profileImage
+                  ? mockUser.profileImage
+                  : defaultProfileImage
+              }
+              alt="프로필"
+              className="h-full w-full rounded-full object-cover"
+            />
           </div>
 
           {/* 사용자 정보 */}
