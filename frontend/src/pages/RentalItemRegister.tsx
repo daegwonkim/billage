@@ -1,13 +1,13 @@
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useRef, useState } from 'react'
 import { X, Plus, Camera, CircleAlert, Loader2 } from 'lucide-react'
 import toast, { Toaster } from 'react-hot-toast'
-import { categories } from '@/types'
 import { useMutation } from '@tanstack/react-query'
 import type { RegisterRentalItemRequest } from '@/api/rentall_item/dto/RegisterRentalItem'
 import { register } from '@/api/rentall_item/rentalItem'
 import { generateUploadSignedUrl, removeFile } from '@/api/storage/storage'
 import { formatPrice } from '@/utils/utils'
 import { useNavigate } from 'react-router-dom'
+import { useGetRentalItemCategories } from '@/hooks/RentalItem'
 
 interface FormData {
   category: string
@@ -71,6 +71,8 @@ export default function RentalItemRegister({
       toast.error('물품 등록에 실패했습니다. 잠시 후 다시 시도해주세요.')
     }
   })
+
+  const { data: categoriesData } = useGetRentalItemCategories()
 
   // 닫기 애니메이션 처리
   const handleClose = () => {
@@ -345,8 +347,9 @@ export default function RentalItemRegister({
                   } ${!formData.category ? 'text-gray-400' : 'text-gray-800'}`}>
                   <span>
                     {formData.category
-                      ? categories.find(c => c.value === formData.category)
-                          ?.label
+                      ? categoriesData?.categories.find(
+                          c => c.value === formData.category
+                        )?.label
                       : '카테고리를 선택해주세요.'}
                   </span>
                   <svg
@@ -372,7 +375,7 @@ export default function RentalItemRegister({
                     />
                     <div className="absolute z-20 mt-1 w-full overflow-hidden rounded-xl border-2 border-gray-200 bg-white shadow-lg">
                       <div className="max-h-60 overflow-y-auto">
-                        {categories.map((category, index) => (
+                        {categoriesData?.categories.map((category, index) => (
                           <button
                             key={category.value}
                             type="button"
@@ -388,7 +391,7 @@ export default function RentalItemRegister({
                               formData.category === category.value
                                 ? 'bg-neutral-50'
                                 : 'text-gray-800'
-                            } ${index !== categories.length - 1 ? 'border-b border-gray-100' : ''}`}>
+                            } ${index !== categoriesData.categories.length - 1 ? 'border-b border-gray-100' : ''}`}>
                             {category.label}
                           </button>
                         ))}

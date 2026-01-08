@@ -1,9 +1,8 @@
 export interface GetRentalItemCategoriesResponse {
-  rentalItemCategories: RentalItemCategory[]
+  categories: Category[]
 }
 
-export interface RentalItemCategory {
-  order: number
+export interface Category {
+  value: string
   label: string
-  icon: string
 }

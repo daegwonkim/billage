@@ -1,6 +1,5 @@
 import type { GetRentalItemResponse } from '@/api/rentall_item/dto/GetRentalItem'
 import { getTimeAgo } from '@/utils/utils'
-import { categories } from '@/types'
 import { MapPin } from 'lucide-react'
 import { useState } from 'react'
 
@@ -14,10 +13,6 @@ export function RentalItemDetailInfo({
   rentalItem
 }: RentalItemDetailInfoProps) {
   const [isExpanded, setIsExpanded] = useState(false)
-
-  const categoryLabel = rentalItem.category
-    ? categories.find(cat => cat.value === rentalItem.category)?.label
-    : null
 
   const infoItems = [
     rentalItem.rentalCount > 0 ? `대여 ${rentalItem.rentalCount}` : null,
@@ -39,9 +34,9 @@ export function RentalItemDetailInfo({
       <div className="pr-1.5 pl-1.5">
         <div className="mb-5 flex items-center gap-2 text-sm font-semibold text-gray-500">
           <div className="flex gap-2">
-            {categoryLabel && (
+            {rentalItem.category && (
               <span className="underline underline-offset-[1.5px]">
-                {categoryLabel}
+                {rentalItem.category}
               </span>
             )}
             <div className="flex items-center gap-0.5">

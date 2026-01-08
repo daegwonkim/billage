@@ -1,4 +1,3 @@
-import fetchWithToken from '../fetchWithToken'
 import type {
   RegisterRentalItemRequest,
   RegisterRentalItemResponse
@@ -7,8 +6,15 @@ import type { GetRentalItemsResponse } from './dto/GetRentalItems'
 import type { GetOtherRentalItemsBySellerResponse } from './dto/GetOtherRentalItemsBySeller'
 import type { GetSimilarRentalItemsResponse } from './dto/GetSimilarRentalItems'
 import type { GetRentalItemResponse } from './dto/GetRentalItem'
+import type { GetRentalItemCategoriesResponse } from './dto/GetRentalItemCategories'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL!
+
+export async function getRentalItemCategories(): Promise<GetRentalItemCategoriesResponse> {
+  const response = await fetch(`${API_BASE_URL}/api/rental-items/categories`)
+  if (!response.ok) throw new Error('Failed to fetch rental items')
+  return response.json()
+}
 
 export async function getRentalItems(
   page = 0,

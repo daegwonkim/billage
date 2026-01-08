@@ -1,4 +1,4 @@
-import { categories } from '@/types'
+import { useGetRentalItemCategories } from '@/hooks/RentalItem'
 import { X } from 'lucide-react'
 import { useState, useEffect } from 'react'
 
@@ -18,6 +18,7 @@ export function FilterModal({
   const [tempCategory, setTempCategory] = useState<string | undefined>(
     selectedCategory
   )
+  const { data: categoriesData } = useGetRentalItemCategories()
 
   useEffect(() => {
     setTempCategory(selectedCategory)
@@ -43,7 +44,7 @@ export function FilterModal({
       />
 
       {/* 모달 */}
-      <div className="fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-white shadow-xl">
+      <div className="fixed top-1/2 left-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-white shadow-xl">
         {/* 헤더 */}
         <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
           <h3 className="text-lg font-semibold text-gray-800">필터</h3>
@@ -61,15 +62,28 @@ export function FilterModal({
         <div className="max-h-[60vh] overflow-y-auto p-6">
           {/* 카테고리 섹션 */}
           <div className="mb-6">
-            <h4 className="mb-3 text-sm font-semibold text-gray-700">카테고리</h4>
+            <h4 className="mb-3 text-sm font-semibold text-gray-700">
+              카테고리
+            </h4>
             <div className="grid grid-cols-3 gap-2">
+              {/* 전체 버튼 */}
+              <button
+                onClick={() => setTempCategory(undefined)}
+                className={`flex flex-col items-center gap-2 rounded-lg border-2 px-3 py-3 transition-all ${
+                  tempCategory === undefined
+                    ? 'border-black bg-gray-50'
+                    : 'border-gray-200 bg-white hover:bg-gray-50'
+                }`}>
+                <span className="text-sm font-medium">전체</span>
+              </button>
+
               {/* 카테고리 버튼들 */}
-              {categories.map(category => (
+              {categoriesData?.categories.map(category => (
                 <button
-                  key={category.label}
-                  onClick={() => setTempCategory(category.label)}
+                  key={category.value}
+                  onClick={() => setTempCategory(category.value)}
                   className={`flex flex-col items-center gap-2 rounded-lg border-2 px-3 py-3 transition-all ${
-                    tempCategory === category.label
+                    tempCategory === category.value
                       ? 'border-black bg-gray-50'
                       : 'border-gray-200 bg-white hover:bg-gray-50'
                   }`}>
