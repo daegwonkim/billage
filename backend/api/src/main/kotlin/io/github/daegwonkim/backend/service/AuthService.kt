@@ -93,41 +93,25 @@ class AuthService(
         val userId = saveUser(phoneNo)
         neighborhoodService.saveNeighborhood(userId, neighborhood)
 
-        val generatedTokens = generateTokensAndSaveRefreshToken(userId, phoneNo)
+        val generatedTokens = generateTokensAndSaveRefreshToken(userId)
         eventPublisher.publishEvent(VerifiedTokenDeleteEvent(phoneNo))
 
         return SignUpResponse(generatedTokens.accessToken, generatedTokens.refreshToken)
     }
 
-    private fun saveUser(phoneNo: String): Long {
-        val user = userRepository.save(
-            User(phoneNo = phoneNo, nickname = nicknameGenerator.generate())
-        )
-        return user.id
-    }
-
-    private fun generateTokensAndSaveRefreshToken(userId: Long, phoneNo: String): GeneratedTokens {
-        val accessToken = jwtTokenProvider.generateAccessToken(userId)
-        val refreshToken = jwtTokenProvider.generateRefreshToken(userId)
-
-        eventPublisher.publishEvent(RefreshTokenSaveEvent(userId, refreshToken))
-        return GeneratedTokens(accessToken, refreshToken)
-    }
-
     @Transactional(readOnly = true)
     fun signIn(request: SignInRequest): SignInResponse {
-        val user = userRepository.findByPhoneNoAndIsWithdrawnFalse(request.phoneNo)
+        val phoneNo = request.phoneNo
+
+        val user = userRepository.findByPhoneNoAndIsWithdrawnFalse(phoneNo)
             ?: throw AuthenticationException(AuthenticationException.Reason.USER_NOT_FOUND)
 
-        validateVerifiedToken(request.phoneNo, request.verifiedToken)
+        validateVerifiedToken(phoneNo, request.verifiedToken)
 
-        val accessToken = jwtTokenProvider.generateAccessToken(user.id)
-        val refreshToken = jwtTokenProvider.generateRefreshToken(user.id)
+        val generatedTokens = generateTokensAndSaveRefreshToken(user.id)
+        eventPublisher.publishEvent(VerifiedTokenDeleteEvent(phoneNo))
 
-        eventPublisher.publishEvent(RefreshTokenSaveEvent(user.id, refreshToken))
-        eventPublisher.publishEvent(VerifiedTokenDeleteEvent(request.phoneNo))
-
-        return SignInResponse(accessToken, refreshToken)
+        return SignInResponse(generatedTokens.accessToken, generatedTokens.refreshToken)
     }
 
     @Transactional(readOnly = true)
@@ -139,13 +123,10 @@ class AuthService(
 
         validateRefreshToken(userId, request.refreshToken)
 
-        val newAccessToken = jwtTokenProvider.generateAccessToken(userId)
-        val newRefreshToken = jwtTokenProvider.generateRefreshToken(userId)
-
+        val generatedTokens = generateTokensAndSaveRefreshToken(userId)
         eventPublisher.publishEvent(RefreshTokenDeleteEvent(userId))
-        eventPublisher.publishEvent(RefreshTokenSaveEvent(userId, newRefreshToken))
 
-        return ReissueTokenResponse(newAccessToken, newRefreshToken)
+        return ReissueTokenResponse(generatedTokens.accessToken, generatedTokens.refreshToken)
     }
 
     // Private helper methods
@@ -176,7 +157,7 @@ class AuthService(
         return verifiedToken
     }
 
-    private fun validateVerificationCode(phoneNo: String, requestedVerificationCode: String): Boolean {
+    private fun validateVerificationCode(phoneNo: String, requestedVerificationCode: String) {
         val savedVerificationCode = verificationCodeRedisRepository.find(phoneNo)
 
         if (savedVerificationCode == null || savedVerificationCode != requestedVerificationCode) {
@@ -192,12 +173,26 @@ class AuthService(
         }
     }
 
-    private fun validateRefreshToken(userId: Long, refreshToken: String) {
+    private fun saveUser(phoneNo: String): Long {
+        val user = userRepository.save(
+            User(phoneNo = phoneNo, nickname = nicknameGenerator.generate())
+        )
+        return user.id
+    }
+
+    private fun generateTokensAndSaveRefreshToken(userId: Long): GeneratedTokens {
+        val accessToken = jwtTokenProvider.generateAccessToken(userId)
+        val refreshToken = jwtTokenProvider.generateRefreshToken(userId)
+
+        eventPublisher.publishEvent(RefreshTokenSaveEvent(userId, refreshToken))
+        return GeneratedTokens(accessToken, refreshToken)
+    }
+
+    private fun validateRefreshToken(userId: Long, requestedRefreshToken: String) {
         val savedRefreshToken = refreshTokenRedisRepository.find(userId)
 
-        when {
-            savedRefreshToken == null -> throw AuthenticationException(AuthenticationException.Reason.REFRESH_TOKEN_NOT_FOUND)
-            savedRefreshToken != refreshToken -> throw AuthenticationException(AuthenticationException.Reason.REFRESH_TOKEN_MISMATCH)
+        if (savedRefreshToken == null || savedRefreshToken != requestedRefreshToken) {
+            throw AuthenticationException(AuthenticationException.Reason.INVALID_REFRESH_TOKEN)
         }
     }
 
