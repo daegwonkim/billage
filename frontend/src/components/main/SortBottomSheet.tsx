@@ -1,3 +1,4 @@
+import { useGetRentalItemSortOptions } from '@/hooks/RentalItem'
 import { BottomSheet } from '../common/BottomSheet'
 import { BottomSheetItem } from '../common/BottomSheetItem'
 
@@ -8,20 +9,14 @@ interface SortBottomSheetProps {
   onSortChange: (sort: string) => void
 }
 
-const SORT_OPTIONS = [
-  { value: 'latest', label: '최신순' },
-  { value: 'popular', label: '인기순' },
-  { value: 'price-low', label: '가격 낮은순' },
-  { value: 'price-high', label: '가격 높은순' },
-  { value: 'nearest', label: '가까운순' }
-]
-
 export function SortBottomSheet({
   isOpen,
   onClose,
   selectedSort,
   onSortChange
 }: SortBottomSheetProps) {
+  const { data: sortOptionsData } = useGetRentalItemSortOptions()
+
   const handleSortSelect = (value: string) => {
     onSortChange(value)
     onClose()
@@ -34,7 +29,7 @@ export function SortBottomSheet({
       title="정렬"
       showCancelButton={false}>
       <div className="py-2">
-        {SORT_OPTIONS.map(option => (
+        {sortOptionsData?.sortOptions.map(option => (
           <BottomSheetItem
             key={option.value}
             label={option.label}

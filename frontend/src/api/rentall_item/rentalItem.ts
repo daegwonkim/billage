@@ -7,27 +7,32 @@ import type { GetOtherRentalItemsBySellerResponse } from './dto/GetOtherRentalIt
 import type { GetSimilarRentalItemsResponse } from './dto/GetSimilarRentalItems'
 import type { GetRentalItemResponse } from './dto/GetRentalItem'
 import type { GetRentalItemCategoriesResponse } from './dto/GetRentalItemCategories'
+import type { GetRentalItemSortOptionsResponse } from './dto/GetRentalItemSortOptions'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL!
 
 export async function getRentalItemCategories(): Promise<GetRentalItemCategoriesResponse> {
   const response = await fetch(`${API_BASE_URL}/api/rental-items/categories`)
-  if (!response.ok) throw new Error('Failed to fetch rental items')
+  if (!response.ok) throw new Error('Failed to fetch rental item categories')
+  return response.json()
+}
+
+export async function getRentalItemSortOptions(): Promise<GetRentalItemSortOptionsResponse> {
+  const response = await fetch(`${API_BASE_URL}/api/rental-items/sort-options`)
+  if (!response.ok) throw new Error('Failed to fetch rental item sort options')
   return response.json()
 }
 
 export async function getRentalItems(
   page = 0,
   size = 10,
-  sortBy = 'CREATED_AT',
-  sortDirection = 'DESC',
+  sortBy = 'LATEST',
   category?: string
 ): Promise<GetRentalItemsResponse> {
   const params = new URLSearchParams({
     page: page.toString(),
     size: size.toString(),
-    sortBy,
-    sortDirection
+    sortBy
   })
   if (category) {
     params.append('category', category)

@@ -14,7 +14,7 @@ export function Home() {
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>(
     undefined
   )
-  const [selectedSort, setSelectedSort] = useState<string>('latest')
+  const [selectedSort, setSelectedSort] = useState<string>('LATEST')
   const [showFilterModal, setShowFilterModal] = useState(false)
   const [showSortBottomSheet, setShowSortBottomSheet] = useState(false)
   const [location, setLocation] = useState<{
@@ -92,7 +92,6 @@ export function Home() {
 
   const handleSortChange = (sort: string) => {
     setSelectedSort(sort)
-    console.log('정렬 변경:', sort)
   }
 
   const {
@@ -102,7 +101,7 @@ export function Home() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage
-  } = useGetRentalItems(selectedCategory)
+  } = useGetRentalItems(selectedSort, selectedCategory)
 
   useEffect(() => {
     const observer = new IntersectionObserver(
