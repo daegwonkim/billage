@@ -38,7 +38,7 @@ data class GetRentalItemResponse(
                 address = item.address,
                 profileImageUrl = sellerProfileImageUrl
             ),
-            category = item.category,
+            category = item.category.label,
             title = item.title,
             description = item.description,
             imageUrls = imageUrls,

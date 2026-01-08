@@ -1,6 +1,7 @@
 package io.github.daegwonkim.backend.service
 
 import io.github.daegwonkim.backend.dto.rental_item.GetOtherRentalItemsBySellerResponse
+import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemCategoriesResponse
 import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemResponse
 import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemForModifyResponse
 import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemsRequest
@@ -12,6 +13,7 @@ import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemsResponse
 import io.github.daegwonkim.backend.dto.rental_item.GetSimilarRentalItemsResponse
 import io.github.daegwonkim.backend.entity.RentalItem
 import io.github.daegwonkim.backend.entity.RentalItemImage
+import io.github.daegwonkim.backend.enumerate.RentalItemCategory
 import io.github.daegwonkim.backend.enumerate.RentalItemSortBy
 import io.github.daegwonkim.backend.enumerate.SortDirection
 import io.github.daegwonkim.backend.enumerate.SortDirection.ASC
@@ -45,6 +47,13 @@ class RentalItemService(
     @Value($$"${supabase.storage.bucket.rental-item-images}")
     private val userProfileImagesBucket: String
 ) {
+
+    fun getRentalItemCategories(): GetRentalItemCategoriesResponse {
+        val categories = RentalItemCategory.entries.map { category ->
+            GetRentalItemCategoriesResponse.Category(category.name, category.label)
+        }
+        return GetRentalItemCategoriesResponse(categories)
+    }
 
     @Transactional(readOnly = true)
     fun getRentalItems(request: GetRentalItemsRequest): GetRentalItemsResponse {

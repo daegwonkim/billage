@@ -1,5 +1,6 @@
 package io.github.daegwonkim.backend.repository.projection
 
+import io.github.daegwonkim.backend.enumerate.RentalItemCategory
 import java.time.LocalDateTime
 
 data class GetRentalItemProjection(
@@ -8,7 +9,7 @@ data class GetRentalItemProjection(
     val sellerNickname: String,
     val sellerProfileImageKey: String?,
     val address: String,
-    val category: String,
+    val category: RentalItemCategory,
     val title: String,
     val description: String,
     val pricePerDay: Int,

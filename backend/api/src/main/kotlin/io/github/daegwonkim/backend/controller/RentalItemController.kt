@@ -1,6 +1,7 @@
 package io.github.daegwonkim.backend.controller
 
 import io.github.daegwonkim.backend.dto.rental_item.GetOtherRentalItemsBySellerResponse
+import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemCategoriesResponse
 import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemResponse
 import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemForModifyResponse
 import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemsRequest
@@ -29,6 +30,11 @@ import org.springframework.web.bind.annotation.RestController
 class RentalItemController(
     private val rentalItemService: RentalItemService
 ) {
+    @Operation(summary = "대여 상품 카테고리 목록 조회", description = "대여 상품 카테고리 목록을 조회합니다")
+    @GetMapping("/categories")
+    fun getRentalItemCategories(): GetRentalItemCategoriesResponse =
+        rentalItemService.getRentalItemCategories()
+
     @Operation(summary = "대여 상품 목록 조회", description = "조건에 맞는 대여 상품을 모두 조회합니다")
     @GetMapping
     fun getRentalItems(
