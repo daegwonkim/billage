@@ -1,6 +1,7 @@
 package io.github.daegwonkim.backend.repository
 
 import io.github.daegwonkim.backend.enumerate.RentalItemCategory
+import io.github.daegwonkim.backend.enumerate.RentalItemSortOption
 import io.github.daegwonkim.backend.enumerate.RentalStatus
 import io.github.daegwonkim.backend.jooq.generated.Tables.USERS
 import io.github.daegwonkim.backend.jooq.generated.Tables.NEIGHBORHOODS
@@ -33,6 +34,7 @@ class RentalItemJooqRepository(
     fun getRentalItems(
         category: RentalItemCategory?,
         keyword: String?,
+        sortBy: RentalItemSortOption,
         pageable: Pageable
     ): Page<GetRentalItemsProjection> {
         val baseQuery = dslContext.select(
@@ -50,7 +52,7 @@ class RentalItemJooqRepository(
             .join(USER_NEIGHBORHOODS).on(USER_NEIGHBORHOODS.USER_ID.eq(RENTAL_ITEMS.USER_ID))
             .join(NEIGHBORHOODS).on(NEIGHBORHOODS.ID.eq(USER_NEIGHBORHOODS.NEIGHBORHOOD_ID))
             .where(buildGetRentalItemsCondition(category = category, keyword = keyword))
-            .orderBy(buildSortOrder(pageable = pageable))
+            .orderBy(buildSortOrder(sortBy))
 
         val totalCount = dslContext.selectCount()
             .from(RENTAL_ITEMS)
@@ -156,12 +158,11 @@ class RentalItemJooqRepository(
             else it.reduce { acc, condition -> acc.and(condition) }
         }
 
-    private fun buildSortOrder(pageable: Pageable) =
-        pageable.sort.firstOrNull()?.let { sort ->
-            val field = when (sort.property) {
-                "createdAt" -> RENTAL_ITEMS.CREATED_AT
-                else -> RENTAL_ITEMS.CREATED_AT
-            }
-            if (sort.isAscending) field.asc() else field.desc()
-        } ?: RENTAL_ITEMS.CREATED_AT.desc()
+    private fun buildSortOrder(sortBy: RentalItemSortOption) = when (sortBy) {
+        RentalItemSortOption.LATEST -> RENTAL_ITEMS.CREATED_AT.desc()
+        RentalItemSortOption.POPULAR -> likeCountSubquery().desc()
+        RentalItemSortOption.PRICE_LOW -> RENTAL_ITEMS.PRICE_PER_DAY.asc().nullsLast()
+        RentalItemSortOption.PRICE_HIGH -> RENTAL_ITEMS.PRICE_PER_DAY.desc().nullsLast()
+        RentalItemSortOption.NEAREST -> RENTAL_ITEMS.CREATED_AT.desc() // TODO: 위치 기반 정렬 구현 필요
+    }
 }

@@ -4,6 +4,7 @@ import io.github.daegwonkim.backend.dto.rental_item.GetOtherRentalItemsBySellerR
 import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemCategoriesResponse
 import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemResponse
 import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemForModifyResponse
+import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemSortOptionsResponse
 import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemsRequest
 import io.github.daegwonkim.backend.dto.rental_item.ModifyRentalItemRequest
 import io.github.daegwonkim.backend.dto.rental_item.ModifyRentalItemResponse
@@ -14,10 +15,7 @@ import io.github.daegwonkim.backend.dto.rental_item.GetSimilarRentalItemsRespons
 import io.github.daegwonkim.backend.entity.RentalItem
 import io.github.daegwonkim.backend.entity.RentalItemImage
 import io.github.daegwonkim.backend.enumerate.RentalItemCategory
-import io.github.daegwonkim.backend.enumerate.RentalItemSortBy
-import io.github.daegwonkim.backend.enumerate.SortDirection
-import io.github.daegwonkim.backend.enumerate.SortDirection.ASC
-import io.github.daegwonkim.backend.enumerate.SortDirection.DESC
+import io.github.daegwonkim.backend.enumerate.RentalItemSortOption
 import io.github.daegwonkim.backend.event.dto.StorageFileDeleteEvent
 import io.github.daegwonkim.backend.exception.business.ResourceNotFoundException
 import io.github.daegwonkim.backend.repository.RentalItemImageRepository
@@ -29,7 +27,6 @@ import io.github.daegwonkim.backend.supabase.SupabaseStorageClient
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -55,11 +52,22 @@ class RentalItemService(
         return GetRentalItemCategoriesResponse(categories)
     }
 
+    fun getRentalItemSortOptions(): GetRentalItemSortOptionsResponse {
+        val sortOptions = RentalItemSortOption.entries.map { sortOption ->
+            GetRentalItemSortOptionsResponse.SortOption(sortOption.name, sortOption.label)
+        }
+        return GetRentalItemSortOptionsResponse(sortOptions)
+    }
+
     @Transactional(readOnly = true)
     fun getRentalItems(request: GetRentalItemsRequest): GetRentalItemsResponse {
-        val sort = toSort(request.sortDirection, request.sortBy)
-        val pageable = PageRequest.of(request.page, request.size, sort)
-        val result = rentalItemJooqRepository.getRentalItems(request.category, request.keyword, pageable)
+        val pageable = PageRequest.of(request.page, request.size)
+        val result = rentalItemJooqRepository.getRentalItems(
+            category = request.category,
+            keyword = request.keyword,
+            sortBy = request.sortBy,
+            pageable = pageable
+        )
         val content = result.content.map(::toGetRentalItemsResponse)
 
         return GetRentalItemsResponse.from(result, content)
@@ -149,12 +157,6 @@ class RentalItemService(
         }
         rentalItemImageRepository.saveAll(newRentalItemImages)
     }
-
-    private fun toSort(sortDirection: SortDirection, sortBy: RentalItemSortBy): Sort =
-        when (sortDirection) {
-            ASC -> Sort.by(Sort.Direction.ASC, sortBy.name)
-            DESC -> Sort.by(Sort.Direction.DESC, sortBy.name)
-        }
 
     private fun toGetRentalItemsResponse(rentalItem: GetRentalItemsProjection): GetRentalItemsResponse.RentalItem =
         GetRentalItemsResponse.RentalItem(

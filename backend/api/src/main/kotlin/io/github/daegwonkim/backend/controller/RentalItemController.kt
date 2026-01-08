@@ -4,6 +4,7 @@ import io.github.daegwonkim.backend.dto.rental_item.GetOtherRentalItemsBySellerR
 import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemCategoriesResponse
 import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemResponse
 import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemForModifyResponse
+import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemSortOptionsResponse
 import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemsRequest
 import io.github.daegwonkim.backend.dto.rental_item.ModifyRentalItemRequest
 import io.github.daegwonkim.backend.dto.rental_item.ModifyRentalItemResponse
@@ -12,8 +13,7 @@ import io.github.daegwonkim.backend.dto.rental_item.RegisterRentalItemResponse
 import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemsResponse
 import io.github.daegwonkim.backend.dto.rental_item.GetSimilarRentalItemsResponse
 import io.github.daegwonkim.backend.enumerate.RentalItemCategory
-import io.github.daegwonkim.backend.enumerate.RentalItemSortBy
-import io.github.daegwonkim.backend.enumerate.SortDirection
+import io.github.daegwonkim.backend.enumerate.RentalItemSortOption
 import io.github.daegwonkim.backend.service.RentalItemService
 import io.swagger.v3.oas.annotations.Operation
 import org.springframework.web.bind.annotation.GetMapping
@@ -35,6 +35,11 @@ class RentalItemController(
     fun getRentalItemCategories(): GetRentalItemCategoriesResponse =
         rentalItemService.getRentalItemCategories()
 
+    @Operation(summary = "대여 상품 정렬 기준 조회", description = "대여 상품 정렬 기준을 조회합니다")
+    @GetMapping("/sort-options")
+    fun getRentalItemSortOptions(): GetRentalItemSortOptionsResponse =
+        rentalItemService.getRentalItemSortOptions()
+
     @Operation(summary = "대여 상품 목록 조회", description = "조건에 맞는 대여 상품을 모두 조회합니다")
     @GetMapping
     fun getRentalItems(
@@ -42,10 +47,9 @@ class RentalItemController(
         @RequestParam(required = false) keyword: String?,
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "20") size: Int,
-        @RequestParam(defaultValue = "CREATED_AT") sortBy: RentalItemSortBy,
-        @RequestParam(defaultValue = "DESC") sortDirection: SortDirection
+        @RequestParam(defaultValue = "LATEST") sortBy: RentalItemSortOption,
     ): GetRentalItemsResponse {
-        val request = GetRentalItemsRequest(category, keyword, page, size, sortBy, sortDirection)
+        val request = GetRentalItemsRequest(category, keyword, page, size, sortBy)
         return rentalItemService.getRentalItems(request)
     }
 
