@@ -12,9 +12,6 @@ class StorageService(
     private val supabaseStorageClient: SupabaseStorageClient
 ) {
 
-    /**
-     * 업로드용 Signed URL 생성
-     */
     fun generateUploadSignedUrl(
         bucket: String,
         originalFileName: String
@@ -26,9 +23,6 @@ class StorageService(
         return GenerateUploadSignedUrlResponse(fileKey, signedUrl)
     }
 
-    /**
-     * 조회용 Signed URL 생성
-     */
     fun generateSignedUrl(
         bucket: String,
         fileKey: String
@@ -38,9 +32,6 @@ class StorageService(
         return GenerateSignedUrlResponse(signedUrl)
     }
 
-    /**
-     * 스토리지 파일 삭제
-     */
     fun removeFile(bucket: String, fileKey: String) {
         supabaseStorageClient.removeFile(bucket, fileKey)
     }
@@ -58,9 +49,6 @@ class StorageService(
         return "$year/$month/${UUID.randomUUID()}.$extension"
     }
 
-    /**
-     * 파일명에서 확장자 추출
-     */
     private fun getFileExtension(fileName: String): String {
         return fileName.substringAfterLast('.', "")
             .lowercase()
