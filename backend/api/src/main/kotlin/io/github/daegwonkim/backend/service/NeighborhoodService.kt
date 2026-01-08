@@ -23,7 +23,7 @@ class NeighborhoodService(
         val neighborhood = neighborhoodJooqRepository.findByCoordinate(latitude, longitude)
             ?: throw ResourceNotFoundException("Neighborhood", "lat=$latitude, lng=$longitude")
 
-        return LocateNeighborhoodResponse(neighborhood.code)
+        return LocateNeighborhoodResponse.from(neighborhood)
     }
 
     fun nearby(latitude: Double, longitude: Double): NearbyNeighborhoodsResponse {
