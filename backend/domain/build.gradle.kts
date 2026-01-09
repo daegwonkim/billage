@@ -1,6 +1,6 @@
 plugins {
     kotlin("plugin.jpa") version "2.2.21"
-    id("nu.studer.jooq") version "9.0"
+    id("dev.monosoul.jooq-docker") version "8.0.9"
 }
 
 group = "io.github.daegwonkim"
@@ -21,9 +21,13 @@ repositories {
 dependencies {
     implementation("org.postgresql:postgresql")
 
+    // flyway
+    implementation("org.flywaydb:flyway-core:11.20.0")
+    implementation("org.flywaydb:flyway-database-postgresql:11.20.0")
+
     // jooq
     implementation("org.springframework.boot:spring-boot-starter-jooq")
-    jooqGenerator("org.postgresql:postgresql:42.7.7")
+    jooqCodegen("org.postgresql:postgresql")
 
     // geo
     implementation("org.locationtech.jts:jts-core:1.19.0")
@@ -32,13 +36,17 @@ dependencies {
     testImplementation(kotlin("test"))
     testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
     testImplementation("org.springframework.boot:spring-boot-starter-data-redis-test")
+
+    testImplementation("org.testcontainers:junit-jupiter:1.20.1")
+    testImplementation("org.testcontainers:postgresql:1.21.4")
 }
 
 tasks.test {
     useJUnitPlatform()
 }
+
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(21)
 }
 
 allOpen {
@@ -48,49 +56,47 @@ allOpen {
 }
 
 jooq {
-    version.set("3.19.28")
-
-    configurations {
-        create("main") {
-            jooqConfiguration.apply {
-                logging = org.jooq.meta.jaxb.Logging.WARN
-
-                jdbc.apply {
-                    driver = "org.postgresql.Driver"
-                    url = project.findProperty("jooq.db.url") as String? ?: ""
-                    user = project.findProperty("jooq.db.user") as String? ?: ""
-                    password = project.findProperty("jooq.db.password") as String? ?: ""
-                }
-
-                generator.apply {
-                    name = "org.jooq.codegen.DefaultGenerator"
-
-                    database.apply {
-                        name = "org.jooq.meta.postgres.PostgresDatabase"
-                        inputSchema = "public"
-                    }
-
-                    generate.apply {
-                        isDeprecated = false
-                        isRecords = true
-                        isPojos = true
-                        isFluentSetters = true
-                    }
-
-                    target.apply {
-                        packageName = "io.github.daegwonkim.backend.jooq.generated"
-                        directory = "src/main/generated/jooq"
-                    }
-                }
+    withContainer {
+        image {
+            name = "postgis/postgis:16-3.4"
+            envVars = mapOf(
+                "POSTGRES_PASSWORD" to "testPassword",
+                "POSTGRES_DB" to "testDB",
+                "POSTGRES_USER" to "testUser"
+            )
+        }
+        db {
+            username = "testUser"
+            password = "testPassword"
+            name = "testDB"
+            port = 5432
+            jdbc {
+                schema = "jdbc:postgresql"
+                driverClassName = "org.postgresql.Driver"
             }
         }
     }
 }
 
-sourceSets {
-    main {
-        java {
-            srcDir("src/main/generated/jooq")
+tasks {
+    generateJooqClasses {
+        schemas.set(listOf("testDB"))
+        migrationLocations.setFromFilesystem("src/main/resources/db/migration")
+        basePackageName.set("io.github.daegwonkim.backend.jooq")
+        outputDirectory.set(project.layout.buildDirectory.dir("generated-src/jooq/main"))
+
+        usingJavaConfig {
+            generate.apply {
+                isTables = true
+                isRecords = false
+                isPojos = false
+                isImmutablePojos = false
+                isDaos = false
+                isDeprecated = false
+                isFluentSetters = false
+                isJavaTimeTypes = true
+            }
+            database.withExcludes("flyway_schema_history")
         }
     }
 }

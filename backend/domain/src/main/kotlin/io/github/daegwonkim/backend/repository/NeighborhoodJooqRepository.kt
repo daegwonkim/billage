@@ -1,6 +1,6 @@
 package io.github.daegwonkim.backend.repository
 
-import io.github.daegwonkim.backend.jooq.generated.Tables.NEIGHBORHOODS
+import io.github.daegwonkim.backend.jooq.Tables.NEIGHBORHOODS
 import io.github.daegwonkim.backend.repository.projection.NeighborhoodProjection
 import org.jooq.DSLContext
 import org.jooq.impl.DSL
