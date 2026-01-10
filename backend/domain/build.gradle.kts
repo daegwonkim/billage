@@ -28,10 +28,6 @@ dependencies {
     }
     jooqCodegen("org.postgresql:postgresql")
 
-    // flyway
-    implementation("org.flywaydb:flyway-core:11.20.0")
-    implementation("org.flywaydb:flyway-database-postgresql:11.20.0")
-
     // geo
     implementation("org.locationtech.jts:jts-core:1.19.0")
     implementation("org.hibernate:hibernate-spatial:7.1.11.Final")

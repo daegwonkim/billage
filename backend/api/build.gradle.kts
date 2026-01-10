@@ -36,3 +36,11 @@ tasks.test {
 kotlin {
     jvmToolchain(21)
 }
+
+tasks.processResources {
+    from(project(":domain").file("src/main/resources/application-domain.yaml"))
+    from(project(":domain").file("src/main/resources/db/migration")) {
+        into("db/migration")
+    }
+    from(project(":infra").file("src/main/resources/application-infra.yaml"))
+}
