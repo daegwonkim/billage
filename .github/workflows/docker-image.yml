@@ -57,3 +57,6 @@ jobs:
           context: ./backend  # Docker 빌드 context도 backend로
           push: true
           tags: ghcr.io/${{ github.repository }}/backend:latest
+
+      - name: Trigger Render Deploy
+        run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
