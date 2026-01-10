@@ -77,25 +77,23 @@ jooq {
     }
 }
 
-tasks {
-    generateJooqClasses {
-        schemas.set(listOf("testDB"))
-        migrationLocations.setFromFilesystem("src/main/resources/db/migration")
-        basePackageName.set("io.github.daegwonkim.backend.jooq")
-        outputDirectory.set(project.layout.buildDirectory.dir("generated-src/jooq/main"))
+tasks.generateJooqClasses {
+    schemas.set(listOf("public"))
+    migrationLocations.setFromFilesystem("src/main/resources/db/migration")
+    basePackageName.set("io.github.daegwonkim.backend.jooq")
+    outputDirectory.set(project.layout.buildDirectory.dir("generated-src/jooq/main"))
 
-        usingJavaConfig {
-            generate.apply {
-                isTables = true
-                isRecords = false
-                isPojos = false
-                isImmutablePojos = false
-                isDaos = false
-                isDeprecated = false
-                isFluentSetters = false
-                isJavaTimeTypes = true
-            }
-            database.withExcludes("flyway_schema_history")
+    usingJavaConfig {
+        generate.apply {
+            isTables = true
+            isRecords = false
+            isPojos = false
+            isImmutablePojos = false
+            isDaos = false
+            isDeprecated = false
+            isFluentSetters = false
+            isJavaTimeTypes = true
         }
+        database.withExcludes("flyway_schema_history")
     }
 }
