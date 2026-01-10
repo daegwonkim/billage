@@ -5,9 +5,14 @@ spring:
       data-source-properties:
         prepareThreshold: 0
   jpa:
+    open-in-view: false
     database-platform: org.hibernate.spatial.dialect.postgis.PostgisPG10Dialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
 
   data:
     redis:

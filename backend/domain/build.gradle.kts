@@ -1,3 +1,5 @@
+import org.springframework.boot.gradle.tasks.bundling.BootJar
+
 plugins {
     kotlin("plugin.jpa") version "2.2.21"
     id("dev.monosoul.jooq-docker") version "8.0.9"
@@ -21,13 +23,16 @@ repositories {
 dependencies {
     implementation("org.postgresql:postgresql")
 
+    // jooq
+    implementation("org.jooq:jooq:3.20.10")
+    implementation("org.springframework.boot:spring-boot-starter-jooq") {
+        exclude(group = "org.jooq", module = "jooq")
+    }
+    jooqCodegen("org.postgresql:postgresql")
+
     // flyway
     implementation("org.flywaydb:flyway-core:11.20.0")
     implementation("org.flywaydb:flyway-database-postgresql:11.20.0")
-
-    // jooq
-    implementation("org.springframework.boot:spring-boot-starter-jooq")
-    jooqCodegen("org.postgresql:postgresql")
 
     // geo
     implementation("org.locationtech.jts:jts-core:1.19.0")

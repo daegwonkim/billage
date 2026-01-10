@@ -1,7 +1,7 @@
 # ===============================
 # 1. Build stage
 # ===============================
-FROM gradle:8.5-jdk17 AS builder
+FROM gradle:8.5-jdk21 AS builder
 WORKDIR /app
 
 COPY build.gradle.kts settings.gradle.kts ./
@@ -18,7 +18,7 @@ RUN ./gradlew :api:bootJar -x test -x generateJooq --no-daemon
 # ===============================
 # 2. Runtime stage
 # ===============================
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
 COPY --from=builder /app/api/build/libs/*.jar app.jar
