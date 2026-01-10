@@ -79,7 +79,7 @@ jooq {
 
 tasks.generateJooqClasses {
     schemas.set(listOf("public"))
-    migrationLocations.setFromFilesystem("src/main/resources/db/migration")
+    migrationLocations.setFromFilesystem("${rootProject.projectDir}/supabase/migrations")
     basePackageName.set("io.github.daegwonkim.backend.jooq")
     outputDirectory.set(project.layout.buildDirectory.dir("generated-src/jooq/main"))
 
