@@ -1,5 +1,3 @@
-import org.springframework.boot.gradle.tasks.bundling.BootJar
-
 plugins {
     kotlin("plugin.jpa") version "2.2.21"
     id("dev.monosoul.jooq-docker") version "8.0.9"
