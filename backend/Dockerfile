@@ -10,11 +10,11 @@ COPY domain/build.gradle.kts domain/
 COPY infra/build.gradle.kts infra/
 COPY common/build.gradle.kts common/
 
-RUN ./gradlew build -x test -x generateJooqClasses --no-daemon || true
+RUN ./gradlew build -x test --no-daemon || true
 
 COPY . .
 
-RUN ./gradlew :api:bootJar -x test -x generateJooqClasses --no-daemon --stacktrace
+RUN ./gradlew :api:bootJar -x test --no-daemon
 
 # ===============================
 # 2. Runtime stage
