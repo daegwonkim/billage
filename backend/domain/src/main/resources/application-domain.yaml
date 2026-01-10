@@ -9,6 +9,11 @@ spring:
     hibernate:
       ddl-auto: validate
 
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+
   data:
     redis:
       url: ${UPSTASH_REDIS_URL}

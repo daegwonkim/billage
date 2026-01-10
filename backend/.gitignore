@@ -1,8 +1,6 @@
 HELP.md
 CLAUDE.md
 
-domain/src/main/resources/db/migration/
-
 .gradle
 domain/gradle.properties
 build/

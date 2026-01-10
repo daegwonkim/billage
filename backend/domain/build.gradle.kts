@@ -19,7 +19,7 @@ repositories {
 }
 
 dependencies {
-    implementation("org.postgresql:postgresql")
+    runtimeOnly("org.postgresql:postgresql")
 
     // jooq
     implementation("org.jooq:jooq:3.20.10")
@@ -28,6 +28,10 @@ dependencies {
     }
     jooqCodegen("org.postgresql:postgresql")
 
+    // flyway
+    implementation("org.springframework.boot:spring-boot-starter-flyway")
+    implementation("org.flywaydb:flyway-database-postgresql")
+
     // geo
     implementation("org.locationtech.jts:jts-core:1.19.0")
     implementation("org.hibernate:hibernate-spatial:7.1.11.Final")
@@ -35,9 +39,6 @@ dependencies {
     testImplementation(kotlin("test"))
     testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
     testImplementation("org.springframework.boot:spring-boot-starter-data-redis-test")
-
-    testImplementation("org.testcontainers:junit-jupiter:1.20.1")
-    testImplementation("org.testcontainers:postgresql:1.21.4")
 }
 
 tasks.test {
@@ -77,28 +78,7 @@ jooq {
     }
 }
 
-tasks.register("copyMigrations") {
-    doLast {
-        val sourceDir = file("${rootProject.projectDir}/supabase/migrations")
-        val targetDir = file("src/main/resources/db/migration")
-
-        targetDir.deleteRecursively()
-        targetDir.mkdirs()
-
-        sourceDir.listFiles()
-            ?.filter { it.extension == "sql" }
-            ?.sortedBy { it.name }  // 타임스탬프순 정렬
-            ?.forEachIndexed { index, file ->
-                val name = file.name.substringAfter("_")  // init.sql
-                val newName = "V${index + 1}__$name"
-                file.copyTo(File(targetDir, newName))
-            }
-    }
-}
-
 tasks.generateJooqClasses {
-    dependsOn("copyMigrations")
-
     schemas.set(listOf("public"))
     migrationLocations.setFromFilesystem("src/main/resources/db/migration")
     basePackageName.set("io.github.daegwonkim.backend.jooq")
@@ -117,9 +97,4 @@ tasks.generateJooqClasses {
         }
         database.withExcludes("flyway_schema_history")
     }
-}
-
-// clean 시 복사된 마이그레이션도 삭제
-tasks.clean {
-    delete("src/main/resources/db/migration")
 }
