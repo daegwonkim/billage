@@ -6,7 +6,7 @@ spring:
         prepareThreshold: 0
   jpa:
     open-in-view: false
-    database-platform: org.hibernate.spatial.dialect.postgis.PostgisPG10Dialect
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: validate
 
