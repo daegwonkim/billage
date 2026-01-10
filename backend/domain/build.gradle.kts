@@ -77,9 +77,30 @@ jooq {
     }
 }
 
+tasks.register("copyMigrations") {
+    doLast {
+        val sourceDir = file("${rootProject.projectDir}/supabase/migrations")
+        val targetDir = file("src/main/resources/db/migration")
+
+        targetDir.deleteRecursively()
+        targetDir.mkdirs()
+
+        sourceDir.listFiles()
+            ?.filter { it.extension == "sql" }
+            ?.sortedBy { it.name }  // 타임스탬프순 정렬
+            ?.forEachIndexed { index, file ->
+                val name = file.name.substringAfter("_")  // init.sql
+                val newName = "V${index + 1}__$name"
+                file.copyTo(File(targetDir, newName))
+            }
+    }
+}
+
 tasks.generateJooqClasses {
+    dependsOn("copyMigrations")
+
     schemas.set(listOf("public"))
-    migrationLocations.setFromFilesystem("${rootProject.projectDir}/supabase/migrations")
+    migrationLocations.setFromFilesystem("src/main/resources/db/migration")
     basePackageName.set("io.github.daegwonkim.backend.jooq")
     outputDirectory.set(project.layout.buildDirectory.dir("generated-src/jooq/main"))
 
@@ -96,4 +117,9 @@ tasks.generateJooqClasses {
         }
         database.withExcludes("flyway_schema_history")
     }
+}
+
+// clean 시 복사된 마이그레이션도 삭제
+tasks.clean {
+    delete("src/main/resources/db/migration")
 }
