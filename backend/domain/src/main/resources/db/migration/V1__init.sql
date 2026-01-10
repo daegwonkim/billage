@@ -18,8 +18,8 @@ CREATE TABLE IF NOT EXISTS neighborhoods (
     sido CHARACTER VARYING(255) NOT NULL,
     sigungu CHARACTER VARYING(255) NOT NULL,
     eupmyeondong CHARACTER VARYING(255) NOT NULL,
-    boundary GEOMETRY NULL,
-    centroid GEOMETRY NULL,
+    boundary GEOMETRY(MULTIPOLYGON, 4326) NULL,
+    centroid GEOMETRY(POINT, 4326) NULL,
     CONSTRAINT neighborhoods_pk PRIMARY KEY (id),
     CONSTRAINT neighborhoods_code_uk UNIQUE (code)
 ) TABLESPACE pg_default;
