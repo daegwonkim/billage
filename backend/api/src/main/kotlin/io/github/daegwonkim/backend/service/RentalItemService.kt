@@ -41,7 +41,7 @@ class RentalItemService(
 
     @Value($$"${supabase.storage.bucket.rental-item-images}")
     private val rentalItemImagesBucket: String,
-    @Value($$"${supabase.storage.bucket.rental-item-images}")
+    @Value($$"${supabase.storage.bucket.user-profile-images}")
     private val userProfileImagesBucket: String
 ) {
 
