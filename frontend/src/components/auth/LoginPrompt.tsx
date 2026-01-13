@@ -7,7 +7,6 @@ import {
   signUp
 } from '@/api/auth/auth'
 import { nearbyNeighborhoods } from '@/api/neighborhood/neighborhood'
-import { useAuth } from '@/contexts/AuthContext'
 import { ApiError } from '@/api/error'
 import logo from '@/assets/logo.png'
 
@@ -19,7 +18,6 @@ interface Neighborhood {
 }
 
 export function LoginPrompt() {
-  const { login } = useAuth()
   const [step, setStep] = useState<Step>('start')
   const [phoneNo, setPhoneNo] = useState('')
   const [verificationCode, setVerificationCode] = useState('')
@@ -104,7 +102,6 @@ export function LoginPrompt() {
           phoneNo: cleanPhoneNo,
           verifiedToken: result.verifiedToken
         })
-        login({ phoneNo: cleanPhoneNo })
       }
     } catch (err) {
       if (err instanceof ApiError) {
@@ -172,7 +169,6 @@ export function LoginPrompt() {
           code: selectedNeighborhood.code
         }
       })
-      login({ phoneNo: cleanPhoneNo })
     } catch (err) {
       if (err instanceof ApiError) {
         setError(err.message)
