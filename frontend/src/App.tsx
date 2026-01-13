@@ -5,7 +5,6 @@ import { BottomNav } from './components/common/BottomNav'
 import type { NavTab } from './types'
 import { RentalItemDetail } from './pages/RentalItemDetail'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import Authentication from './pages/Authentication'
 import RentalItemRegister from './pages/RentalItemRegister'
 import { MyBillage } from './pages/MyBillage'
 
@@ -39,10 +38,6 @@ function AppContent() {
           position: 'relative'
         }}>
         <Routes>
-          <Route
-            path="/authentication"
-            element={<Authentication />}
-          />
           <Route
             path="/"
             element={<Home />}

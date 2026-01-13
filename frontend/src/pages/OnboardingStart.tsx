@@ -2,7 +2,7 @@ import logo from '@/assets/logo.png'
 import { ArrowRight } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
-export default function Start() {
+export default function OnboardingStart() {
   const navigate = useNavigate()
 
   return (
@@ -28,7 +28,7 @@ export default function Start() {
       <div className="w-full space-y-4 px-6 pb-10">
         <button
           className="flex w-full items-center justify-center gap-2 rounded-2xl bg-red-400 py-4 font-semibold text-white shadow-lg"
-          onClick={() => navigate('/authentication')}>
+          onClick={() => navigate('/onboarding/authentication')}>
           <span>시작하기</span>
           <ArrowRight className="h-5 w-5" />
         </button>
@@ -37,7 +37,7 @@ export default function Start() {
           이미 계정이 있나요?{' '}
           <span
             className="cursor-pointer font-semibold text-red-400"
-            onClick={() => navigate('/signin')}>
+            onClick={() => navigate('/onboarding/signin')}>
             로그인
           </span>
         </div>

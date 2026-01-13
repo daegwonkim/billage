@@ -17,7 +17,7 @@ import type { ConfirmPhoneNoRequest } from '@/api/auth/dto/ConfirmPhoneNo'
 import { ErrorMessageMap, type ApiError } from '@/api/error'
 import toast from 'react-hot-toast'
 
-export default function Signin() {
+export default function OnboardingSignin() {
   const navigate = useNavigate()
 
   const phoneNoInputRef = useRef<HTMLInputElement>(null)
