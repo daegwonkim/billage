@@ -5,7 +5,7 @@ import type {
   ConfirmVerificationCodeResponse
 } from './dto/ConfirmVerificationCode'
 import type { SendVerificationCodeRequest } from './dto/SendVerificationCode'
-import { ApiError, type ApiErrorResponse } from '../error'
+import { ApiError, type ProblemDetail } from '../error'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL!
 
@@ -23,14 +23,8 @@ export async function sendVerificationCode(
     }
   )
   if (!response.ok) {
-    const errorData: ApiErrorResponse = await response.json()
-    throw new ApiError(
-      errorData.code,
-      errorData.message,
-      response.status,
-      errorData.path,
-      errorData.errors
-    )
+    const errorData: ProblemDetail = await response.json()
+    throw ApiError.fromResponse(errorData, response.status)
   }
 }
 
@@ -61,14 +55,8 @@ export async function signUp(request: SignUpRequest): Promise<void> {
     body: JSON.stringify(request)
   })
   if (!response.ok) {
-    const errorData: ApiErrorResponse = await response.json()
-    throw new ApiError(
-      errorData.code,
-      errorData.message,
-      response.status,
-      errorData.path,
-      errorData.errors
-    )
+    const errorData: ProblemDetail = await response.json()
+    throw ApiError.fromResponse(errorData, response.status)
   }
 }
 

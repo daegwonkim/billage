@@ -1,15 +1,22 @@
 import { useState } from 'react'
-import { ArrowRight, ChevronLeft } from 'lucide-react'
+import { ArrowRight, ChevronLeft, ChevronDown, MapPin } from 'lucide-react'
 import {
   sendVerificationCode,
   confirmVerificationCode,
-  signIn
+  signIn,
+  signUp
 } from '@/api/auth/auth'
+import { nearbyNeighborhoods } from '@/api/neighborhood/neighborhood'
 import { useAuth } from '@/contexts/AuthContext'
 import { ApiError } from '@/api/error'
 import logo from '@/assets/logo.png'
 
-type Step = 'start' | 'phone' | 'verification' | 'signup'
+type Step = 'start' | 'phone' | 'verification' | 'neighborhood'
+
+interface Neighborhood {
+  name: string
+  code: string
+}
 
 export function LoginPrompt() {
   const { login } = useAuth()
@@ -17,9 +24,19 @@ export function LoginPrompt() {
   const [phoneNo, setPhoneNo] = useState('')
   const [verificationCode, setVerificationCode] = useState('')
   const [verifiedToken, setVerifiedToken] = useState('')
-  const [name, setName] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+
+  // 동네 관련 상태
+  const [neighborhoods, setNeighborhoods] = useState<Neighborhood[]>([])
+  const [selectedNeighborhood, setSelectedNeighborhood] =
+    useState<Neighborhood | null>(null)
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [isLoadingNeighborhoods, setIsLoadingNeighborhoods] = useState(false)
+  const [currentLocation, setCurrentLocation] = useState<{
+    latitude: string
+    longitude: string
+  } | null>(null)
 
   const formatPhoneNumber = (value: string) => {
     const numbers = value.replace(/\D/g, '')
@@ -77,8 +94,10 @@ export function LoginPrompt() {
       setVerifiedToken(result.verifiedToken)
 
       if (!result.exists) {
-        // 신규 회원이면 이름 입력 단계로
-        setStep('signup')
+        // 신규 회원이면 동네 인증 단계로
+        setStep('neighborhood')
+        // 위치 정보 요청
+        fetchNeighborhoods()
       } else {
         // 기존 회원이면 바로 로그인
         await signIn({
@@ -98,9 +117,44 @@ export function LoginPrompt() {
     }
   }
 
+  // 위치 기반 동네 목록 가져오기
+  const fetchNeighborhoods = () => {
+    setIsLoadingNeighborhoods(true)
+    setError('')
+
+    navigator.geolocation.getCurrentPosition(
+      async position => {
+        const { latitude, longitude } = position.coords
+        const location = {
+          latitude: latitude.toString(),
+          longitude: longitude.toString()
+        }
+        setCurrentLocation(location)
+
+        try {
+          const result = await nearbyNeighborhoods(location)
+          setNeighborhoods(result.neighborhoods)
+        } catch (err) {
+          if (err instanceof ApiError) {
+            setError(err.message)
+          } else {
+            setError('동네 목록을 불러오는데 실패했습니다')
+          }
+        } finally {
+          setIsLoadingNeighborhoods(false)
+        }
+      },
+      () => {
+        setError('위치 정보를 가져올 수 없습니다. 위치 권한을 허용해주세요.')
+        setIsLoadingNeighborhoods(false)
+      }
+    )
+  }
+
+  // 회원가입 처리
   const handleSignUp = async () => {
-    if (name.trim().length < 2) {
-      setError('이름을 2자 이상 입력해주세요')
+    if (!selectedNeighborhood || !currentLocation) {
+      setError('동네 인증을 수행해주세요.')
       return
     }
 
@@ -109,11 +163,16 @@ export function LoginPrompt() {
 
     try {
       const cleanPhoneNo = phoneNo.replace(/-/g, '')
-      await signIn({
+      await signUp({
         phoneNo: cleanPhoneNo,
-        verifiedToken
+        verifiedToken,
+        neighborhood: {
+          latitude: currentLocation.latitude,
+          longitude: currentLocation.longitude,
+          code: selectedNeighborhood.code
+        }
       })
-      login({ phoneNo: cleanPhoneNo, name: name.trim() })
+      login({ phoneNo: cleanPhoneNo })
     } catch (err) {
       if (err instanceof ApiError) {
         setError(err.message)
@@ -213,7 +272,76 @@ export function LoginPrompt() {
             </div>
           )}
 
-          {error && <p className="text-sm text-red-500">{error}</p>}
+          {/* 동네 선택 (신규 회원) */}
+          {step === 'neighborhood' && (
+            <div>
+              <div className="mb-2 ml-0.5 font-bold text-neutral-700">
+                동네 인증
+              </div>
+              <p className="mb-3 ml-0.5 text-sm text-neutral-500">
+                현재 위치를 기반으로 동네를 선택해주세요
+              </p>
+
+              {isLoadingNeighborhoods ? (
+                <div className="flex items-center justify-center py-4">
+                  <div className="text-sm text-neutral-500">
+                    주변 동네 목록을 불러오는 중...
+                  </div>
+                </div>
+              ) : (
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    className="flex w-full items-center justify-between rounded-lg border border-gray-200 px-4 py-3 text-left transition-colors hover:border-gray-300">
+                    <div className="flex items-center gap-2">
+                      <MapPin
+                        size={18}
+                        className="text-neutral-500"
+                      />
+                      <span
+                        className={
+                          selectedNeighborhood
+                            ? 'text-neutral-900'
+                            : 'text-neutral-400'
+                        }>
+                        {selectedNeighborhood
+                          ? selectedNeighborhood.name
+                          : '동네를 선택해주세요'}
+                      </span>
+                    </div>
+                    <ChevronDown
+                      size={20}
+                      className={`text-neutral-400 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`}
+                    />
+                  </button>
+
+                  {isDropdownOpen && neighborhoods.length > 0 && (
+                    <div className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-gray-200 bg-white shadow-lg">
+                      {neighborhoods.map(neighborhood => (
+                        <button
+                          key={neighborhood.code}
+                          type="button"
+                          onClick={() => {
+                            setSelectedNeighborhood(neighborhood)
+                            setIsDropdownOpen(false)
+                          }}
+                          className={`w-full px-4 py-3 text-left transition-colors hover:bg-gray-50 ${
+                            selectedNeighborhood?.code === neighborhood.code
+                              ? 'bg-gray-50 font-medium'
+                              : ''
+                          }`}>
+                          {neighborhood.name}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {error && <p className="ml-0.5 text-sm text-red-500">{error}</p>}
 
           {/* 버튼 */}
           {step === 'start' && (
@@ -238,6 +366,14 @@ export function LoginPrompt() {
               disabled={isLoading || verificationCode.length !== 6}
               className="w-full rounded-lg bg-black py-3 text-base font-medium text-white transition-colors disabled:cursor-not-allowed disabled:bg-gray-300">
               {isLoading ? '확인 중...' : '확인'}
+            </button>
+          )}
+          {step === 'neighborhood' && (
+            <button
+              onClick={handleSignUp}
+              disabled={isLoading || !selectedNeighborhood}
+              className="w-full rounded-lg bg-black py-3 text-base font-medium text-white transition-colors disabled:cursor-not-allowed disabled:bg-gray-300">
+              {isLoading ? '가입 중...' : '시작하기'}
             </button>
           )}
         </div>

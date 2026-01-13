@@ -6,7 +6,7 @@ import type {
   NearbyNeighborhoodsRequest,
   NearbyNeighborhoodsResponse
 } from './dto/NearbyNeighborhoods'
-import { ApiError, type ApiErrorResponse } from '../error'
+import { ApiError, type ProblemDetail } from '../error'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL!
 
@@ -24,14 +24,8 @@ export async function nearbyNeighborhoods(
     }
   )
   if (!response.ok) {
-    const errorData: ApiErrorResponse = await response.json()
-    throw new ApiError(
-      errorData.code,
-      errorData.message,
-      response.status,
-      errorData.path,
-      errorData.errors
-    )
+    const errorData: ProblemDetail = await response.json()
+    throw ApiError.fromResponse(errorData, response.status)
   }
 
   return response.json()
