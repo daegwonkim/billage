@@ -4,6 +4,6 @@ export interface ConfirmVerificationCodeRequest {
 }
 
 export interface ConfirmVerificationCodeResponse {
-  phoneNo: string
   verifiedToken: string
+  exists: boolean
 }

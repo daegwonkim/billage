@@ -1,7 +1,3 @@
-import type {
-  ConfirmPhoneNoRequest,
-  ConfirmPhoneNoResponse
-} from './dto/ConfirmPhoneNo'
 import type { SignInRequest } from './dto/SignIn'
 import type { SignUpRequest } from './dto/SignUp'
 import type {
@@ -85,21 +81,6 @@ export async function signIn(request: SignInRequest): Promise<void> {
     body: JSON.stringify(request)
   })
   if (!response.ok) throw new Error('Failed to sign in')
-}
-
-export async function confirmPhoneNo(
-  request: ConfirmPhoneNoRequest
-): Promise<ConfirmPhoneNoResponse> {
-  const response = await fetch(`${API_BASE_URL}/api/auth/phone-no/confirm`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(request)
-  })
-  if (!response.ok) throw new Error('Failed to verify phone no')
-
-  return response.json()
 }
 
 export async function confirmNeighborhood(

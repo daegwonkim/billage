@@ -1,17 +1,22 @@
 import { Header } from '@/components/common/Header'
 import { ChevronRight, Settings } from 'lucide-react'
 import defaultProfileImage from '@/assets/default-profile.png'
+import { useAuth } from '@/contexts/AuthContext'
+import { LoginPrompt } from '@/components/auth/LoginPrompt'
 
 export function MyBillage() {
-  // Mock 데이터
-  const mockUser = {
-    name: '김빌리',
-    profileImage: null, // 프로필 이미지가 없는 경우
-    neighborhood: {
-      sido: '서울특별시',
-      sigungu: '강남구',
-      eupmyeondong: '역삼동'
-    }
+  const { user, isLoggedIn, isLoading, logout } = useAuth()
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen w-md items-center justify-center bg-white">
+        <div className="text-neutral-500">로딩 중...</div>
+      </div>
+    )
+  }
+
+  if (!isLoggedIn) {
+    return <LoginPrompt />
   }
 
   const menuItems = [
@@ -31,11 +36,7 @@ export function MyBillage() {
           {/* 프로필 이미지 */}
           <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gray-100">
             <img
-              src={
-                mockUser.profileImage
-                  ? mockUser.profileImage
-                  : defaultProfileImage
-              }
+              src={user?.profileImage ?? defaultProfileImage}
               alt="프로필"
               className="h-full w-full rounded-full object-cover"
             />
@@ -44,12 +45,14 @@ export function MyBillage() {
           {/* 사용자 정보 */}
           <div className="flex-1">
             <h2 className="mb-1 text-xl font-bold text-neutral-900">
-              {mockUser.name}
+              {user?.name ?? '사용자'}
             </h2>
-            <p className="text-sm text-neutral-500">
-              {mockUser.neighborhood.sido} {mockUser.neighborhood.sigungu}{' '}
-              {mockUser.neighborhood.eupmyeondong}
-            </p>
+            {user?.neighborhood && (
+              <p className="text-sm text-neutral-500">
+                {user.neighborhood.sido} {user.neighborhood.sigungu}{' '}
+                {user.neighborhood.eupmyeondong}
+              </p>
+            )}
           </div>
 
           {/* 설정 아이콘 */}
@@ -93,7 +96,9 @@ export function MyBillage() {
 
       {/* 로그아웃 버튼 */}
       <div className="mt-6 px-4">
-        <button className="w-full rounded-lg py-3 text-sm font-medium text-neutral-500 transition-colors hover:bg-gray-50">
+        <button
+          onClick={logout}
+          className="w-full rounded-lg py-3 text-sm font-medium text-neutral-500 transition-colors hover:bg-gray-50">
           로그아웃
         </button>
       </div>

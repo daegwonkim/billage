@@ -7,6 +7,7 @@ import { RentalItemDetail } from './pages/RentalItemDetail'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import RentalItemRegister from './pages/RentalItemRegister'
 import { MyBillage } from './pages/MyBillage'
+import { AuthProvider } from './contexts/AuthContext'
 
 const queryClient = new QueryClient()
 
@@ -69,9 +70,11 @@ function AppContent() {
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <AppContent />
-      </BrowserRouter>
+      <AuthProvider>
+        <BrowserRouter>
+          <AppContent />
+        </BrowserRouter>
+      </AuthProvider>
     </QueryClientProvider>
   )
 }
