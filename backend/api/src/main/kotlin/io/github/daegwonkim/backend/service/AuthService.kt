@@ -123,6 +123,12 @@ class AuthService(
         return ReissueTokenResponse(generatedTokens.accessToken, generatedTokens.refreshToken)
     }
 
+    fun signOut(token: String) {
+        jwtTokenProvider.validateAndGetUserIdOrNull(token)?.let { userId ->
+            refreshTokenRedisRepository.delete(userId)
+        }
+    }
+
     // Private helper methods
 
     fun generateVerificationCodeAndSave(phoneNo: String): String {

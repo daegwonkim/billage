@@ -9,6 +9,7 @@ import io.github.daegwonkim.backend.dto.auth.SendVerificationCodeRequest
 import io.github.daegwonkim.backend.service.AuthService
 import io.github.daegwonkim.backend.util.CookieUtil
 import io.swagger.v3.oas.annotations.Operation
+import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
 import org.springframework.web.bind.annotation.PostMapping
@@ -59,5 +60,16 @@ class AuthController(
 
         response.addCookie(cookieUtil.createAccessTokenCookie(reissueTokenResponse.accessToken))
         response.addCookie(cookieUtil.createRefreshTokenCookie(reissueTokenResponse.refreshToken))
+    }
+
+    @Operation(summary = "로그아웃", description = "로그아웃하고 토큰을 무효화합니다")
+    @PostMapping("/sign-out")
+    fun signOut(request: HttpServletRequest, response: HttpServletResponse) {
+        cookieUtil.getTokenFromCookie(request, "accessToken")?.let { token ->
+            authService.signOut(token)
+        }
+
+        response.addCookie(cookieUtil.deleteCookie("accessToken"))
+        response.addCookie(cookieUtil.deleteCookie("refreshToken"))
     }
 }
