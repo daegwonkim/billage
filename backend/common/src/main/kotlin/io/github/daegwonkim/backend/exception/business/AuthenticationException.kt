@@ -15,7 +15,6 @@ class AuthenticationException(
         TOKEN_EXPIRED,
         INVALID_VERIFICATION_CODE,
         INVALID_VERIFIED_TOKEN,
-        INVALID_REFRESH_TOKEN,
         INVALID_NEIGHBORHOOD
     }
 }

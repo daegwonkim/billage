@@ -2,7 +2,6 @@ package io.github.daegwonkim.backend.service
 
 import io.github.daegwonkim.backend.coolsms.CoolsmsService
 import io.github.daegwonkim.backend.dto.auth.ReissueTokenResponse
-import io.github.daegwonkim.backend.dto.auth.ReissueTokenRequest
 import io.github.daegwonkim.backend.dto.auth.SignInRequest
 import io.github.daegwonkim.backend.dto.auth.SignInResponse
 import io.github.daegwonkim.backend.dto.auth.SignUpRequest
@@ -108,14 +107,9 @@ class AuthService(
         return SignInResponse(generatedTokens.accessToken, generatedTokens.refreshToken)
     }
 
-    @Transactional(readOnly = true)
-    fun reissueToken(request: ReissueTokenRequest): ReissueTokenResponse {
-        val userId = jwtTokenProvider.validateAndGetUserId(request.refreshToken)
-
+    fun reissueToken(userId: Long): ReissueTokenResponse {
         userRepository.findByIdOrNull(userId)
             ?: throw AuthenticationException(AuthenticationException.Reason.USER_NOT_FOUND)
-
-        validateRefreshToken(userId, request.refreshToken)
 
         val generatedTokens = generateTokensAndSaveRefreshToken(userId)
         eventPublisher.publishEvent(RefreshTokenDeleteEvent(userId))
@@ -123,10 +117,8 @@ class AuthService(
         return ReissueTokenResponse(generatedTokens.accessToken, generatedTokens.refreshToken)
     }
 
-    fun signOut(token: String) {
-        jwtTokenProvider.validateAndGetUserIdOrNull(token)?.let { userId ->
-            refreshTokenRedisRepository.delete(userId)
-        }
+    fun signOut(userId: Long) {
+        refreshTokenRedisRepository.delete(userId)
     }
 
     // Private helper methods
@@ -192,7 +184,7 @@ class AuthService(
         val savedRefreshToken = refreshTokenRedisRepository.find(userId)
 
         if (savedRefreshToken == null || savedRefreshToken != requestedRefreshToken) {
-            throw AuthenticationException(AuthenticationException.Reason.INVALID_REFRESH_TOKEN)
+            throw AuthenticationException(AuthenticationException.Reason.INVALID_TOKEN)
         }
     }
 

@@ -1,6 +1,5 @@
 package io.github.daegwonkim.backend.controller
 
-import io.github.daegwonkim.backend.dto.auth.ReissueTokenRequest
 import io.github.daegwonkim.backend.dto.auth.SignInRequest
 import io.github.daegwonkim.backend.dto.auth.SignUpRequest
 import io.github.daegwonkim.backend.dto.auth.ConfirmVerificationCodeRequest
@@ -9,9 +8,9 @@ import io.github.daegwonkim.backend.dto.auth.SendVerificationCodeRequest
 import io.github.daegwonkim.backend.service.AuthService
 import io.github.daegwonkim.backend.util.CookieUtil
 import io.swagger.v3.oas.annotations.Operation
-import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -55,8 +54,11 @@ class AuthController(
 
     @Operation(summary = "토큰 재발급", description = "AccessToken, RefreshToken을 재발급합니다")
     @PostMapping("/token/reissue")
-    fun reissueToken(request: ReissueTokenRequest, response: HttpServletResponse) {
-        val reissueTokenResponse = authService.reissueToken(request)
+    fun reissueToken(
+        @AuthenticationPrincipal userId: Long,
+        response: HttpServletResponse
+    ) {
+        val reissueTokenResponse = authService.reissueToken(userId)
 
         response.addCookie(cookieUtil.createAccessTokenCookie(reissueTokenResponse.accessToken))
         response.addCookie(cookieUtil.createRefreshTokenCookie(reissueTokenResponse.refreshToken))
@@ -64,10 +66,11 @@ class AuthController(
 
     @Operation(summary = "로그아웃", description = "로그아웃하고 토큰을 무효화합니다")
     @PostMapping("/sign-out")
-    fun signOut(request: HttpServletRequest, response: HttpServletResponse) {
-        cookieUtil.getTokenFromCookie(request, "accessToken")?.let { token ->
-            authService.signOut(token)
-        }
+    fun signOut(
+        @AuthenticationPrincipal userId: Long,
+        response: HttpServletResponse
+    ) {
+        authService.signOut(userId)
 
         response.addCookie(cookieUtil.deleteCookie("accessToken"))
         response.addCookie(cookieUtil.deleteCookie("refreshToken"))
