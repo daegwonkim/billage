@@ -2,7 +2,6 @@ package io.github.daegwonkim.backend.service
 
 import io.github.daegwonkim.backend.coolsms.CoolsmsService
 import io.github.daegwonkim.backend.dto.auth.ReissueTokenResponse
-import io.github.daegwonkim.backend.dto.auth.ConfirmPhoneNoRequest
 import io.github.daegwonkim.backend.dto.auth.ReissueTokenRequest
 import io.github.daegwonkim.backend.dto.auth.SignInRequest
 import io.github.daegwonkim.backend.dto.auth.SignInResponse
@@ -12,7 +11,6 @@ import io.github.daegwonkim.backend.dto.auth.ConfirmVerificationCodeRequest
 import io.github.daegwonkim.backend.dto.auth.ConfirmVerificationCodeResponse
 import io.github.daegwonkim.backend.dto.auth.SendVerificationCodeRequest
 import io.github.daegwonkim.backend.entity.User
-import io.github.daegwonkim.backend.dto.auth.ConfirmPhoneNoResponse
 import io.github.daegwonkim.backend.exception.business.AuthenticationException
 import io.github.daegwonkim.backend.exception.infra.ExternalApiException
 import io.github.daegwonkim.backend.jwt.JwtTokenProvider
@@ -68,13 +66,9 @@ class AuthService(
         val verifiedToken = generateVerifiedTokenAndSave(phoneNo)
         verificationCodeRedisRepository.delete(phoneNo)
 
-        return ConfirmVerificationCodeResponse(verifiedToken)
-    }
+        val exists = userRepository.existsByPhoneNoAndIsWithdrawnFalse(phoneNo)
 
-    @Transactional(readOnly = true)
-    fun confirmPhoneNo(request: ConfirmPhoneNoRequest): ConfirmPhoneNoResponse {
-        val exists = userRepository.existsByPhoneNoAndIsWithdrawnFalse(request.phoneNo)
-        return ConfirmPhoneNoResponse(exists)
+        return ConfirmVerificationCodeResponse(verifiedToken, exists)
     }
 
     @Transactional

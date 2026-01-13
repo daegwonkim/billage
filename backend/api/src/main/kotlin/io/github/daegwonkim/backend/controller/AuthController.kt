@@ -1,7 +1,5 @@
 package io.github.daegwonkim.backend.controller
 
-import io.github.daegwonkim.backend.dto.auth.ConfirmPhoneNoRequest
-import io.github.daegwonkim.backend.dto.auth.ConfirmPhoneNoResponse
 import io.github.daegwonkim.backend.dto.auth.ReissueTokenRequest
 import io.github.daegwonkim.backend.dto.auth.SignInRequest
 import io.github.daegwonkim.backend.dto.auth.SignUpRequest
@@ -35,11 +33,6 @@ class AuthController(
         @Valid @RequestBody request: ConfirmVerificationCodeRequest
     ): ConfirmVerificationCodeResponse =
         authService.confirmVerificationCode(request)
-
-    @Operation(summary = "휴대폰 번호 검증", description = "서버에 존재하는 휴대폰 번호인지 검증합니다")
-    @PostMapping("/phone-no/confirm")
-    fun confirmPhoneNo(@Valid @RequestBody request: ConfirmPhoneNoRequest): ConfirmPhoneNoResponse =
-        authService.confirmPhoneNo(request)
 
     @Operation(summary = "회원가입", description = "새로운 계정을 등록합니다")
     @PostMapping("/sign-up")
