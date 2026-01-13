@@ -1,7 +1,6 @@
 import { confirmPhoneNo } from '@/api/auth/auth'
 import type { ConfirmPhoneNoRequest } from '@/api/auth/dto/ConfirmPhoneNo'
 import logo from '@/assets/logo.png'
-import { useOnboardingStatus } from '@/hooks/useOnboardingStatus'
 import { formatPhoneNo } from '@/utils/utils'
 import { useMutation } from '@tanstack/react-query'
 import { ChevronLeft, CircleAlert } from 'lucide-react'
@@ -9,10 +8,8 @@ import { useRef, useState, useEffect } from 'react'
 import toast, { Toaster } from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 
-export default function OnboardingAuthentication() {
+export default function Authentication() {
   const navigate = useNavigate()
-
-  const { updateStatus } = useOnboardingStatus()
 
   const [phoneNo, setPhoneNo] = useState('')
   const [existsPhoneNo, setExistsPhoneNo] = useState(false)
@@ -24,8 +21,7 @@ export default function OnboardingAuthentication() {
       if (data.exists) {
         setExistsPhoneNo(true)
       } else {
-        updateStatus({ isAuthenticated: true })
-        navigate('/onboarding/verification', {
+        navigate('/verification', {
           state: { phoneNo: variables.phoneNo }
         })
       }

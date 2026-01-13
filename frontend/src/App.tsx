@@ -5,12 +5,7 @@ import { BottomNav } from './components/common/BottomNav'
 import type { NavTab } from './types'
 import { RentalItemDetail } from './pages/RentalItemDetail'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import OnboardingStart from './pages/OnboardingStart'
-import OnboardingNeighborhood from './pages/OnboardingNeighborhood'
-import OnboardingAuthentication from './pages/OnboardingAuthentication'
-import OnboardingVerification from './pages/OnboardingVerification'
-import OnboardingSignin from './pages/OnboardingSignin'
-import { ProtectedOnboardingRoute } from './ProtectedOnboardingRoute'
+import Authentication from './pages/Authentication'
 import RentalItemRegister from './pages/RentalItemRegister'
 import { MyBillage } from './pages/MyBillage'
 
@@ -20,7 +15,7 @@ function AppContent() {
   const [showRegisterModal, setShowRegisterModal] = useState(false)
 
   const location = useLocation()
-  const hideBottomNavPaths = ['/rental-items/', '/onboarding']
+  const hideBottomNavPaths = ['/rental-items/']
   const showBottomNav = !hideBottomNavPaths.some(path =>
     location.pathname.includes(path)
   )
@@ -44,39 +39,10 @@ function AppContent() {
           position: 'relative'
         }}>
         <Routes>
-          {/* 보호되지 않은 온보딩 시작 페이지들 */}
           <Route
-            path="/onboarding"
-            element={<OnboardingStart />}
+            path="/authentication"
+            element={<Authentication />}
           />
-          <Route
-            path="/onboarding/authentication"
-            element={<OnboardingAuthentication />}
-          />
-          <Route
-            path="/onboarding/signin"
-            element={<OnboardingSignin />}
-          />
-
-          {/* 보호된 온보딩 페이지들 */}
-          <Route
-            path="/onboarding/verification"
-            element={
-              <ProtectedOnboardingRoute requiredStep="verification">
-                <OnboardingVerification />
-              </ProtectedOnboardingRoute>
-            }
-          />
-          <Route
-            path="/onboarding/neighborhood"
-            element={
-              <ProtectedOnboardingRoute requiredStep="neighborhood">
-                <OnboardingNeighborhood />
-              </ProtectedOnboardingRoute>
-            }
-          />
-
-          {/* 일반 페이지들 */}
           <Route
             path="/"
             element={<Home />}
