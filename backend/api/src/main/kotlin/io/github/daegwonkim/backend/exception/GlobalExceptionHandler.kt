@@ -15,7 +15,7 @@ class GlobalExceptionHandler {
 
     @ExceptionHandler(AuthenticationException::class)
     fun handleAuthenticationException(e: AuthenticationException): ProblemDetail {
-        logger.warn { "인증 실패: reason=${e.reason}" }
+        logger.warn(e) { "인증 실패: reason=${e.reason}" }
         return ProblemDetail.forStatusAndDetail(e.errorCode.status, e.message).apply {
             setProperty("code", e.errorCode.code)
         }
@@ -34,7 +34,7 @@ class GlobalExceptionHandler {
         val errors = e.bindingResult.fieldErrors.map {
             mapOf("field" to it.field, "message" to (it.defaultMessage ?: "유효하지 않은 값입니다"))
         }
-        logger.warn { "입력값 검증 실패: ${errors.map { it["field"] }}" }
+        logger.warn(e) { "입력값 검증 실패: ${errors.map { it["field"] }}" }
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "입력값 검증 실패").apply {
             setProperty("code", ErrorCode.VALIDATION_FAILED.code)
             setProperty("errors", errors)
