@@ -1,7 +1,7 @@
-export interface ConfirmMemberRequest {
+export interface ConfirmRegisteredRequest {
   phoneNo: string
 }
 
-export interface ConfirmMemberResponse {
-  isMember: boolean
+export interface ConfirmRegisteredResponse {
+  registered: boolean
 }

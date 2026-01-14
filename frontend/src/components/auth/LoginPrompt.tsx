@@ -5,11 +5,12 @@ import {
   confirmVerificationCode,
   signIn,
   signUp,
-  confirmMember
+  confirmRegistered
 } from '@/api/auth/auth'
 import { nearbyNeighborhoods } from '@/api/neighborhood/neighborhood'
 import { ApiError } from '@/api/error'
 import logo from '@/assets/logo.png'
+import { useAuth } from '@/contexts/AuthContext'
 
 type Step = 'start' | 'phone' | 'verification' | 'neighborhood'
 
@@ -19,6 +20,8 @@ interface Neighborhood {
 }
 
 export function LoginPrompt() {
+  const { setAuthenticated } = useAuth()
+
   const [step, setStep] = useState<Step>('start')
   const [phoneNo, setPhoneNo] = useState('')
   const [verificationCode, setVerificationCode] = useState('')
@@ -91,11 +94,11 @@ export function LoginPrompt() {
         verificationCode
       })
       setVerifiedToken(confirmVerificationCodeRes.verifiedToken)
-      const confirmMemberRes = await confirmMember({
+      const confirmMemberRes = await confirmRegistered({
         phoneNo: cleanPhoneNo
       })
 
-      if (confirmMemberRes.isMember) {
+      if (!confirmMemberRes.registered) {
         // 신규 회원이면 동네 인증 단계로
         setStep('neighborhood')
         // 위치 정보 요청
@@ -106,6 +109,8 @@ export function LoginPrompt() {
           phoneNo: cleanPhoneNo,
           verifiedToken: confirmVerificationCodeRes.verifiedToken
         })
+
+        setAuthenticated(true)
       }
     } catch (err) {
       if (err instanceof ApiError) {
@@ -166,13 +171,20 @@ export function LoginPrompt() {
       const cleanPhoneNo = phoneNo.replace(/-/g, '')
       await signUp({
         phoneNo: cleanPhoneNo,
-        verifiedToken,
+        verifiedToken: verifiedToken,
         neighborhood: {
           latitude: currentLocation.latitude,
           longitude: currentLocation.longitude,
           code: selectedNeighborhood.code
         }
       })
+
+      await signIn({
+        phoneNo: cleanPhoneNo,
+        verifiedToken: verifiedToken
+      })
+
+      setAuthenticated(true)
     } catch (err) {
       if (err instanceof ApiError) {
         setError(err.message)

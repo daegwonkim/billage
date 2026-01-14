@@ -7,8 +7,8 @@ import type {
 import type { SendVerificationCodeRequest } from './dto/SendVerificationCode'
 import { ApiError, type ProblemDetail } from '../error'
 import type {
-  ConfirmMemberRequest,
-  ConfirmMemberResponse
+  ConfirmRegisteredRequest,
+  ConfirmRegisteredResponse
 } from './dto/ConfirmMember'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL!
@@ -50,17 +50,17 @@ export async function confirmVerificationCode(
   return response.json()
 }
 
-export async function confirmMember(
-  request: ConfirmMemberRequest
-): Promise<ConfirmMemberResponse> {
-  const response = await fetch(`${API_BASE_URL}/api/auth/confirm-member`, {
+export async function confirmRegistered(
+  request: ConfirmRegisteredRequest
+): Promise<ConfirmRegisteredResponse> {
+  const response = await fetch(`${API_BASE_URL}/api/auth/confirm-registered`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify(request)
   })
-  if (!response.ok) throw new Error('Failed to confirm member')
+  if (!response.ok) throw new Error('Failed to confirm registered')
 
   return response.json()
 }
@@ -85,6 +85,7 @@ export async function signIn(request: SignInRequest): Promise<void> {
     headers: {
       'Content-Type': 'application/json'
     },
+    credentials: 'include',
     body: JSON.stringify(request)
   })
   if (!response.ok) throw new Error('Failed to sign in')
@@ -100,7 +101,8 @@ export async function reissue() {
 
 export async function signOut() {
   const response = await fetch(`${API_BASE_URL}/api/auth/sign-out`, {
-    method: 'POST'
+    method: 'POST',
+    credentials: 'include'
   })
 
   if (!response.ok) throw new Error('Failed to sign out')

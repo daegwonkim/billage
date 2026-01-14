@@ -1,14 +1,28 @@
 import { Header } from '@/components/common/Header'
 import { ChevronRight, Settings } from 'lucide-react'
 import defaultProfileImage from '@/assets/default-profile.png'
+import { useAuth } from '@/contexts/AuthContext'
+import { LoginPrompt } from '@/components/auth/LoginPrompt'
+import { signOut } from '@/api/auth/auth'
 
 export function MyBillage() {
+  const { isAuthenticated, logout } = useAuth()
+
+  if (!isAuthenticated) {
+    return <LoginPrompt />
+  }
+
   const menuItems = [
     { id: 'my-items', label: '내가 등록한 물품', count: 0 },
     { id: 'borrowed-items', label: '내가 빌린 물품', count: 0 },
     { id: 'favorites', label: '관심 물품', count: 0 },
     { id: 'history', label: '거래 내역', count: 0 }
   ]
+
+  const handleLogout = async () => {
+    await signOut()
+    logout()
+  }
 
   return (
     <div className="min-h-screen w-md bg-white pb-20">
@@ -75,7 +89,9 @@ export function MyBillage() {
 
       {/* 로그아웃 버튼 */}
       <div className="mt-6 px-4">
-        <button className="w-full rounded-lg py-3 text-sm font-medium text-neutral-500 transition-colors hover:bg-gray-50">
+        <button
+          className="w-full rounded-lg py-3 text-sm font-medium text-neutral-500 transition-colors hover:bg-gray-50"
+          onClick={handleLogout}>
           로그아웃
         </button>
       </div>
