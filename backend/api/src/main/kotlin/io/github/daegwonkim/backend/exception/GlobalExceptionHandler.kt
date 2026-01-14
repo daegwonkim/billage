@@ -3,6 +3,7 @@ package io.github.daegwonkim.backend.exception
 import io.github.daegwonkim.backend.exception.base.BaseException
 import io.github.daegwonkim.backend.exception.base.ErrorCode
 import io.github.daegwonkim.backend.exception.business.AuthenticationException
+import io.github.daegwonkim.backend.exception.infra.InfraException
 import io.github.daegwonkim.backend.log.logger
 import org.springframework.http.HttpStatus
 import org.springframework.http.ProblemDetail
@@ -15,8 +16,8 @@ class GlobalExceptionHandler {
 
     @ExceptionHandler(AuthenticationException::class)
     fun handleAuthenticationException(e: AuthenticationException): ProblemDetail {
-        logger.warn(e) { "인증 실패: reason=${e.reason}" }
-        return ProblemDetail.forStatusAndDetail(e.errorCode.status, e.message).apply {
+        logger.warn(e) { e.message }
+        return ProblemDetail.forStatusAndDetail(e.errorCode.status, e.errorCode.message).apply {
             setProperty("code", e.errorCode.code)
         }
     }
@@ -24,8 +25,16 @@ class GlobalExceptionHandler {
     @ExceptionHandler(BaseException::class)
     fun handleBaseException(e: BaseException): ProblemDetail {
         logger.error(e) { "${e.errorCode.code}: ${e.message}" }
-        return ProblemDetail.forStatusAndDetail(e.errorCode.status, e.message).apply {
+        return ProblemDetail.forStatusAndDetail(e.errorCode.status, e.errorCode.message).apply {
             setProperty("code", e.errorCode.code)
+        }
+    }
+
+    @ExceptionHandler(InfraException::class)
+    fun handleInfraException(e: InfraException): ProblemDetail {
+        logger.error(e) { "${e.errorCode.code}: ${e.message}" }
+        return ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다").apply {
+            setProperty("code", ErrorCode.INTERNAL_SERVER_ERROR.code)
         }
     }
 

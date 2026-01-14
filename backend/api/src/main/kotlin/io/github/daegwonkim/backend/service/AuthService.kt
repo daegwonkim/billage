@@ -11,6 +11,7 @@ import io.github.daegwonkim.backend.dto.auth.ConfirmVerificationCodeRequest
 import io.github.daegwonkim.backend.dto.auth.ConfirmVerificationCodeResponse
 import io.github.daegwonkim.backend.dto.auth.SendVerificationCodeRequest
 import io.github.daegwonkim.backend.entity.User
+import io.github.daegwonkim.backend.exception.base.ErrorCode
 import io.github.daegwonkim.backend.exception.business.AuthenticationException
 import io.github.daegwonkim.backend.exception.infra.ExternalApiException
 import io.github.daegwonkim.backend.jwt.JwtTokenProvider
@@ -53,14 +54,14 @@ class AuthService(
         val phoneNo = request.phoneNo
 
         val generatedVerificationCode = generateVerificationCodeAndSave(phoneNo)
-//        buildVerificationCodeMessageAndSendSms(phoneNo, generatedVerificationCode)
+        buildVerificationCodeMessageAndSendSms(phoneNo, generatedVerificationCode)
     }
 
     fun confirmVerificationCode(request: ConfirmVerificationCodeRequest): ConfirmVerificationCodeResponse {
         val phoneNo = request.phoneNo
         val verificationCode = request.verificationCode
 
-//        validateVerificationCode(phoneNo, verificationCode)
+        validateVerificationCode(phoneNo, verificationCode)
         val verifiedToken = generateVerifiedTokenAndSave(phoneNo)
         verificationCodeRedisRepository.delete(phoneNo)
 
@@ -94,7 +95,7 @@ class AuthService(
         val phoneNo = request.phoneNo
 
         val user = userRepository.findByPhoneNoAndIsWithdrawnFalse(phoneNo)
-            ?: throw AuthenticationException(AuthenticationException.Reason.USER_NOT_FOUND)
+            ?: throw AuthenticationException(ErrorCode.AUTHENTICATION_FAILED,"존재하지 않는 사용자에 대한 로그인 요청 발생: phoneNo=$phoneNo")
 
         validateVerifiedToken(phoneNo, request.verifiedToken)
 
@@ -147,15 +148,17 @@ class AuthService(
         val savedVerificationCode = verificationCodeRedisRepository.find(phoneNo)
 
         if (savedVerificationCode == null || savedVerificationCode != requestedVerificationCode) {
-            throw AuthenticationException(AuthenticationException.Reason.INVALID_VERIFICATION_CODE)
+            throw AuthenticationException(ErrorCode.INVALID_VERIFICATION_CODE,
+                "인증코드 불일치: savedVerificationCode=$savedVerificationCode, requestedVerificationCode=$requestedVerificationCode")
         }
     }
 
     private fun validateVerifiedToken(phoneNo: String, requestedVerifiedToken: String) {
-        val savedToken = verifiedTokenRedisRepository.find(phoneNo)
+        val savedVerifiedToken = verifiedTokenRedisRepository.find(phoneNo)
 
-        if (savedToken == null || savedToken != requestedVerifiedToken) {
-            throw AuthenticationException(AuthenticationException.Reason.INVALID_VERIFIED_TOKEN)
+        if (savedVerifiedToken == null || savedVerifiedToken != requestedVerifiedToken) {
+            throw AuthenticationException(ErrorCode.AUTHENTICATION_FAILED,
+                "인증토큰 불일치: savedVerifiedToken=$savedVerifiedToken, requestedVerifiedToken=$requestedVerifiedToken")
         }
     }
 
@@ -178,7 +181,8 @@ class AuthService(
         val savedRefreshToken = refreshTokenRedisRepository.find(userId)
 
         if (savedRefreshToken == null || savedRefreshToken != requestedRefreshToken) {
-            throw AuthenticationException(AuthenticationException.Reason.INVALID_TOKEN)
+            throw AuthenticationException(ErrorCode.AUTHENTICATION_FAILED,
+                "유효하지 않은 RefreshToken: savedRefreshToken=$savedRefreshToken, requestedRefreshToken=$requestedRefreshToken")
         }
     }
 

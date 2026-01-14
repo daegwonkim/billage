@@ -1,5 +1,6 @@
 package io.github.daegwonkim.backend.jwt
 
+import io.github.daegwonkim.backend.exception.base.ErrorCode
 import io.github.daegwonkim.backend.exception.business.AuthenticationException
 import io.github.daegwonkim.backend.log.logger
 import io.jsonwebtoken.Claims
@@ -31,12 +32,15 @@ class JwtTokenProvider(
 
     fun validateAndGetUserId(token: String): Long {
         return runCatching { getClaims(token).subject.toLong() }
-            .getOrElse { throw AuthenticationException(AuthenticationException.Reason.INVALID_TOKEN) }
+            .getOrElse {
+                throw AuthenticationException(ErrorCode.AUTHENTICATION_FAILED,
+                "유효하지 않은 JWT 토큰: token=$token")
+            }
     }
 
     fun validateAndGetUserIdOrNull(token: String): Long? {
         return runCatching { getClaims(token).subject.toLong() }
-            .onFailure { logger.warn { "Invalid JWT: ${it.message}" } }
+            .onFailure { logger.warn { "유효하지 않은 JWT: token=$token, message=${it.message}" } }
             .getOrNull()
     }
 

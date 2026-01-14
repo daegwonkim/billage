@@ -17,6 +17,7 @@ import io.github.daegwonkim.backend.entity.RentalItemImage
 import io.github.daegwonkim.backend.enumerate.RentalItemCategory
 import io.github.daegwonkim.backend.enumerate.RentalItemSortOption
 import io.github.daegwonkim.backend.event.dto.StorageFileDeleteEvent
+import io.github.daegwonkim.backend.exception.base.ErrorCode
 import io.github.daegwonkim.backend.exception.business.ResourceNotFoundException
 import io.github.daegwonkim.backend.repository.RentalItemImageRepository
 import io.github.daegwonkim.backend.repository.RentalItemJooqRepository
@@ -76,7 +77,8 @@ class RentalItemService(
     @Transactional(readOnly = true)
     fun getRentalItem(userId: Long, rentalItemId: Long): GetRentalItemResponse {
         val rentalItem = rentalItemJooqRepository.getRentalItem(rentalItemId, userId)
-            ?: throw ResourceNotFoundException("RentalItem", rentalItemId)
+            ?: throw ResourceNotFoundException(ErrorCode.RENTAL_ITEM_NOT_FOUND,
+                "대여 상품 정보 조회 실패(존재하지 않는 대여 상품): userId=$userId, rentalItemId=$rentalItemId")
 
         return GetRentalItemResponse.from(
             item = rentalItem,
@@ -123,7 +125,10 @@ class RentalItemService(
     @Transactional(readOnly = true)
     fun getForModify(id: Long): GetRentalItemForModifyResponse {
         val rentalItem = rentalItemRepository.findById(id)
-            .orElseThrow { ResourceNotFoundException("RentalItem", id) }
+            .orElseThrow {
+                throw ResourceNotFoundException(ErrorCode.RENTAL_ITEM_NOT_FOUND,
+                "대여 상품 정보 조회 실패(존재하지 않는 대여 상품): id=$id")
+            }
         val rentalItemImages = getRentalItemImages(rentalItem.id)
 
         return GetRentalItemForModifyResponse.from(rentalItem, rentalItemImages)
@@ -135,7 +140,10 @@ class RentalItemService(
         modifiedInfo: ModifyRentalItemRequest
     ): ModifyRentalItemResponse {
         val rentalItem = rentalItemRepository.findById(id)
-            .orElseThrow { ResourceNotFoundException("RentalItem", id) }
+            .orElseThrow {
+                throw ResourceNotFoundException(ErrorCode.RENTAL_ITEM_NOT_FOUND,
+                    "대여 상품 정보 조회 실패(존재하지 않는 대여 상품): id=$id")
+            }
         rentalItem.modify(modifiedInfo.category, modifiedInfo.title, modifiedInfo.description,
             modifiedInfo.pricePerDay, modifiedInfo.pricePerWeek)
 

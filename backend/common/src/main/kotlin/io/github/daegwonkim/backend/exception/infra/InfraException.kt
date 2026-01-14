@@ -4,7 +4,7 @@ import io.github.daegwonkim.backend.exception.base.BaseException
 import io.github.daegwonkim.backend.exception.base.ErrorCode
 
 sealed class InfraException(
-    message: String,
     errorCode: ErrorCode,
+    message: String,
     cause: Throwable? = null
-) : BaseException(message, errorCode, cause)
+) : BaseException(errorCode, message, cause)

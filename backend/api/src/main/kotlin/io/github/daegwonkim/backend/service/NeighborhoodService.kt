@@ -4,7 +4,9 @@ import io.github.daegwonkim.backend.dto.neighborhood.LocateNeighborhoodResponse
 import io.github.daegwonkim.backend.dto.neighborhood.NearbyNeighborhoodsResponse
 import io.github.daegwonkim.backend.entity.UserNeighborhood
 import io.github.daegwonkim.backend.entity.command.CreateUserNeighborhoodCommand
+import io.github.daegwonkim.backend.exception.base.ErrorCode
 import io.github.daegwonkim.backend.exception.business.AuthenticationException
+import io.github.daegwonkim.backend.exception.business.InvalidRequestException
 import io.github.daegwonkim.backend.exception.business.ResourceNotFoundException
 import io.github.daegwonkim.backend.repository.NeighborhoodJooqRepository
 import io.github.daegwonkim.backend.repository.NeighborhoodRepository
@@ -21,7 +23,8 @@ class NeighborhoodService(
 ) {
     fun locate(latitude: Double, longitude: Double): LocateNeighborhoodResponse {
         val neighborhood = neighborhoodJooqRepository.findByCoordinate(latitude, longitude)
-            ?: throw ResourceNotFoundException("Neighborhood", "lat=$latitude, lng=$longitude")
+            ?: throw InvalidRequestException(ErrorCode.UNSUPPORTED_REGION,
+                "지원하지 않는 지역에 대한 요청 발생: latitude=$latitude, longitude=$longitude")
 
         return LocateNeighborhoodResponse.from(neighborhood)
     }
@@ -37,19 +40,19 @@ class NeighborhoodService(
         val neighborhood = neighborhoodJooqRepository.findByCoordinate(
             requestedNeighborhood.latitude,
             requestedNeighborhood.longitude
-        ) ?: throw ResourceNotFoundException(
-            "Neighborhood",
-            "lat=${requestedNeighborhood.latitude}, lng=${requestedNeighborhood.longitude}"
-        )
+        ) ?: throw InvalidRequestException(ErrorCode.UNSUPPORTED_REGION,
+            "지원하지 않는 지역에 대한 요청 발생: latitude=${requestedNeighborhood.latitude}, longitude=${requestedNeighborhood.longitude}")
 
         if (neighborhood.code != requestedNeighborhood.code) {
-            throw AuthenticationException(AuthenticationException.Reason.INVALID_NEIGHBORHOOD)
+            throw AuthenticationException(ErrorCode.NEIGHBORHOOD_VERIFICATION_FAILED,
+                "동네 인증 실패: 인증 요청 동네=${requestedNeighborhood.code}, 실제 위치=${neighborhood.code}")
         }
     }
 
     fun saveNeighborhood(userId: Long, requestedNeighborhood: Neighborhood) {
         val neighborhood = neighborhoodRepository.findByCode(requestedNeighborhood.code)
-            ?: throw ResourceNotFoundException("Neighborhood", "code=${requestedNeighborhood.code}")
+            ?: throw ResourceNotFoundException(ErrorCode.NEIGHBORHOOD_NOT_FOUND,
+                "사용자 동네 정보 저장 실패: userId=$userId, code=${requestedNeighborhood.code}")
 
         val command = CreateUserNeighborhoodCommand(
             userId = userId,
