@@ -4,7 +4,8 @@ import {
   sendVerificationCode,
   confirmVerificationCode,
   signIn,
-  signUp
+  signUp,
+  confirmMember
 } from '@/api/auth/auth'
 import { nearbyNeighborhoods } from '@/api/neighborhood/neighborhood'
 import { ApiError } from '@/api/error'
@@ -85,13 +86,16 @@ export function LoginPrompt() {
 
     try {
       const cleanPhoneNo = phoneNo.replace(/-/g, '')
-      const result = await confirmVerificationCode({
+      const confirmVerificationCodeRes = await confirmVerificationCode({
         phoneNo: cleanPhoneNo,
         verificationCode
       })
-      setVerifiedToken(result.verifiedToken)
+      setVerifiedToken(confirmVerificationCodeRes.verifiedToken)
+      const confirmMemberRes = await confirmMember({
+        phoneNo: cleanPhoneNo
+      })
 
-      if (!result.exists) {
+      if (confirmMemberRes.isMember) {
         // 신규 회원이면 동네 인증 단계로
         setStep('neighborhood')
         // 위치 정보 요청
@@ -100,7 +104,7 @@ export function LoginPrompt() {
         // 기존 회원이면 바로 로그인
         await signIn({
           phoneNo: cleanPhoneNo,
-          verifiedToken: result.verifiedToken
+          verifiedToken: confirmVerificationCodeRes.verifiedToken
         })
       }
     } catch (err) {

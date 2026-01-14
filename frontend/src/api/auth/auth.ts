@@ -6,6 +6,10 @@ import type {
 } from './dto/ConfirmVerificationCode'
 import type { SendVerificationCodeRequest } from './dto/SendVerificationCode'
 import { ApiError, type ProblemDetail } from '../error'
+import type {
+  ConfirmMemberRequest,
+  ConfirmMemberResponse
+} from './dto/ConfirmMember'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL!
 
@@ -46,6 +50,21 @@ export async function confirmVerificationCode(
   return response.json()
 }
 
+export async function confirmMember(
+  request: ConfirmMemberRequest
+): Promise<ConfirmMemberResponse> {
+  const response = await fetch(`${API_BASE_URL}/api/auth/confirm-member`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(request)
+  })
+  if (!response.ok) throw new Error('Failed to confirm member')
+
+  return response.json()
+}
+
 export async function signUp(request: SignUpRequest): Promise<void> {
   const response = await fetch(`${API_BASE_URL}/api/auth/sign-up`, {
     method: 'POST',
@@ -71,19 +90,18 @@ export async function signIn(request: SignInRequest): Promise<void> {
   if (!response.ok) throw new Error('Failed to sign in')
 }
 
-export async function confirmNeighborhood(
-  phoneNo: string,
-  verificationCode: string
-): Promise<void> {
-  const response = await fetch(
-    `${API_BASE_URL}/api/auth/neighborhood/confirm`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ phoneNo, verificationCode })
-    }
-  )
-  if (!response.ok) throw new Error('Failed to verify verification code')
+export async function reissue() {
+  const response = await fetch(`${API_BASE_URL}/api/auth/token/reissue`, {
+    method: 'POST'
+  })
+
+  if (!response.ok) throw new Error('Failed to reissue')
+}
+
+export async function signOut() {
+  const response = await fetch(`${API_BASE_URL}/api/auth/sign-out`, {
+    method: 'POST'
+  })
+
+  if (!response.ok) throw new Error('Failed to sign out')
 }

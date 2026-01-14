@@ -1,4 +1,4 @@
-import { useGetRentalItemSortOptions } from '@/hooks/RentalItem'
+import { useGetRentalItemSortOptions } from '@/hooks/useRentalItem'
 import { BottomSheet } from '../common/BottomSheet'
 import { BottomSheetItem } from '../common/BottomSheetItem'
 

@@ -1,5 +1,5 @@
 import type { Seller } from '@/api/rentall_item/dto/GetRentalItem'
-import { useGetUserRentalItems } from '@/hooks/User'
+import { useGetUserRentalItems } from '@/hooks/useUser'
 import { formatCompactPrice } from '@/utils/utils'
 import { ChevronRight, Frown } from 'lucide-react'
 import { useRef, useState } from 'react'

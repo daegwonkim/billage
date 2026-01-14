@@ -7,7 +7,7 @@ import { register } from '@/api/rentall_item/rentalItem'
 import { generateUploadSignedUrl, removeFile } from '@/api/storage/storage'
 import { formatPrice } from '@/utils/utils'
 import { useNavigate } from 'react-router-dom'
-import { useGetRentalItemCategories } from '@/hooks/RentalItem'
+import { useGetRentalItemCategories } from '@/hooks/useRentalItem'
 
 interface FormData {
   category: string

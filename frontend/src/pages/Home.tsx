@@ -6,8 +6,8 @@ import { SortBottomSheet } from '../components/main/SortBottomSheet'
 import { HomeSkeleton } from '../components/main/HomeSkeleton'
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useRef, useState } from 'react'
-import { useGetRentalItems } from '@/hooks/RentalItem'
-import { useLocateNeighborhood } from '@/hooks/Neighborhood'
+import { useGetRentalItems } from '@/hooks/useRentalItem'
+import { useLocateNeighborhood } from '@/hooks/useNeighborhood'
 
 export function Home() {
   const navigate = useNavigate()

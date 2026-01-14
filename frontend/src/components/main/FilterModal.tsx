@@ -1,4 +1,4 @@
-import { useGetRentalItemCategories } from '@/hooks/RentalItem'
+import { useGetRentalItemCategories } from '@/hooks/useRentalItem'
 import { X } from 'lucide-react'
 import { useState, useEffect } from 'react'
 

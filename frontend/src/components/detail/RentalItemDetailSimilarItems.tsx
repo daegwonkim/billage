@@ -1,4 +1,4 @@
-import { useGetSimilarRentalItems } from '@/hooks/RentalItem'
+import { useGetSimilarRentalItems } from '@/hooks/useRentalItem'
 import { formatCompactPrice } from '@/utils/utils'
 import { ChevronRight, Frown } from 'lucide-react'
 import { useRef, useState } from 'react'

@@ -7,7 +7,7 @@ import { RentalItemDetailSimilarItems } from '@/components/detail/RentalItemDeta
 import { RentalItemDetailSeller } from '@/components/detail/RentalItemDetailSeller'
 import { RentalItemDetailSkeleton } from '@/components/detail/RentalItemDetailSkeleton'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useGetRentalItem } from '@/hooks/RentalItem'
+import { useGetRentalItem } from '@/hooks/useRentalItem'
 
 export function RentalItemDetail() {
   const navigate = useNavigate()

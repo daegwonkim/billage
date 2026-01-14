@@ -5,5 +5,4 @@ export interface ConfirmVerificationCodeRequest {
 
 export interface ConfirmVerificationCodeResponse {
   verifiedToken: string
-  exists: boolean
 }
