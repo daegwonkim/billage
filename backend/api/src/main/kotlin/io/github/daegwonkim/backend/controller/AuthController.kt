@@ -1,15 +1,17 @@
 package io.github.daegwonkim.backend.controller
 
-import io.github.daegwonkim.backend.dto.auth.ConfirmMemberRequest
-import io.github.daegwonkim.backend.dto.auth.ConfirmMemberResponse
+import io.github.daegwonkim.backend.dto.auth.ConfirmRegisteredRequest
+import io.github.daegwonkim.backend.dto.auth.ConfirmRegisteredResponse
 import io.github.daegwonkim.backend.dto.auth.SignInRequest
 import io.github.daegwonkim.backend.dto.auth.SignUpRequest
 import io.github.daegwonkim.backend.dto.auth.ConfirmVerificationCodeRequest
 import io.github.daegwonkim.backend.dto.auth.ConfirmVerificationCodeResponse
 import io.github.daegwonkim.backend.dto.auth.SendVerificationCodeRequest
+import io.github.daegwonkim.backend.exception.business.AuthenticationException
 import io.github.daegwonkim.backend.service.AuthService
 import io.github.daegwonkim.backend.util.CookieUtil
 import io.swagger.v3.oas.annotations.Operation
+import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -36,11 +38,11 @@ class AuthController(
     ): ConfirmVerificationCodeResponse =
         authService.confirmVerificationCode(request)
 
-    @Operation(summary = "회원 여부 확인", description = "사용자가 이미 회원인지 확인합니다")
-    @PostMapping("/confirm-member")
-    fun confirm(
-        @Valid @RequestBody request: ConfirmMemberRequest
-    ): ConfirmMemberResponse = authService.confirmMember(request)
+    @Operation(summary = "회원 여부 확인", description = "이미 등록된 사용자인지 확인합니다")
+    @PostMapping("/confirm-registered")
+    fun confirmRegistered(
+        @Valid @RequestBody request: ConfirmRegisteredRequest
+    ): ConfirmRegisteredResponse = authService.confirmRegistered(request)
 
     @Operation(summary = "회원가입", description = "새로운 계정을 등록합니다")
     @PostMapping("/sign-up")
@@ -51,19 +53,19 @@ class AuthController(
     @PostMapping("/sign-in")
     fun signIn(@Valid @RequestBody request: SignInRequest, response: HttpServletResponse) {
         val signInResponse = authService.signIn(request)
-
         response.addCookie(cookieUtil.createAccessTokenCookie(signInResponse.accessToken))
+        response.addCookie(cookieUtil.createRefreshTokenCookie(signInResponse.refreshToken))
     }
 
     @Operation(summary = "토큰 재발급", description = "AccessToken, RefreshToken을 재발급합니다")
     @PostMapping("/token/reissue")
-    fun reissueToken(
-        @AuthenticationPrincipal userId: Long,
-        response: HttpServletResponse
-    ) {
-        val reissueTokenResponse = authService.reissueToken(userId)
+    fun reissueToken(request: HttpServletRequest, response: HttpServletResponse) {
+        val refreshToken = cookieUtil.getTokenFromCookie(request, "refreshToken")
+            ?: throw AuthenticationException(AuthenticationException.Reason.UNAUTHORIZED)
 
+        val reissueTokenResponse = authService.reissueToken(refreshToken)
         response.addCookie(cookieUtil.createAccessTokenCookie(reissueTokenResponse.accessToken))
+        response.addCookie(cookieUtil.createRefreshTokenCookie(reissueTokenResponse.refreshToken))
     }
 
     @Operation(summary = "로그아웃", description = "로그아웃하고 토큰을 무효화합니다")
@@ -73,7 +75,6 @@ class AuthController(
         response: HttpServletResponse
     ) {
         authService.signOut(userId)
-
         response.addCookie(cookieUtil.deleteCookie("accessToken"))
     }
 }

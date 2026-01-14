@@ -25,7 +25,14 @@ class SecurityConfig(
             .cors { it.configurationSource(corsConfigurationSource()) }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests { auth ->
-                auth.anyRequest().permitAll()
+                auth.requestMatchers("/api/auth/verification-code/**").permitAll()
+                auth.requestMatchers("/api/auth/confirm-registered").permitAll()
+                auth.requestMatchers("/api/auth/sign-up").permitAll()
+                auth.requestMatchers("/api/auth/sign-in").permitAll()
+                auth.requestMatchers("/api/auth/token/reissue").permitAll()
+                auth.requestMatchers("/api/neighborhoods/**").permitAll()
+                auth.requestMatchers("/api/rental-items/**")
+                auth.anyRequest().authenticated()
             }
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
 
@@ -35,7 +42,7 @@ class SecurityConfig(
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
         val config = CorsConfiguration().apply {
-            allowedOrigins = listOf("https://billage.vercel.app/", "http://localhost:5173")
+            allowedOrigins = listOf("https://billage.vercel.app", "http://localhost:5173", "https://localhost:5173")
             allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
             allowedHeaders = listOf("*")
             allowCredentials = true

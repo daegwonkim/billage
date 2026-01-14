@@ -41,3 +41,6 @@ out/
 
 ### Kotlin ###
 .kotlin
+
+### 로컬 테스트용
+localhost.p12

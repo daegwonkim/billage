@@ -12,7 +12,7 @@ class AuthenticationException(
     enum class Reason {
         USER_NOT_FOUND,
         INVALID_TOKEN,
-        TOKEN_EXPIRED,
+        UNAUTHORIZED,
         INVALID_VERIFICATION_CODE,
         INVALID_VERIFIED_TOKEN,
         INVALID_NEIGHBORHOOD

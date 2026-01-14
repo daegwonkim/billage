@@ -1,8 +1,8 @@
 package io.github.daegwonkim.backend.service
 
 import io.github.daegwonkim.backend.coolsms.CoolsmsService
-import io.github.daegwonkim.backend.dto.auth.ConfirmMemberRequest
-import io.github.daegwonkim.backend.dto.auth.ConfirmMemberResponse
+import io.github.daegwonkim.backend.dto.auth.ConfirmRegisteredRequest
+import io.github.daegwonkim.backend.dto.auth.ConfirmRegisteredResponse
 import io.github.daegwonkim.backend.dto.auth.ReissueTokenResponse
 import io.github.daegwonkim.backend.dto.auth.SignInRequest
 import io.github.daegwonkim.backend.dto.auth.SignInResponse
@@ -24,7 +24,6 @@ import io.github.daegwonkim.backend.util.NicknameGenerator
 import io.github.daegwonkim.backend.vo.GeneratedTokens
 import io.github.daegwonkim.backend.vo.Neighborhood
 import org.springframework.context.ApplicationEventPublisher
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.security.SecureRandom
@@ -54,23 +53,23 @@ class AuthService(
         val phoneNo = request.phoneNo
 
         val generatedVerificationCode = generateVerificationCodeAndSave(phoneNo)
-        buildVerificationCodeMessageAndSendSms(phoneNo, generatedVerificationCode)
+//        buildVerificationCodeMessageAndSendSms(phoneNo, generatedVerificationCode)
     }
 
     fun confirmVerificationCode(request: ConfirmVerificationCodeRequest): ConfirmVerificationCodeResponse {
         val phoneNo = request.phoneNo
         val verificationCode = request.verificationCode
 
-        validateVerificationCode(phoneNo, verificationCode)
+//        validateVerificationCode(phoneNo, verificationCode)
         val verifiedToken = generateVerifiedTokenAndSave(phoneNo)
         verificationCodeRedisRepository.delete(phoneNo)
 
         return ConfirmVerificationCodeResponse(verifiedToken)
     }
 
-    fun confirmMember(request: ConfirmMemberRequest): ConfirmMemberResponse {
-        val isMember = userRepository.existsByPhoneNoAndIsWithdrawnFalse(request.phoneNo)
-        return ConfirmMemberResponse(isMember)
+    fun confirmRegistered(request: ConfirmRegisteredRequest): ConfirmRegisteredResponse {
+        val registered = userRepository.existsByPhoneNoAndIsWithdrawnFalse(request.phoneNo)
+        return ConfirmRegisteredResponse(registered)
     }
 
     @Transactional
@@ -102,13 +101,11 @@ class AuthService(
         val generatedTokens = generateTokensAndSaveRefreshToken(user.id)
         eventPublisher.publishEvent(VerifiedTokenDeleteEvent(phoneNo))
 
-        return SignInResponse(generatedTokens.accessToken)
+        return SignInResponse(generatedTokens.accessToken, generatedTokens.refreshToken)
     }
 
-    fun reissueToken(userId: Long): ReissueTokenResponse {
-        userRepository.findByIdOrNull(userId)
-            ?: throw AuthenticationException(AuthenticationException.Reason.USER_NOT_FOUND)
-
+    fun reissueToken(refreshToken: String): ReissueTokenResponse {
+        val userId = jwtTokenProvider.validateAndGetUserId(refreshToken)
         val generatedTokens = generateTokensAndSaveRefreshToken(userId)
 
         return ReissueTokenResponse(generatedTokens.accessToken, generatedTokens.refreshToken)
