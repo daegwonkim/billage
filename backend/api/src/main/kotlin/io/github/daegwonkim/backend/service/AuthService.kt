@@ -88,8 +88,6 @@ class AuthService(
 
         val userId = saveUser(phoneNo)
         neighborhoodService.saveNeighborhood(userId, neighborhood)
-
-        eventPublisher.publishEvent(VerifiedTokenDeleteEvent(phoneNo))
     }
 
     @Transactional(readOnly = true)
