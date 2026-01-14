@@ -1,11 +1,12 @@
 package io.github.daegwonkim.backend.service
 
 import io.github.daegwonkim.backend.coolsms.CoolsmsService
+import io.github.daegwonkim.backend.dto.auth.ConfirmMemberRequest
+import io.github.daegwonkim.backend.dto.auth.ConfirmMemberResponse
 import io.github.daegwonkim.backend.dto.auth.ReissueTokenResponse
 import io.github.daegwonkim.backend.dto.auth.SignInRequest
 import io.github.daegwonkim.backend.dto.auth.SignInResponse
 import io.github.daegwonkim.backend.dto.auth.SignUpRequest
-import io.github.daegwonkim.backend.dto.auth.SignUpResponse
 import io.github.daegwonkim.backend.dto.auth.ConfirmVerificationCodeRequest
 import io.github.daegwonkim.backend.dto.auth.ConfirmVerificationCodeResponse
 import io.github.daegwonkim.backend.dto.auth.SendVerificationCodeRequest
@@ -16,7 +17,6 @@ import io.github.daegwonkim.backend.jwt.JwtTokenProvider
 import io.github.daegwonkim.backend.redis.RefreshTokenRedisRepository
 import io.github.daegwonkim.backend.redis.VerificationCodeRedisRepository
 import io.github.daegwonkim.backend.redis.VerifiedTokenRedisRepository
-import io.github.daegwonkim.backend.redis.event.dto.RefreshTokenDeleteEvent
 import io.github.daegwonkim.backend.redis.event.dto.RefreshTokenSaveEvent
 import io.github.daegwonkim.backend.redis.event.dto.VerifiedTokenDeleteEvent
 import io.github.daegwonkim.backend.repository.UserRepository
@@ -65,13 +65,16 @@ class AuthService(
         val verifiedToken = generateVerifiedTokenAndSave(phoneNo)
         verificationCodeRedisRepository.delete(phoneNo)
 
-        val exists = userRepository.existsByPhoneNoAndIsWithdrawnFalse(phoneNo)
+        return ConfirmVerificationCodeResponse(verifiedToken)
+    }
 
-        return ConfirmVerificationCodeResponse(verifiedToken, exists)
+    fun confirmMember(request: ConfirmMemberRequest): ConfirmMemberResponse {
+        val isMember = userRepository.existsByPhoneNoAndIsWithdrawnFalse(request.phoneNo)
+        return ConfirmMemberResponse(isMember)
     }
 
     @Transactional
-    fun signUp(request: SignUpRequest): SignUpResponse {
+    fun signUp(request: SignUpRequest) {
         val phoneNo = request.phoneNo
         val verifiedToken = request.verifiedToken
         val latitude = request.neighborhood.latitude
@@ -86,10 +89,7 @@ class AuthService(
         val userId = saveUser(phoneNo)
         neighborhoodService.saveNeighborhood(userId, neighborhood)
 
-        val generatedTokens = generateTokensAndSaveRefreshToken(userId)
         eventPublisher.publishEvent(VerifiedTokenDeleteEvent(phoneNo))
-
-        return SignUpResponse(generatedTokens.accessToken, generatedTokens.refreshToken)
     }
 
     @Transactional(readOnly = true)
@@ -104,7 +104,7 @@ class AuthService(
         val generatedTokens = generateTokensAndSaveRefreshToken(user.id)
         eventPublisher.publishEvent(VerifiedTokenDeleteEvent(phoneNo))
 
-        return SignInResponse(generatedTokens.accessToken, generatedTokens.refreshToken)
+        return SignInResponse(generatedTokens.accessToken)
     }
 
     fun reissueToken(userId: Long): ReissueTokenResponse {
@@ -112,7 +112,6 @@ class AuthService(
             ?: throw AuthenticationException(AuthenticationException.Reason.USER_NOT_FOUND)
 
         val generatedTokens = generateTokensAndSaveRefreshToken(userId)
-        eventPublisher.publishEvent(RefreshTokenDeleteEvent(userId))
 
         return ReissueTokenResponse(generatedTokens.accessToken, generatedTokens.refreshToken)
     }

@@ -8,9 +8,7 @@ import org.springframework.stereotype.Component
 @Component
 class CookieUtil(
     @Value($$"${jwt.access-token-expiration.seconds}")
-    private val accessTokenExpiration: Int,
-    @Value($$"${jwt.refresh-token-expiration.seconds}")
-    private val refreshTokenExpiration: Int
+    private val accessTokenExpiration: Int
 ){
     fun createCookie(name: String, value: String, maxAge: Int): Cookie {
         return Cookie(name, value).apply {
@@ -23,10 +21,6 @@ class CookieUtil(
 
     fun createAccessTokenCookie(token: String): Cookie {
         return createCookie("accessToken", token, accessTokenExpiration)
-    }
-
-    fun createRefreshTokenCookie(token: String): Cookie {
-        return createCookie("refreshToken", token, refreshTokenExpiration)
     }
 
     fun getTokenFromCookie(request: HttpServletRequest, cookieName: String): String? {

@@ -1,5 +1,7 @@
 package io.github.daegwonkim.backend.controller
 
+import io.github.daegwonkim.backend.dto.auth.ConfirmMemberRequest
+import io.github.daegwonkim.backend.dto.auth.ConfirmMemberResponse
 import io.github.daegwonkim.backend.dto.auth.SignInRequest
 import io.github.daegwonkim.backend.dto.auth.SignUpRequest
 import io.github.daegwonkim.backend.dto.auth.ConfirmVerificationCodeRequest
@@ -34,14 +36,16 @@ class AuthController(
     ): ConfirmVerificationCodeResponse =
         authService.confirmVerificationCode(request)
 
+    @Operation(summary = "회원 여부 확인", description = "사용자가 이미 회원인지 확인합니다")
+    @PostMapping("/confirm-member")
+    fun confirm(
+        @Valid @RequestBody request: ConfirmMemberRequest
+    ): ConfirmMemberResponse = authService.confirmMember(request)
+
     @Operation(summary = "회원가입", description = "새로운 계정을 등록합니다")
     @PostMapping("/sign-up")
-    fun signUp(@Valid @RequestBody request: SignUpRequest, response: HttpServletResponse) {
-        val signUpResponse = authService.signUp(request)
-
-        response.addCookie(cookieUtil.createAccessTokenCookie(signUpResponse.accessToken))
-        response.addCookie(cookieUtil.createRefreshTokenCookie(signUpResponse.refreshToken))
-    }
+    fun signUp(@Valid @RequestBody request: SignUpRequest) =
+        authService.signUp(request)
 
     @Operation(summary = "로그인", description = "기존 계정으로 로그인합니다")
     @PostMapping("/sign-in")
@@ -49,7 +53,6 @@ class AuthController(
         val signInResponse = authService.signIn(request)
 
         response.addCookie(cookieUtil.createAccessTokenCookie(signInResponse.accessToken))
-        response.addCookie(cookieUtil.createRefreshTokenCookie(signInResponse.refreshToken))
     }
 
     @Operation(summary = "토큰 재발급", description = "AccessToken, RefreshToken을 재발급합니다")
@@ -61,7 +64,6 @@ class AuthController(
         val reissueTokenResponse = authService.reissueToken(userId)
 
         response.addCookie(cookieUtil.createAccessTokenCookie(reissueTokenResponse.accessToken))
-        response.addCookie(cookieUtil.createRefreshTokenCookie(reissueTokenResponse.refreshToken))
     }
 
     @Operation(summary = "로그아웃", description = "로그아웃하고 토큰을 무효화합니다")
@@ -73,6 +75,5 @@ class AuthController(
         authService.signOut(userId)
 
         response.addCookie(cookieUtil.deleteCookie("accessToken"))
-        response.addCookie(cookieUtil.deleteCookie("refreshToken"))
     }
 }
