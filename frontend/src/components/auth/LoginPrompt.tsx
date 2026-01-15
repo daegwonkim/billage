@@ -11,6 +11,7 @@ import { nearbyNeighborhoods } from '@/api/neighborhood/neighborhood'
 import { ApiError } from '@/api/error'
 import logo from '@/assets/logo.png'
 import { useAuth } from '@/contexts/AuthContext'
+import { getMe } from '@/api/user/user'
 
 type Step = 'start' | 'phone' | 'verification' | 'neighborhood'
 
@@ -20,7 +21,7 @@ interface Neighborhood {
 }
 
 export function LoginPrompt() {
-  const { setAuthenticated } = useAuth()
+  const { login } = useAuth()
 
   const [step, setStep] = useState<Step>('start')
   const [phoneNo, setPhoneNo] = useState('')
@@ -56,7 +57,7 @@ export function LoginPrompt() {
   const handleSendCode = async () => {
     const cleanPhoneNo = phoneNo.replace(/-/g, '')
     if (cleanPhoneNo.length !== 11) {
-      setError('올바른 휴대폰 번호를 입력해주세요')
+      setError('올바른 휴대폰 번호를 입력해주세요.')
       return
     }
 
@@ -68,11 +69,7 @@ export function LoginPrompt() {
       await sendVerificationCode({ phoneNo: cleanPhoneNo })
       setStep('verification')
     } catch (err) {
-      if (err instanceof ApiError) {
-        setError(err.message)
-      } else {
-        setError('인증코드 발송에 실패했습니다')
-      }
+      setError('인증코드 발송에 실패했어요.')
     } finally {
       setIsLoading(false)
     }
@@ -80,7 +77,7 @@ export function LoginPrompt() {
 
   const handleVerifyCode = async () => {
     if (verificationCode.length !== 6) {
-      setError('6자리 인증코드를 입력해주세요')
+      setError('6자리 인증코드를 입력해주세요.')
       return
     }
 
@@ -109,14 +106,14 @@ export function LoginPrompt() {
           phoneNo: cleanPhoneNo,
           verifiedToken: confirmVerificationCodeRes.verifiedToken
         })
-
-        setAuthenticated(true)
+        const user = await getMe()
+        login(user)
       }
     } catch (err) {
       if (err instanceof ApiError) {
-        setError(err.message)
+        setError(err.getMessage())
       } else {
-        setError('인증코드가 올바르지 않습니다')
+        setError('인증번호 검증에 실패했어요.')
       }
     } finally {
       setIsLoading(false)
@@ -142,16 +139,16 @@ export function LoginPrompt() {
           setNeighborhoods(result.neighborhoods)
         } catch (err) {
           if (err instanceof ApiError) {
-            setError(err.message)
+            setError(err.getMessage())
           } else {
-            setError('동네 목록을 불러오는데 실패했습니다')
+            setError('동네 목록을 불러오는데 실패했어요.')
           }
         } finally {
           setIsLoadingNeighborhoods(false)
         }
       },
       () => {
-        setError('위치 정보를 가져올 수 없습니다. 위치 권한을 허용해주세요.')
+        setError('위치 정보를 가져올 수 없어요. 위치 권한을 허용해주세요.')
         setIsLoadingNeighborhoods(false)
       }
     )
@@ -183,13 +180,13 @@ export function LoginPrompt() {
         phoneNo: cleanPhoneNo,
         verifiedToken: verifiedToken
       })
-
-      setAuthenticated(true)
+      const user = await getMe()
+      login(user)
     } catch (err) {
       if (err instanceof ApiError) {
-        setError(err.message)
+        setError(err.getMessage())
       } else {
-        setError('회원가입에 실패했습니다')
+        setError('회원가입에 실패했어요.')
       }
     } finally {
       setIsLoading(false)

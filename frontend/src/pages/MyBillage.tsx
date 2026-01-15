@@ -6,9 +6,9 @@ import { LoginPrompt } from '@/components/auth/LoginPrompt'
 import { signOut } from '@/api/auth/auth'
 
 export function MyBillage() {
-  const { isAuthenticated, logout } = useAuth()
+  const { user, logout } = useAuth()
 
-  if (!isAuthenticated) {
+  if (!user) {
     return <LoginPrompt />
   }
 
@@ -34,7 +34,11 @@ export function MyBillage() {
           {/* 프로필 이미지 */}
           <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gray-100">
             <img
-              src={defaultProfileImage}
+              src={
+                user.profileImageUrl
+                  ? user.profileImageUrl
+                  : defaultProfileImage
+              }
               alt="프로필"
               className="h-full w-full rounded-full object-cover"
             />
@@ -43,9 +47,9 @@ export function MyBillage() {
           {/* 사용자 정보 */}
           <div className="flex-1">
             <h2 className="mb-1 text-xl font-bold text-neutral-900">
-              치즈주는 보이
+              {user.nickname}
             </h2>
-            영등포구 당산동6가
+            {user.neighborhood.sigungu} {user.neighborhood.eupmyeondong}
           </div>
 
           {/* 설정 아이콘 */}

@@ -1,32 +1,66 @@
+import type { GetMeResponse } from '@/api/user/dto/GetMe'
+import { Loader2 } from 'lucide-react'
 import {
   createContext,
   useContext,
   useState,
-  useCallback,
-  type ReactNode
+  type ReactNode,
+  useEffect,
+  useCallback
 } from 'react'
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL!
+
 interface AuthContextType {
-  isAuthenticated: boolean
-  setAuthenticated: (value: boolean) => void
+  user: GetMeResponse | null
+  login: (user: GetMeResponse) => void
   logout: () => void
 }
 
 const AuthContext = createContext<AuthContextType | null>(null)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [user, setUser] = useState<GetMeResponse | null>(null)
+  const [loading, setLoading] = useState(true)
 
-  const setAuthenticated = useCallback((value: boolean) => {
-    setIsAuthenticated(value)
+  useEffect(() => {
+    checkAuthenticated()
+  }, [])
+
+  const checkAuthenticated = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/users/me`, {
+        credentials: 'include',
+        cache: 'no-store'
+      })
+
+      if (response.ok) {
+        const userData = await response.json()
+        setUser(userData)
+      } else {
+        setUser(null)
+      }
+    } catch {
+      setUser(null)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const login = useCallback((user: GetMeResponse) => {
+    setUser(user)
   }, [])
 
   const logout = useCallback(() => {
-    setIsAuthenticated(false)
+    setUser(null)
   }, [])
 
+  if (loading) {
+    return <Loader2 />
+  }
+
   return (
-    <AuthContext.Provider value={{ isAuthenticated, setAuthenticated, logout }}>
+    <AuthContext.Provider value={{ user, login, logout }}>
       {children}
     </AuthContext.Provider>
   )
