@@ -77,5 +77,6 @@ class AuthController(
     ) {
         authService.signOut(userId)
         response.addCookie(cookieUtil.deleteCookie("accessToken"))
+        response.addCookie(cookieUtil.deleteCookie("refreshToken"))
     }
 }

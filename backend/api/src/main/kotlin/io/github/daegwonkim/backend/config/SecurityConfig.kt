@@ -31,7 +31,7 @@ class SecurityConfig(
                 auth.requestMatchers("/api/auth/sign-in").permitAll()
                 auth.requestMatchers("/api/auth/token/reissue").permitAll()
                 auth.requestMatchers("/api/neighborhoods/**").permitAll()
-                auth.requestMatchers("/api/rental-items/**")
+                auth.requestMatchers("/api/rental-items/**").permitAll()
                 auth.anyRequest().authenticated()
             }
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)

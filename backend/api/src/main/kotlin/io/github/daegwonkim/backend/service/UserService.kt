@@ -1,6 +1,6 @@
 package io.github.daegwonkim.backend.service
 
-import io.github.daegwonkim.backend.dto.user.MeResponse
+import io.github.daegwonkim.backend.dto.user.GetMeResponse
 import io.github.daegwonkim.backend.exception.base.ErrorCode
 import io.github.daegwonkim.backend.exception.business.ResourceNotFoundException
 import io.github.daegwonkim.backend.repository.UserJooqRepository
@@ -18,14 +18,14 @@ class UserService(
     private val userProfileImagesBucket: String
 ) {
     @Transactional(readOnly = true)
-    fun me(userId: Long): MeResponse {
+    fun getMe(userId: Long): GetMeResponse {
         val me = userJooqRepository.getMe(userId)
             ?: throw ResourceNotFoundException(userId, ErrorCode.USER_NOT_FOUND)
 
-        return MeResponse(
+        return GetMeResponse(
             me.nickname,
             me.profileImageKey?.let { supabaseStorageClient.getPublicUrl(userProfileImagesBucket, it) },
-            MeResponse.Neighborhood(me.sido, me.sigungu, me.eupmyeondong)
+            GetMeResponse.Neighborhood(me.sido, me.sigungu, me.eupmyeondong)
         )
     }
 }

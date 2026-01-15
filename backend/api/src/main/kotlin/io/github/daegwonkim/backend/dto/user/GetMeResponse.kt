@@ -1,6 +1,6 @@
 package io.github.daegwonkim.backend.dto.user
 
-data class MeResponse(
+data class GetMeResponse(
     val nickname: String,
     val profileImageUrl: String?,
     val neighborhood: Neighborhood
