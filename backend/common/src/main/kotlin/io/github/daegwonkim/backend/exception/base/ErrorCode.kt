@@ -22,4 +22,5 @@ enum class ErrorCode(
 
     // 서버 에러
     INTERNAL_SERVER_ERROR("INTERNAL_SERVER_ERROR", "서버 오류가 발생했습니다", HttpStatus.INTERNAL_SERVER_ERROR),
+    EXTERNAL_API_ERROR("EXTERNAL_API_ERROR", "외부 API 호출에 실패했습니다", HttpStatus.BAD_GATEWAY)
 }
