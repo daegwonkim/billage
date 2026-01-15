@@ -77,8 +77,7 @@ class RentalItemService(
     @Transactional(readOnly = true)
     fun getRentalItem(userId: Long, rentalItemId: Long): GetRentalItemResponse {
         val rentalItem = rentalItemJooqRepository.getRentalItem(rentalItemId, userId)
-            ?: throw ResourceNotFoundException(ErrorCode.RENTAL_ITEM_NOT_FOUND,
-                "대여 상품 정보 조회 실패(존재하지 않는 대여 상품): userId=$userId, rentalItemId=$rentalItemId")
+            ?: throw ResourceNotFoundException(rentalItemId, ErrorCode.RENTAL_ITEM_NOT_FOUND)
 
         return GetRentalItemResponse.from(
             item = rentalItem,
@@ -125,10 +124,7 @@ class RentalItemService(
     @Transactional(readOnly = true)
     fun getForModify(id: Long): GetRentalItemForModifyResponse {
         val rentalItem = rentalItemRepository.findById(id)
-            .orElseThrow {
-                throw ResourceNotFoundException(ErrorCode.RENTAL_ITEM_NOT_FOUND,
-                "대여 상품 정보 조회 실패(존재하지 않는 대여 상품): id=$id")
-            }
+            .orElseThrow { throw ResourceNotFoundException(id, ErrorCode.RENTAL_ITEM_NOT_FOUND) }
         val rentalItemImages = getRentalItemImages(rentalItem.id)
 
         return GetRentalItemForModifyResponse.from(rentalItem, rentalItemImages)
@@ -140,10 +136,7 @@ class RentalItemService(
         modifiedInfo: ModifyRentalItemRequest
     ): ModifyRentalItemResponse {
         val rentalItem = rentalItemRepository.findById(id)
-            .orElseThrow {
-                throw ResourceNotFoundException(ErrorCode.RENTAL_ITEM_NOT_FOUND,
-                    "대여 상품 정보 조회 실패(존재하지 않는 대여 상품): id=$id")
-            }
+            .orElseThrow { throw ResourceNotFoundException(id, ErrorCode.RENTAL_ITEM_NOT_FOUND) }
         rentalItem.modify(modifiedInfo.category, modifiedInfo.title, modifiedInfo.description,
             modifiedInfo.pricePerDay, modifiedInfo.pricePerWeek)
 

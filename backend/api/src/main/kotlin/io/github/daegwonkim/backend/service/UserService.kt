@@ -1,6 +1,8 @@
 package io.github.daegwonkim.backend.service
 
 import io.github.daegwonkim.backend.dto.user.MeResponse
+import io.github.daegwonkim.backend.exception.base.ErrorCode
+import io.github.daegwonkim.backend.exception.business.ResourceNotFoundException
 import io.github.daegwonkim.backend.repository.UserJooqRepository
 import io.github.daegwonkim.backend.supabase.SupabaseStorageClient
 import org.springframework.beans.factory.annotation.Value
@@ -18,7 +20,7 @@ class UserService(
     @Transactional(readOnly = true)
     fun me(userId: Long): MeResponse {
         val me = userJooqRepository.getMe(userId)
-            ?: throw IllegalStateException("조회된 사용자 정보가 없습니다: userId=$userId")
+            ?: throw ResourceNotFoundException(userId, ErrorCode.USER_NOT_FOUND)
 
         return MeResponse(
             me.nickname,

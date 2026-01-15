@@ -3,9 +3,9 @@ package io.github.daegwonkim.backend.exception.business
 import io.github.daegwonkim.backend.exception.base.ErrorCode
 
 class AuthenticationException(
-    errorCode: ErrorCode,
-    message: String
+    errorCode: ErrorCode = ErrorCode.AUTHENTICATION_FAILED,
+    logMessage: String
 ) : BusinessException(
     errorCode = errorCode,
-    message = message
+    logMessage = logMessage
 )

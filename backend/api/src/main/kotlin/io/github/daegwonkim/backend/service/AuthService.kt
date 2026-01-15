@@ -95,7 +95,7 @@ class AuthService(
         val phoneNo = request.phoneNo
 
         val user = userRepository.findByPhoneNoAndIsWithdrawnFalse(phoneNo)
-            ?: throw AuthenticationException(ErrorCode.AUTHENTICATION_FAILED,"존재하지 않는 사용자에 대한 로그인 요청 발생: phoneNo=$phoneNo")
+            ?: throw AuthenticationException(logMessage = "존재하지 않는 사용자에 대한 인증 요청 발생: requestedBy=$phoneNo")
 
         validateVerifiedToken(phoneNo, request.verifiedToken)
 
@@ -144,21 +144,25 @@ class AuthService(
         return verifiedToken
     }
 
-    private fun validateVerificationCode(phoneNo: String, requestedVerificationCode: String) {
-        val savedVerificationCode = verificationCodeRedisRepository.find(phoneNo)
+    private fun validateVerificationCode(phoneNo: String, receivedVerificationCode: String) {
+        val expectedVerificationCode = verificationCodeRedisRepository.find(phoneNo)
 
-        if (savedVerificationCode == null || savedVerificationCode != requestedVerificationCode) {
-            throw AuthenticationException(ErrorCode.INVALID_VERIFICATION_CODE,
-                "인증코드 불일치: savedVerificationCode=$savedVerificationCode, requestedVerificationCode=$requestedVerificationCode")
+        when {
+            expectedVerificationCode == null ->
+                throw AuthenticationException(ErrorCode.VERIFICATION_CODE_EXPIRED, "인증번호 만료: requestedBy=$phoneNo, receivedValue=$receivedVerificationCode")
+            expectedVerificationCode != receivedVerificationCode ->
+                throw AuthenticationException(ErrorCode.INVALID_VERIFICATION_CODE, "인증번호 불일치: requestedBy=$phoneNo, expectedValue=$expectedVerificationCode, receivedValue=$receivedVerificationCode")
         }
     }
 
-    private fun validateVerifiedToken(phoneNo: String, requestedVerifiedToken: String) {
-        val savedVerifiedToken = verifiedTokenRedisRepository.find(phoneNo)
+    private fun validateVerifiedToken(phoneNo: String, receivedVerifiedToken: String) {
+        val expectedVerifiedToken = verifiedTokenRedisRepository.find(phoneNo)
 
-        if (savedVerifiedToken == null || savedVerifiedToken != requestedVerifiedToken) {
-            throw AuthenticationException(ErrorCode.AUTHENTICATION_FAILED,
-                "인증토큰 불일치: savedVerifiedToken=$savedVerifiedToken, requestedVerifiedToken=$requestedVerifiedToken")
+        when {
+            expectedVerifiedToken == null ->
+                throw AuthenticationException(logMessage = "인증토큰 만료: requestedBy=$phoneNo, receivedValue=$receivedVerifiedToken")
+            expectedVerifiedToken != receivedVerifiedToken ->
+                throw AuthenticationException(logMessage = "인증토큰 불일치: requestedBy=$phoneNo, expectedValue=$expectedVerifiedToken, receivedValue=$receivedVerifiedToken")
         }
     }
 
@@ -175,15 +179,6 @@ class AuthService(
 
         eventPublisher.publishEvent(RefreshTokenSaveEvent(userId, refreshToken))
         return GeneratedTokens(accessToken, refreshToken)
-    }
-
-    private fun validateRefreshToken(userId: Long, requestedRefreshToken: String) {
-        val savedRefreshToken = refreshTokenRedisRepository.find(userId)
-
-        if (savedRefreshToken == null || savedRefreshToken != requestedRefreshToken) {
-            throw AuthenticationException(ErrorCode.AUTHENTICATION_FAILED,
-                "유효하지 않은 RefreshToken: savedRefreshToken=$savedRefreshToken, requestedRefreshToken=$requestedRefreshToken")
-        }
     }
 
     private fun buildVerificationCodeMessage(verificationCode: String): String =

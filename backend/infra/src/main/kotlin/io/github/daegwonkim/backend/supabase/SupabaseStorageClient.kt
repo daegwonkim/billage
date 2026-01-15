@@ -28,14 +28,14 @@ class SupabaseStorageClient(
                 .uri("/storage/v1/object/upload/sign/$bucket/$fileKey")
                 .retrieve()
                 .body(CreateUploadSignedUrlResponse::class.java)
-                ?: throw ExternalApiException("Amazon S3")
+                ?: throw ExternalApiException(ExternalApiException.ExternalApi.AMAZON_S3)
 
             return "$supabaseUrl/storage/v1${response.url}"
         } catch (e: ExternalApiException) {
             throw e
         } catch (e: Exception) {
             logger.error(e) { "S3 업로드용 Signed URL 생성 API 호출 중 예외 발생: bucket=$bucket, fileKey=$fileKey" }
-            throw ExternalApiException(apiName = "Amazon S3", cause = e)
+            throw ExternalApiException(externalApi = ExternalApiException.ExternalApi.AMAZON_S3, cause = e)
         }
     }
 
@@ -53,14 +53,14 @@ class SupabaseStorageClient(
                 .body(request)
                 .retrieve()
                 .body(CreateSignedUrlResponse::class.java)
-                ?: throw ExternalApiException("Amazon S3")
+                ?: throw ExternalApiException(ExternalApiException.ExternalApi.AMAZON_S3)
 
             return "$supabaseUrl/storage/v1${response.signedURL}"
         } catch (e: ExternalApiException) {
             throw e
         } catch (e: Exception) {
             logger.error(e) { "S3 조회용 Signed URL 생성 API 호출 중 예외 발생: bucket=$bucket, fileKey=$fileKey" }
-            throw ExternalApiException(apiName = "Amazon S3", cause = e)
+            throw ExternalApiException(externalApi = ExternalApiException.ExternalApi.AMAZON_S3, cause = e)
         }
     }
 

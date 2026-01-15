@@ -29,7 +29,7 @@ class CoolsmsService(
             throw e
         } catch (e: Exception) {
             logger.error(e) { "CoolSMS API 호출 중 예외 발생: phoneNo=****${to.takeLast(4)}" }
-            throw ExternalApiException(apiName = "CoolSMS", cause = e)
+            throw ExternalApiException(externalApi = ExternalApiException.ExternalApi.COOLSMS, cause = e)
         }
     }
 
@@ -42,11 +42,11 @@ class CoolsmsService(
 
     private fun requestSendOne(message: Message): SingleMessageSentResponse {
         val response = messageService.sendOne(SingleMessageSendingRequest(message))
-            ?: throw ExternalApiException(apiName = "CoolSMS")
+            ?: throw ExternalApiException(ExternalApiException.ExternalApi.COOLSMS)
 
         if (response.statusCode != SUCCESS_CODE) {
             throw ExternalApiException(
-                apiName = "CoolSMS",
+                externalApi = ExternalApiException.ExternalApi.COOLSMS,
                 statusCode = response.statusCode.toIntOrNull()
             )
         }

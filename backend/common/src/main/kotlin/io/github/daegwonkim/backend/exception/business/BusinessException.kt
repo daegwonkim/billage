@@ -5,6 +5,6 @@ import io.github.daegwonkim.backend.exception.base.ErrorCode
 
 sealed class BusinessException(
     errorCode: ErrorCode,
-    message: String,
+    logMessage: String,
     cause: Throwable? = null
-) : BaseException(errorCode, message, cause)
+) : BaseException(errorCode, logMessage, cause)

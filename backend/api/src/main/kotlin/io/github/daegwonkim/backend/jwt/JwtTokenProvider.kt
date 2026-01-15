@@ -33,14 +33,13 @@ class JwtTokenProvider(
     fun validateAndGetUserId(token: String): Long {
         return runCatching { getClaims(token).subject.toLong() }
             .getOrElse {
-                throw AuthenticationException(ErrorCode.AUTHENTICATION_FAILED,
-                "유효하지 않은 JWT 토큰: token=$token")
+                throw AuthenticationException(logMessage = "유효하지 않은 JWT 토큰: token=$token, message=${it.message}")
             }
     }
 
     fun validateAndGetUserIdOrNull(token: String): Long? {
         return runCatching { getClaims(token).subject.toLong() }
-            .onFailure { logger.warn { "유효하지 않은 JWT: token=$token, message=${it.message}" } }
+            .onFailure { logger.warn { "유효하지 않은 JWT 토큰: token=$token, message=${it.message}" } }
             .getOrNull()
     }
 
