@@ -27,12 +27,12 @@ class AuthController(
     private val authService: AuthService,
     private val cookieUtil: CookieUtil
 ) {
-    @Operation(summary = "인증번호 전송", description = "사용자에게 인증번호를 전송합니다")
+    @Operation(summary = "인증코드 전송", description = "사용자에게 인증코드를 전송합니다")
     @PostMapping("/verification-code/send")
     fun sendVerificationCode(@Valid @RequestBody request: SendVerificationCodeRequest) =
         authService.sendVerificationCode(request)
 
-    @Operation(summary = "인증번호 검증", description = "사용자가 입력한 인증번호를 검증합니다")
+    @Operation(summary = "인증코드 검증", description = "사용자가 입력한 인증코드를 검증합니다")
     @PostMapping("/verification-code/confirm")
     fun confirmVerificationCode(
         @Valid @RequestBody request: ConfirmVerificationCodeRequest

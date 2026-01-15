@@ -1,7 +1,6 @@
 package io.github.daegwonkim.backend.coolsms
 
 import io.github.daegwonkim.backend.exception.infra.ExternalApiException
-import io.github.daegwonkim.backend.log.logger
 import net.nurigo.sdk.message.model.Message
 import net.nurigo.sdk.message.request.SingleMessageSendingRequest
 import net.nurigo.sdk.message.response.SingleMessageSentResponse
@@ -28,7 +27,6 @@ class CoolsmsService(
         } catch (e: ExternalApiException) {
             throw e
         } catch (e: Exception) {
-            logger.error(e) { "CoolSMS API 호출 중 예외 발생: phoneNo=****${to.takeLast(4)}" }
             throw ExternalApiException(externalApi = ExternalApiException.ExternalApi.COOLSMS, cause = e)
         }
     }

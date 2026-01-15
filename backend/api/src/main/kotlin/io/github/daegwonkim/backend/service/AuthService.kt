@@ -149,9 +149,9 @@ class AuthService(
 
         when {
             expectedVerificationCode == null ->
-                throw AuthenticationException(ErrorCode.VERIFICATION_CODE_EXPIRED, "인증번호 만료: requestedBy=$phoneNo, receivedValue=$receivedVerificationCode")
+                throw AuthenticationException(ErrorCode.VERIFICATION_CODE_EXPIRED, "인증코드 만료: requestedBy=$phoneNo, receivedValue=$receivedVerificationCode")
             expectedVerificationCode != receivedVerificationCode ->
-                throw AuthenticationException(ErrorCode.INVALID_VERIFICATION_CODE, "인증번호 불일치: requestedBy=$phoneNo, expectedValue=$expectedVerificationCode, receivedValue=$receivedVerificationCode")
+                throw AuthenticationException(ErrorCode.INVALID_VERIFICATION_CODE, "인증코드 불일치: requestedBy=$phoneNo, expectedValue=$expectedVerificationCode, receivedValue=$receivedVerificationCode")
         }
     }
 
