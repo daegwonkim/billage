@@ -1,10 +1,9 @@
 package io.github.daegwonkim.backend.exception.business
 
-import io.github.daegwonkim.backend.exception.base.BaseException
-import io.github.daegwonkim.backend.exception.base.errorcode.ErrorCode
+import io.github.daegwonkim.backend.exception.errorcode.ErrorCode
 
-sealed class BusinessException(
-    errorCode: ErrorCode,
+abstract class BusinessException(
+    val errorCode: ErrorCode,
     logMessage: String,
     cause: Throwable? = null
-) : BaseException(errorCode, logMessage, cause)
+) : RuntimeException(logMessage, cause)

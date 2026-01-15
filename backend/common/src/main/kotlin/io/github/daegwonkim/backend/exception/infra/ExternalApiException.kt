@@ -1,6 +1,6 @@
 package io.github.daegwonkim.backend.exception.infra
 
-import io.github.daegwonkim.backend.exception.base.errorcode.CommonErrorCode
+import io.github.daegwonkim.backend.exception.errorcode.CommonErrorCode
 
 class ExternalApiException(
     externalApi: ExternalApi,

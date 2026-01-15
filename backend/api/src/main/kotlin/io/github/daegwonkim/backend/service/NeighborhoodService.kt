@@ -4,7 +4,7 @@ import io.github.daegwonkim.backend.dto.neighborhood.LocateNeighborhoodResponse
 import io.github.daegwonkim.backend.dto.neighborhood.NearbyNeighborhoodsResponse
 import io.github.daegwonkim.backend.entity.UserNeighborhood
 import io.github.daegwonkim.backend.entity.command.CreateUserNeighborhoodCommand
-import io.github.daegwonkim.backend.exception.base.errorcode.AuthErrorCode
+import io.github.daegwonkim.backend.exception.errorcode.AuthErrorCode
 import io.github.daegwonkim.backend.exception.business.AuthenticationException
 import io.github.daegwonkim.backend.exception.business.UnsupportedRegionException
 import io.github.daegwonkim.backend.repository.NeighborhoodJooqRepository

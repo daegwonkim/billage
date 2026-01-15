@@ -1,7 +1,7 @@
 package io.github.daegwonkim.backend.service
 
 import io.github.daegwonkim.backend.dto.user.GetMeResponse
-import io.github.daegwonkim.backend.exception.base.errorcode.UserErrorCode
+import io.github.daegwonkim.backend.exception.errorcode.UserErrorCode
 import io.github.daegwonkim.backend.exception.business.ResourceNotFoundException
 import io.github.daegwonkim.backend.repository.UserJooqRepository
 import io.github.daegwonkim.backend.supabase.SupabaseStorageClient

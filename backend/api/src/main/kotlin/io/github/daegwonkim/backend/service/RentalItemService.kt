@@ -17,7 +17,7 @@ import io.github.daegwonkim.backend.entity.RentalItemImage
 import io.github.daegwonkim.backend.enumerate.RentalItemCategory
 import io.github.daegwonkim.backend.enumerate.RentalItemSortOption
 import io.github.daegwonkim.backend.event.dto.StorageFileDeleteEvent
-import io.github.daegwonkim.backend.exception.base.errorcode.RentalItemErrorCode
+import io.github.daegwonkim.backend.exception.errorcode.RentalItemErrorCode
 import io.github.daegwonkim.backend.exception.business.ResourceNotFoundException
 import io.github.daegwonkim.backend.repository.RentalItemImageRepository
 import io.github.daegwonkim.backend.repository.RentalItemJooqRepository

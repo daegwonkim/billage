@@ -1,4 +1,4 @@
-package io.github.daegwonkim.backend.exception.base.errorcode
+package io.github.daegwonkim.backend.exception.errorcode
 
 import org.springframework.http.HttpStatus
 

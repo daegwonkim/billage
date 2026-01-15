@@ -1,8 +1,8 @@
 package io.github.daegwonkim.backend.exception
 
-import io.github.daegwonkim.backend.exception.base.BaseException
-import io.github.daegwonkim.backend.exception.base.errorcode.CommonErrorCode
+import io.github.daegwonkim.backend.exception.errorcode.CommonErrorCode
 import io.github.daegwonkim.backend.exception.business.AuthenticationException
+import io.github.daegwonkim.backend.exception.business.BusinessException
 import io.github.daegwonkim.backend.exception.infra.InfraException
 import io.github.daegwonkim.backend.log.logger
 import org.springframework.http.HttpStatus
@@ -22,8 +22,8 @@ class GlobalExceptionHandler {
         }
     }
 
-    @ExceptionHandler(BaseException::class)
-    fun handleBaseException(e: BaseException): ProblemDetail {
+    @ExceptionHandler(BusinessException::class)
+    fun handleBusinessException(e: BusinessException): ProblemDetail {
         logger.error(e) { "${e.errorCode.code}: ${e.message}" }
         return ProblemDetail.forStatusAndDetail(e.errorCode.status, e.errorCode.message).apply {
             setProperty("code", e.errorCode.code)

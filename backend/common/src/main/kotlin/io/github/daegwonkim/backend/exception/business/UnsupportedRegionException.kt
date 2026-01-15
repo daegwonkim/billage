@@ -1,6 +1,6 @@
 package io.github.daegwonkim.backend.exception.business
 
-import io.github.daegwonkim.backend.exception.base.errorcode.NeighborhoodErrorCode
+import io.github.daegwonkim.backend.exception.errorcode.NeighborhoodErrorCode
 
 class UnsupportedRegionException(
     latitude: Double,

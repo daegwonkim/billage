@@ -1,6 +1,6 @@
 package io.github.daegwonkim.backend.exception.business
 
-import io.github.daegwonkim.backend.exception.base.errorcode.AuthErrorCode
+import io.github.daegwonkim.backend.exception.errorcode.AuthErrorCode
 
 class AuthenticationException(
     errorCode: AuthErrorCode = AuthErrorCode.AUTHENTICATION_FAILED,

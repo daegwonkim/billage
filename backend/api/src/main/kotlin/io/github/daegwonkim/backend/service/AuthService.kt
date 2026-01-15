@@ -11,7 +11,7 @@ import io.github.daegwonkim.backend.dto.auth.ConfirmVerificationCodeRequest
 import io.github.daegwonkim.backend.dto.auth.ConfirmVerificationCodeResponse
 import io.github.daegwonkim.backend.dto.auth.SendVerificationCodeRequest
 import io.github.daegwonkim.backend.entity.User
-import io.github.daegwonkim.backend.exception.base.errorcode.AuthErrorCode
+import io.github.daegwonkim.backend.exception.errorcode.AuthErrorCode
 import io.github.daegwonkim.backend.exception.business.AuthenticationException
 import io.github.daegwonkim.backend.exception.infra.ExternalApiException
 import io.github.daegwonkim.backend.jwt.JwtTokenProvider
