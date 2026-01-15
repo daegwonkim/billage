@@ -9,7 +9,7 @@ class ExternalApiException(
     body: String? = null,
     cause: Throwable? = null,
 ) : InfraException(
-    message = "${externalApi.apiName} API 호출 실패: url: $requestUrl, status: $statusCode, body: $body",
+    logMessage = "${externalApi.apiName} API 호출 실패: url: $requestUrl, status: $statusCode, body: $body",
     errorCode = ErrorCode.INTERNAL_SERVER_ERROR,
     cause = cause
 ) {
