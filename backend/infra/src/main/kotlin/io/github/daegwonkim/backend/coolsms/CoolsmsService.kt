@@ -27,7 +27,7 @@ class CoolsmsService(
         } catch (e: ExternalApiException) {
             throw e
         } catch (e: Exception) {
-            throw ExternalApiException(externalApi = ExternalApiException.ExternalApi.COOLSMS, cause = e)
+            throw ExternalApiException(ExternalApiException.ExternalApi.COOLSMS, cause = e)
         }
     }
 
@@ -43,10 +43,7 @@ class CoolsmsService(
             ?: throw ExternalApiException(ExternalApiException.ExternalApi.COOLSMS)
 
         if (response.statusCode != SUCCESS_CODE) {
-            throw ExternalApiException(
-                externalApi = ExternalApiException.ExternalApi.COOLSMS,
-                statusCode = response.statusCode.toIntOrNull()
-            )
+            throw ExternalApiException(ExternalApiException.ExternalApi.COOLSMS, statusCode = response.statusCode.toIntOrNull())
         }
 
         return response
