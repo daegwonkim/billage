@@ -9,7 +9,7 @@ class ExternalApiException(
     cause: Throwable? = null,
 ) : InfraException(
     message = "${externalApi.apiName} API 호출 실패: url: $requestUrl, status: $statusCode",
-    errorCode = ErrorCode.EXTERNAL_API_ERROR,
+    errorCode = ErrorCode.INTERNAL_SERVER_ERROR,
     cause = cause
 ) {
     enum class ExternalApi(val apiName: String) {
