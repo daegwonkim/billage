@@ -7,7 +7,7 @@ import io.github.daegwonkim.backend.dto.auth.SignUpRequest
 import io.github.daegwonkim.backend.dto.auth.ConfirmVerificationCodeRequest
 import io.github.daegwonkim.backend.dto.auth.ConfirmVerificationCodeResponse
 import io.github.daegwonkim.backend.dto.auth.SendVerificationCodeRequest
-import io.github.daegwonkim.backend.exception.base.ErrorCode
+import io.github.daegwonkim.backend.exception.base.errorcode.AuthErrorCode
 import io.github.daegwonkim.backend.exception.business.AuthenticationException
 import io.github.daegwonkim.backend.service.AuthService
 import io.github.daegwonkim.backend.util.CookieUtil
@@ -62,7 +62,7 @@ class AuthController(
     @PostMapping("/token/reissue")
     fun reissueToken(request: HttpServletRequest, response: HttpServletResponse) {
         val refreshToken = cookieUtil.getTokenFromCookie(request, "refreshToken")
-            ?: throw AuthenticationException(ErrorCode.AUTHENTICATION_FAILED, "쿠키에 RefreshToken이 존재하지 않음")
+            ?: throw AuthenticationException(AuthErrorCode.AUTHENTICATION_FAILED, "쿠키에 RefreshToken이 존재하지 않음")
 
         val reissueTokenResponse = authService.reissueToken(refreshToken)
         response.addCookie(cookieUtil.createAccessTokenCookie(reissueTokenResponse.accessToken))

@@ -1,6 +1,5 @@
 package io.github.daegwonkim.backend.jwt
 
-import io.github.daegwonkim.backend.exception.base.ErrorCode
 import io.github.daegwonkim.backend.exception.business.AuthenticationException
 import io.github.daegwonkim.backend.log.logger
 import io.jsonwebtoken.Claims

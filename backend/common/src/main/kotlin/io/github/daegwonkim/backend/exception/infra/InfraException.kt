@@ -1,7 +1,7 @@
 package io.github.daegwonkim.backend.exception.infra
 
 import io.github.daegwonkim.backend.exception.base.BaseException
-import io.github.daegwonkim.backend.exception.base.ErrorCode
+import io.github.daegwonkim.backend.exception.base.errorcode.ErrorCode
 
 sealed class InfraException(
     errorCode: ErrorCode,

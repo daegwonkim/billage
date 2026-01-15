@@ -1,6 +1,6 @@
 package io.github.daegwonkim.backend.exception.business
 
-import io.github.daegwonkim.backend.exception.base.ErrorCode
+import io.github.daegwonkim.backend.exception.base.errorcode.ErrorCode
 
 class ResourceNotFoundException(
     resourceId: Long,

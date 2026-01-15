@@ -17,7 +17,7 @@ import io.github.daegwonkim.backend.entity.RentalItemImage
 import io.github.daegwonkim.backend.enumerate.RentalItemCategory
 import io.github.daegwonkim.backend.enumerate.RentalItemSortOption
 import io.github.daegwonkim.backend.event.dto.StorageFileDeleteEvent
-import io.github.daegwonkim.backend.exception.base.ErrorCode
+import io.github.daegwonkim.backend.exception.base.errorcode.RentalItemErrorCode
 import io.github.daegwonkim.backend.exception.business.ResourceNotFoundException
 import io.github.daegwonkim.backend.repository.RentalItemImageRepository
 import io.github.daegwonkim.backend.repository.RentalItemJooqRepository
@@ -77,7 +77,7 @@ class RentalItemService(
     @Transactional(readOnly = true)
     fun getRentalItem(userId: Long, rentalItemId: Long): GetRentalItemResponse {
         val rentalItem = rentalItemJooqRepository.getRentalItem(rentalItemId, userId)
-            ?: throw ResourceNotFoundException(rentalItemId, ErrorCode.RENTAL_ITEM_NOT_FOUND)
+            ?: throw ResourceNotFoundException(rentalItemId, RentalItemErrorCode.RENTAL_ITEM_NOT_FOUND)
 
         return GetRentalItemResponse.from(
             item = rentalItem,
@@ -124,7 +124,7 @@ class RentalItemService(
     @Transactional(readOnly = true)
     fun getForModify(id: Long): GetRentalItemForModifyResponse {
         val rentalItem = rentalItemRepository.findById(id)
-            .orElseThrow { throw ResourceNotFoundException(id, ErrorCode.RENTAL_ITEM_NOT_FOUND) }
+            .orElseThrow { throw ResourceNotFoundException(id, RentalItemErrorCode.RENTAL_ITEM_NOT_FOUND) }
         val rentalItemImages = getRentalItemImages(rentalItem.id)
 
         return GetRentalItemForModifyResponse.from(rentalItem, rentalItemImages)
@@ -136,7 +136,7 @@ class RentalItemService(
         modifiedInfo: ModifyRentalItemRequest
     ): ModifyRentalItemResponse {
         val rentalItem = rentalItemRepository.findById(id)
-            .orElseThrow { throw ResourceNotFoundException(id, ErrorCode.RENTAL_ITEM_NOT_FOUND) }
+            .orElseThrow { throw ResourceNotFoundException(id, RentalItemErrorCode.RENTAL_ITEM_NOT_FOUND) }
         rentalItem.modify(modifiedInfo.category, modifiedInfo.title, modifiedInfo.description,
             modifiedInfo.pricePerDay, modifiedInfo.pricePerWeek)
 

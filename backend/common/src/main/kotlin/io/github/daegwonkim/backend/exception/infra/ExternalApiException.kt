@@ -1,6 +1,6 @@
 package io.github.daegwonkim.backend.exception.infra
 
-import io.github.daegwonkim.backend.exception.base.ErrorCode
+import io.github.daegwonkim.backend.exception.base.errorcode.CommonErrorCode
 
 class ExternalApiException(
     externalApi: ExternalApi,
@@ -10,7 +10,7 @@ class ExternalApiException(
     cause: Throwable? = null,
 ) : InfraException(
     logMessage = "${externalApi.apiName} API 호출 실패: url: $requestUrl, status: $statusCode, body: $body",
-    errorCode = ErrorCode.EXTERNAL_API_ERROR,
+    errorCode = CommonErrorCode.EXTERNAL_API_ERROR,
     cause = cause
 ) {
     enum class ExternalApi(val apiName: String) {

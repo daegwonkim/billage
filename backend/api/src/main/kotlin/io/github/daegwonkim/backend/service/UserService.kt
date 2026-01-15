@@ -1,7 +1,7 @@
 package io.github.daegwonkim.backend.service
 
 import io.github.daegwonkim.backend.dto.user.GetMeResponse
-import io.github.daegwonkim.backend.exception.base.ErrorCode
+import io.github.daegwonkim.backend.exception.base.errorcode.UserErrorCode
 import io.github.daegwonkim.backend.exception.business.ResourceNotFoundException
 import io.github.daegwonkim.backend.repository.UserJooqRepository
 import io.github.daegwonkim.backend.supabase.SupabaseStorageClient
@@ -20,7 +20,7 @@ class UserService(
     @Transactional(readOnly = true)
     fun getMe(userId: Long): GetMeResponse {
         val me = userJooqRepository.getMe(userId)
-            ?: throw ResourceNotFoundException(userId, ErrorCode.USER_NOT_FOUND)
+            ?: throw ResourceNotFoundException(userId, UserErrorCode.USER_NOT_FOUND)
 
         return GetMeResponse(
             me.nickname,

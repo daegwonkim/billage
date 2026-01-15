@@ -4,7 +4,7 @@ import io.github.daegwonkim.backend.dto.neighborhood.LocateNeighborhoodResponse
 import io.github.daegwonkim.backend.dto.neighborhood.NearbyNeighborhoodsResponse
 import io.github.daegwonkim.backend.entity.UserNeighborhood
 import io.github.daegwonkim.backend.entity.command.CreateUserNeighborhoodCommand
-import io.github.daegwonkim.backend.exception.base.ErrorCode
+import io.github.daegwonkim.backend.exception.base.errorcode.AuthErrorCode
 import io.github.daegwonkim.backend.exception.business.AuthenticationException
 import io.github.daegwonkim.backend.exception.business.UnsupportedRegionException
 import io.github.daegwonkim.backend.repository.NeighborhoodJooqRepository
@@ -41,7 +41,7 @@ class NeighborhoodService(
         ) ?: throw UnsupportedRegionException(requestedNeighborhood.latitude, requestedNeighborhood.longitude)
 
         if (neighborhood.code != requestedNeighborhood.code) {
-            throw AuthenticationException(ErrorCode.NEIGHBORHOOD_VERIFICATION_FAILED,
+            throw AuthenticationException(AuthErrorCode.NEIGHBORHOOD_VERIFICATION_FAILED,
                 "동네 인증 실패: 인증 요청 동네=${requestedNeighborhood.code}, 실제 위치=${neighborhood.code}")
         }
     }

@@ -11,7 +11,7 @@ import io.github.daegwonkim.backend.dto.auth.ConfirmVerificationCodeRequest
 import io.github.daegwonkim.backend.dto.auth.ConfirmVerificationCodeResponse
 import io.github.daegwonkim.backend.dto.auth.SendVerificationCodeRequest
 import io.github.daegwonkim.backend.entity.User
-import io.github.daegwonkim.backend.exception.base.ErrorCode
+import io.github.daegwonkim.backend.exception.base.errorcode.AuthErrorCode
 import io.github.daegwonkim.backend.exception.business.AuthenticationException
 import io.github.daegwonkim.backend.exception.infra.ExternalApiException
 import io.github.daegwonkim.backend.jwt.JwtTokenProvider
@@ -149,9 +149,9 @@ class AuthService(
 
         when {
             expectedVerificationCode == null ->
-                throw AuthenticationException(ErrorCode.VERIFICATION_CODE_EXPIRED, "인증코드 만료: requestedBy=$phoneNo, receivedValue=$receivedVerificationCode")
+                throw AuthenticationException(AuthErrorCode.VERIFICATION_CODE_EXPIRED, "인증코드 만료: requestedBy=$phoneNo, receivedValue=$receivedVerificationCode")
             expectedVerificationCode != receivedVerificationCode ->
-                throw AuthenticationException(ErrorCode.INVALID_VERIFICATION_CODE, "인증코드 불일치: requestedBy=$phoneNo, expectedValue=$expectedVerificationCode, receivedValue=$receivedVerificationCode")
+                throw AuthenticationException(AuthErrorCode.INVALID_VERIFICATION_CODE, "인증코드 불일치: requestedBy=$phoneNo, expectedValue=$expectedVerificationCode, receivedValue=$receivedVerificationCode")
         }
     }
 
