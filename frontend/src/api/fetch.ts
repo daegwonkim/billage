@@ -2,18 +2,61 @@ import { ApiError, type ProblemDetail } from './error'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL!
 
+// 토큰 재발급 중복 요청 방지
+let isRefreshing = false
+let refreshPromise: Promise<boolean> | null = null
+
+async function tryReissueToken(): Promise<boolean> {
+  // 이미 재발급 중이면 기존 Promise 재사용
+  if (isRefreshing && refreshPromise) {
+    return refreshPromise
+  }
+
+  isRefreshing = true
+  refreshPromise = (async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/auth/token/reissue`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include'
+      })
+      return response.ok
+    } catch {
+      return false
+    } finally {
+      isRefreshing = false
+      refreshPromise = null
+    }
+  })()
+
+  return refreshPromise
+}
+
 export async function customFetch<T>(
   path: string,
   options?: RequestInit
 ): Promise<T> {
-  const response = await fetch(API_BASE_URL + path, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options?.headers
-    },
-    credentials: 'include'
-  })
+  const doFetch = async () => {
+    const response = await fetch(API_BASE_URL + path, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options?.headers
+      },
+      credentials: 'include'
+    })
+    return response
+  }
+
+  let response = await doFetch()
+
+  // 401 Unauthorized면 토큰 재발급 시도 후 재요청
+  if (response.status === 401 && !path.includes('/api/auth/token/reissue')) {
+    const reissued = await tryReissueToken()
+    if (reissued) {
+      response = await doFetch()
+    }
+  }
 
   if (!response.ok) {
     const contentType = response.headers.get('content-type')
