@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS rental_items (
     user_id BIGINT NOT NULL,
     category CHARACTER VARYING(255) NOT NULL,
     title CHARACTER VARYING(255) NOT NULL,
-    description CHARACTER VARYING(255) NOT NULL,
+    description TEXT NOT NULL,
     price_per_day INTEGER NULL,
     price_per_week INTEGER NULL,
     view_count INTEGER NOT NULL,
