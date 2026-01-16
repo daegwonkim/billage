@@ -1,3 +1,4 @@
+import { customFetch } from '../fetch'
 import type {
   GenerateSignedUrlRequest,
   GenerateSignedUrlResponse
@@ -8,13 +9,11 @@ import type {
 } from './dto/GenerateUploadSignedUrl'
 import type { RemoveStorageFileRequest } from './dto/RemoveStorageFile'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL!
-
 export async function generateUploadSignedUrl(
   request: GenerateUploadSignedUrlRequest
 ): Promise<GenerateUploadSignedUrlResponse> {
-  const response = await fetch(
-    `${API_BASE_URL}/api/storage/upload/signed-url`,
+  return await customFetch<GenerateUploadSignedUrlResponse>(
+    '/api/storage/upload/signed-url',
     {
       method: 'POST',
       headers: {
@@ -23,36 +22,31 @@ export async function generateUploadSignedUrl(
       body: JSON.stringify(request)
     }
   )
-
-  if (!response.ok) throw new Error('Failed to fetch signed url')
-  return response.json()
 }
 
 export async function generateSignedUrl(
   request: GenerateSignedUrlRequest
 ): Promise<GenerateSignedUrlResponse> {
-  const response = await fetch(`${API_BASE_URL}/api/storage/signed-url`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(request)
-  })
-
-  if (!response.ok) throw new Error('Failed to fetch signed url')
-  return response.json()
+  return await customFetch<GenerateSignedUrlResponse>(
+    `/api/storage/signed-url`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(request)
+    }
+  )
 }
 
 export async function removeFile(
   request: RemoveStorageFileRequest
 ): Promise<void> {
-  const response = await fetch(`${API_BASE_URL}/api/storage/file`, {
+  await customFetch(`/api/storage/file`, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify(request)
   })
-
-  if (!response.ok) throw new Error('스토리지 파일 삭제에 실패했습니다')
 }

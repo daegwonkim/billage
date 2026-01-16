@@ -8,19 +8,18 @@ import type { GetSimilarRentalItemsResponse } from './dto/GetSimilarRentalItems'
 import type { GetRentalItemResponse } from './dto/GetRentalItem'
 import type { GetRentalItemCategoriesResponse } from './dto/GetRentalItemCategories'
 import type { GetRentalItemSortOptionsResponse } from './dto/GetRentalItemSortOptions'
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL!
+import { customFetch } from '../fetch'
 
 export async function getRentalItemCategories(): Promise<GetRentalItemCategoriesResponse> {
-  const response = await fetch(`${API_BASE_URL}/api/rental-items/categories`)
-  if (!response.ok) throw new Error('Failed to fetch rental item categories')
-  return response.json()
+  return await customFetch<GetRentalItemCategoriesResponse>(
+    `/api/rental-items/categories`
+  )
 }
 
 export async function getRentalItemSortOptions(): Promise<GetRentalItemSortOptionsResponse> {
-  const response = await fetch(`${API_BASE_URL}/api/rental-items/sort-options`)
-  if (!response.ok) throw new Error('Failed to fetch rental item sort options')
-  return response.json()
+  return await customFetch<GetRentalItemSortOptionsResponse>(
+    `/api/rental-items/sort-options`
+  )
 }
 
 export async function getRentalItems(
@@ -37,53 +36,44 @@ export async function getRentalItems(
   if (category) {
     params.append('category', category)
   }
-  const response = await fetch(`${API_BASE_URL}/api/rental-items?${params}`)
-  if (!response.ok) throw new Error('Failed to fetch rental items')
-  return response.json()
+  return await customFetch<GetRentalItemsResponse>(
+    `/api/rental-items?${params}`
+  )
 }
 
 export async function getRentalItem(
   rentalItemId: string
 ): Promise<GetRentalItemResponse> {
-  const response = await fetch(
-    `${API_BASE_URL}/api/rental-items/${rentalItemId}`
+  return await customFetch<GetRentalItemResponse>(
+    `/api/rental-items/${rentalItemId}`
   )
-  if (!response.ok) throw new Error('Failed to fetch rental item')
-  return response.json()
 }
 
 export async function getSimilarRentalItems(
   rentalItemId: string
 ): Promise<GetSimilarRentalItemsResponse> {
-  const response = await fetch(
-    `${API_BASE_URL}/api/rental-items/${rentalItemId}/similar`
+  return await customFetch<GetSimilarRentalItemsResponse>(
+    `/api/rental-items/${rentalItemId}/similar`
   )
-  if (!response.ok) throw new Error('Failed to fetch rental item')
-  return response.json()
 }
 
 export async function getOtherRentalItemsBySeller(
   excludeRentalItemId: string,
   sellerId: string
 ): Promise<GetOtherRentalItemsBySellerResponse> {
-  const response = await fetch(
-    `${API_BASE_URL}/api/rental-items/${excludeRentalItemId}/other/${sellerId}`
+  return await customFetch<GetOtherRentalItemsBySellerResponse>(
+    `/api/rental-items/${excludeRentalItemId}/other/${sellerId}`
   )
-  if (!response.ok) throw new Error('Failed to fetch rental item')
-  return response.json()
 }
 
 export async function register(
   request: RegisterRentalItemRequest
 ): Promise<RegisterRentalItemResponse> {
-  const response = await fetch(`${API_BASE_URL}/api/rental-items`, {
+  return await customFetch<RegisterRentalItemResponse>(`/api/rental-items`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify(request)
   })
-
-  if (!response.ok) throw new Error('Failed to fetch rental item')
-  return response.json()
 }

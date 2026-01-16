@@ -6,9 +6,7 @@ import type {
   NearbyNeighborhoodsRequest,
   NearbyNeighborhoodsResponse
 } from './dto/NearbyNeighborhoods'
-import { ApiError, type ProblemDetail } from '../error'
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL!
+import { customFetch } from '../fetch'
 
 export async function nearbyNeighborhoods(
   request: NearbyNeighborhoodsRequest
@@ -17,18 +15,12 @@ export async function nearbyNeighborhoods(
     latitude: request.latitude,
     longitude: request.longitude
   })
-  const response = await fetch(
-    `${API_BASE_URL}/api/neighborhoods/nearby?${params}`,
+  return await customFetch<NearbyNeighborhoodsResponse>(
+    `/api/neighborhoods/nearby?${params}`,
     {
       method: 'GET'
     }
   )
-  if (!response.ok) {
-    const errorData: ProblemDetail = await response.json()
-    throw ApiError.fromResponse(errorData, response.status)
-  }
-
-  return response.json()
 }
 
 export async function locateNeighborhood(
@@ -38,13 +30,10 @@ export async function locateNeighborhood(
     latitude: request.latitude,
     longitude: request.longitude
   })
-  const response = await fetch(
-    `${API_BASE_URL}/api/neighborhoods/locate?${params}`,
+  return await customFetch<LocateNeighborhoodResponse>(
+    `/api/neighborhoods/locate?${params}`,
     {
       method: 'GET'
     }
   )
-  if (!response.ok) throw new Error('Failed to query locate neighborhoods')
-
-  return response.json()
 }
