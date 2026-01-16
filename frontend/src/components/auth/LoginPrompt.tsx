@@ -21,11 +21,7 @@ interface Neighborhood {
   code: string
 }
 
-interface LoginPromptProps {
-  onClose?: () => void
-}
-
-export function LoginPrompt({ onClose }: LoginPromptProps) {
+export function LoginPrompt() {
   const { login } = useAuth()
   const navigate = useNavigate()
 
@@ -188,6 +184,7 @@ export function LoginPrompt({ onClose }: LoginPromptProps) {
       })
       const user = await getMe()
       login(user)
+      navigate('/')
     } catch (err) {
       if (err instanceof ApiError) {
         setError(err.getMessage())
@@ -204,7 +201,7 @@ export function LoginPrompt({ onClose }: LoginPromptProps) {
       {/* 상단 바 */}
       <div className="relative flex h-14 items-center border-b border-gray-100 px-4">
         <button
-          onClick={() => (onClose ? onClose() : navigate(-1))}
+          onClick={() => navigate(-1)}
           className="absolute left-2 rounded-lg p-2 transition-colors hover:bg-gray-50">
           <ChevronLeft
             size={24}

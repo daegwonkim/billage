@@ -65,7 +65,7 @@ export function Home() {
         requestLocation()
       }
     }) ?? requestLocation()
-  }, [location])
+  }, [])
 
   const { data: neighborhoodData } = useLocateNeighborhood(
     {
@@ -193,7 +193,7 @@ export function Home() {
 
       {/* 위치 권한 요청 모달 */}
       {showLocationPermissionModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+        <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/50">
           <div className="mx-4 w-full max-w-sm rounded-2xl bg-white p-6">
             <h3 className="mb-2 text-lg font-bold">위치 권한이 필요합니다</h3>
             <p className="mb-4 text-sm text-neutral-600">

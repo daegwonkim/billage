@@ -1,11 +1,12 @@
-import { Header } from '@/components/common/Header'
-import { ChevronRight, Settings } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Settings } from 'lucide-react'
 import defaultProfileImage from '@/assets/default-profile.png'
 import { useAuth } from '@/contexts/AuthContext'
 import { LoginPrompt } from '@/components/auth/LoginPrompt'
 import { signOut } from '@/api/auth/auth'
+import { useNavigate } from 'react-router-dom'
 
 export function MyBillage() {
+  const navigate = useNavigate()
   const { user, logout } = useAuth()
 
   if (!user) {
@@ -22,11 +23,25 @@ export function MyBillage() {
   const handleLogout = async () => {
     await signOut()
     logout()
+    navigate('/')
   }
 
   return (
     <div className="min-h-screen w-md bg-white pb-20">
-      <Header />
+      {/* 상단 바 */}
+      <div className="relative flex h-14 items-center border-b border-gray-100 px-4">
+        <button
+          onClick={() => navigate(-1)}
+          className="absolute left-2 rounded-lg p-2 transition-colors hover:bg-gray-50">
+          <ChevronLeft
+            size={24}
+            className="text-neutral-700"
+          />
+        </button>
+        <div className="flex-1 text-center text-base font-extrabold text-neutral-900">
+          My 빌리지
+        </div>
+      </div>
 
       {/* 프로필 섹션 */}
       <div className="border-b border-gray-100 bg-white px-4 py-6">

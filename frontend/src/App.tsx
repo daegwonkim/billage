@@ -19,7 +19,7 @@ const queryClient = new QueryClient()
 function AppContent() {
   const location = useLocation()
   const navigate = useNavigate()
-  const hideBottomNavPaths = ['/rental-items/']
+  const hideBottomNavPaths = ['/rental-items/', '/my']
   const showBottomNav = !hideBottomNavPaths.some(path =>
     location.pathname.includes(path)
   )
