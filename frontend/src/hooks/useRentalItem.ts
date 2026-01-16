@@ -10,7 +10,11 @@ import {
   getRentalItemSortOptions,
   getSimilarRentalItems
 } from '@/api/rentall_item/rentalItem'
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
+import {
+  keepPreviousData,
+  useInfiniteQuery,
+  useQuery
+} from '@tanstack/react-query'
 
 export function useGetRentalItemCategories() {
   return useQuery<GetRentalItemCategoriesResponse>({
@@ -32,8 +36,7 @@ export function useGetRentalItem(id: string) {
   return useQuery<GetRentalItemResponse>({
     queryKey: ['rentalItem', id],
     queryFn: () => getRentalItem(id),
-    enabled: !!id,
-    staleTime: 5 * 60 * 1000
+    enabled: !!id
   })
 }
 
@@ -49,14 +52,13 @@ export function useGetRentalItems(sortBy: string, category?: string) {
       return undefined
     },
     initialPageParam: 0,
-    staleTime: 5 * 60 * 1000
+    placeholderData: keepPreviousData
   })
 }
 
 export function useGetSimilarRentalItems(rentalItemId: string) {
   return useQuery<GetSimilarRentalItemsResponse>({
     queryKey: ['similarRentalItems', rentalItemId],
-    queryFn: () => getSimilarRentalItems(rentalItemId),
-    staleTime: 5 * 60 * 1000
+    queryFn: () => getSimilarRentalItems(rentalItemId)
   })
 }

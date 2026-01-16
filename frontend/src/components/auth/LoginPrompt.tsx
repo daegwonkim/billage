@@ -110,6 +110,7 @@ export function LoginPrompt() {
         })
         const user = await getMe()
         login(user)
+        navigate(-1)
       }
     } catch (err) {
       if (err instanceof ApiError) {
@@ -184,7 +185,7 @@ export function LoginPrompt() {
       })
       const user = await getMe()
       login(user)
-      navigate('/')
+      navigate(-1)
     } catch (err) {
       if (err instanceof ApiError) {
         setError(err.getMessage())

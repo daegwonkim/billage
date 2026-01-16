@@ -98,11 +98,16 @@ export function Home() {
   const {
     data: rentalItemsData,
     isLoading: rentalItemsLoading,
+    isFetching: rentalItemsFetching,
+    isPlaceholderData,
     error: rentalItemsError,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage
   } = useGetRentalItems(selectedSort, selectedCategory)
+
+  // 최초 로딩: 캐시도 없고 placeholder 데이터도 없을 때만
+  const isInitialLoading = rentalItemsLoading && !rentalItemsData
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -129,7 +134,7 @@ export function Home() {
   const allRentalItems =
     rentalItemsData?.pages.flatMap(page => page.content) ?? []
 
-  if (rentalItemsLoading) {
+  if (isInitialLoading) {
     return <HomeSkeleton />
   }
 
@@ -163,8 +168,9 @@ export function Home() {
       )}
 
       {!rentalItemsError &&
-        !rentalItemsLoading &&
-        allRentalItems.length === 0 && (
+        !isInitialLoading &&
+        allRentalItems.length === 0 &&
+        !isPlaceholderData && (
           <div className="flex flex-col items-center justify-center px-4 py-20">
             <div className="text-center">
               <p className="mb-2 text-lg font-semibold text-neutral-800">
@@ -178,11 +184,13 @@ export function Home() {
         )}
 
       {allRentalItems.length > 0 && (
-        <RentalItems
-          rentalItems={allRentalItems}
-          onRentalItemClick={onRentalItemClick}
-          isFetchingNextPage={isFetchingNextPage}
-        />
+        <div className={isPlaceholderData ? 'opacity-50' : ''}>
+          <RentalItems
+            rentalItems={allRentalItems}
+            onRentalItemClick={onRentalItemClick}
+            isFetchingNextPage={isFetchingNextPage || rentalItemsFetching}
+          />
+        </div>
       )}
 
       {/* 무한 스크롤 트리거 요소 */}

@@ -8,7 +8,7 @@ import {
   X
 } from 'lucide-react'
 import toast, { Toaster } from 'react-hot-toast'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import type { RegisterRentalItemRequest } from '@/api/rentall_item/dto/RegisterRentalItem'
 import { register } from '@/api/rentall_item/rentalItem'
 import { generateUploadSignedUrl, removeFile } from '@/api/storage/storage'
@@ -38,6 +38,7 @@ interface ImageData {
 
 export default function RentalItemRegister() {
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const { user } = useAuth()
   const [isOpen, setIsOpen] = useState(false)
   const [images, setImages] = useState<ImageData[]>([])
@@ -66,11 +67,11 @@ export default function RentalItemRegister() {
   const registerMutation = useMutation({
     mutationFn: (request: RegisterRentalItemRequest) => register(request),
     onSuccess: data => {
-      toast.success('물품이 등록되었습니다.')
-      navigate(`/rental-items/${data.id}`)
+      queryClient.invalidateQueries({ queryKey: ['rentalItems'] })
+      navigate(`/rental-items/${data.id}`, { replace: true })
     },
     onError: () => {
-      toast.error('물품 등록에 실패했습니다. 잠시 후 다시 시도해주세요.')
+      toast.error('등록에 실패했어요.')
     }
   })
 
@@ -404,16 +405,25 @@ export default function RentalItemRegister() {
 
         {/* Title */}
         <div className="mb-2 p-4">
-          <label className="mb-2 block font-medium">제목</label>
+          <div className="mb-2 flex items-center justify-between">
+            <label className="font-medium">제목</label>
+            <span className="text-sm text-gray-400">
+              {formData.title.length}/40
+            </span>
+          </div>
           <input
             ref={titleRef}
             type="text"
             value={formData.title}
             onChange={e => {
-              setFormData(prev => ({ ...prev, title: e.target.value }))
-              setTitleError(false)
+              const value = e.target.value
+              if (value.length <= 40) {
+                setFormData(prev => ({ ...prev, title: value }))
+                setTitleError(false)
+              }
             }}
             placeholder="제목을 입력해주세요."
+            maxLength={40}
             className={`w-full rounded-lg border-2 bg-white px-3 py-2 focus:outline-none ${
               titleError
                 ? 'border-red-500 focus:border-red-500'
@@ -430,19 +440,28 @@ export default function RentalItemRegister() {
 
         {/* Description */}
         <div className="mb-2 p-4">
-          <label className="mb-2 block font-medium">자세한 설명</label>
+          <div className="mb-2 flex items-center justify-between">
+            <label className="font-medium">자세한 설명</label>
+            <span className="text-sm text-gray-400">
+              {formData.description.length}/500
+            </span>
+          </div>
           <textarea
             ref={descriptionRef}
             value={formData.description}
             onChange={e => {
-              setFormData(prev => ({
-                ...prev,
-                description: e.target.value
-              }))
-              setDescriptionError(false)
+              const value = e.target.value
+              if (value.length <= 500) {
+                setFormData(prev => ({
+                  ...prev,
+                  description: value
+                }))
+                setDescriptionError(false)
+              }
             }}
             placeholder="신뢰할 수 있는 거래를 위해 자세한 설명을 적어주세요. 판매 금지 물품은 게시가 제한될 수 있어요."
             rows={6}
+            maxLength={500}
             className={`w-full resize-none rounded-lg border-2 bg-white px-3 py-2 focus:outline-none ${
               descriptionError
                 ? 'border-red-500 focus:border-red-500'
