@@ -69,7 +69,7 @@ class RentalItemJooqRepository(
         return PageImpl(results, pageable, totalCount)
     }
 
-    fun getRentalItem(rentalItemId: Long, userId: Long): GetRentalItemProjection? {
+    fun getRentalItem(rentalItemId: Long, userId: Long?): GetRentalItemProjection? {
         return dslContext.select(
             USERS.ID.`as`("seller_id"),
             USERS.NICKNAME.`as`("seller_nickname"),
@@ -133,13 +133,17 @@ class RentalItemJooqRepository(
             .where(RENTAL_ITEM_LIKE_RECORDS.RENTAL_ITEM_ID.eq(RENTAL_ITEMS.ID))
             .asField<Int>("like_count")
 
-    private fun likedSubquery(userId: Long) =
-        DSL.exists(
-            dslContext.selectOne()
-                .from(RENTAL_ITEM_LIKE_RECORDS)
-                .where(RENTAL_ITEM_LIKE_RECORDS.RENTAL_ITEM_ID.eq(RENTAL_ITEMS.ID)
-                    .and(RENTAL_ITEM_LIKE_RECORDS.USER_ID.eq(userId)))
-        ).`as`("liked")
+    private fun likedSubquery(userId: Long?) =
+        if (userId != null) {
+            DSL.exists(
+                dslContext.selectOne()
+                    .from(RENTAL_ITEM_LIKE_RECORDS)
+                    .where(RENTAL_ITEM_LIKE_RECORDS.RENTAL_ITEM_ID.eq(RENTAL_ITEMS.ID)
+                        .and(RENTAL_ITEM_LIKE_RECORDS.USER_ID.eq(userId)))
+            ).`as`("liked")
+        } else {
+            DSL.`val`(false).`as`("liked")
+        }
 
     private fun addressField() =
         concat(

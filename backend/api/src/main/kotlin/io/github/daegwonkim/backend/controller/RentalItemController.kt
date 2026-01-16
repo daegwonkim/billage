@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 
 @RestController
 @RequestMapping("/api/rental-items")
@@ -56,9 +57,10 @@ class RentalItemController(
     @Operation(summary = "대여 상품 상세 조회", description = "특정 상품의 상세 정보를 조회합니다")
     @GetMapping("/{id}")
     fun getRentalItem(
+        @AuthenticationPrincipal userId: Long?,
         @PathVariable("id") id: Long
     ): GetRentalItemResponse {
-        return rentalItemService.getRentalItem(1L, id)
+        return rentalItemService.getRentalItem(userId, id)
     }
 
     @Operation(summary = "비슷한 상품 목록 조회", description = "현재 보고있는 상품과 비슷한 상품 목록을 조회합니다")
@@ -81,9 +83,10 @@ class RentalItemController(
     @Operation(summary = "대여 상품 등록", description = "새로운 대여 상품을 등록합니다")
     @PostMapping
     fun register(
+        @AuthenticationPrincipal userId: Long,
         @RequestBody request: RegisterRentalItemRequest
     ): RegisterRentalItemResponse {
-        return rentalItemService.register(1L, request)
+        return rentalItemService.register(userId, request)
     }
 
     @Operation(summary = "수정 전 데이터 조회", description = "대여 상품 수정 전 데이터를 조회합니다")

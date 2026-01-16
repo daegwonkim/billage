@@ -75,7 +75,7 @@ class RentalItemService(
     }
 
     @Transactional(readOnly = true)
-    fun getRentalItem(userId: Long, rentalItemId: Long): GetRentalItemResponse {
+    fun getRentalItem(userId: Long?, rentalItemId: Long): GetRentalItemResponse {
         val rentalItem = rentalItemJooqRepository.getRentalItem(rentalItemId, userId)
             ?: throw ResourceNotFoundException(rentalItemId, RentalItemErrorCode.RENTAL_ITEM_NOT_FOUND)
 
