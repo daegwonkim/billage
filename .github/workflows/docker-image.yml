@@ -55,11 +55,15 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push Docker image
+        id: docker_build
         uses: docker/build-push-action@v5
         with:
-          context: ./backend  # Docker 빌드 context도 backend로
+          context: ./backend
           push: true
           tags: ghcr.io/${{ github.repository }}/backend:latest
-
+      
+      - name: Verify push completed
+        run: echo "Docker image pushed with digest ${{ steps.docker_build.outputs.digest }}"
+      
       - name: Trigger Render Deploy
         run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
