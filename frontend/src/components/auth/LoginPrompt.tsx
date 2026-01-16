@@ -12,6 +12,7 @@ import { ApiError } from '@/api/error'
 import logo from '@/assets/logo.png'
 import { useAuth } from '@/contexts/AuthContext'
 import { getMe } from '@/api/user/user'
+import { useNavigate } from 'react-router-dom'
 
 type Step = 'start' | 'phone' | 'verification' | 'neighborhood'
 
@@ -20,8 +21,13 @@ interface Neighborhood {
   code: string
 }
 
-export function LoginPrompt() {
+interface LoginPromptProps {
+  onClose?: () => void
+}
+
+export function LoginPrompt({ onClose }: LoginPromptProps) {
   const { login } = useAuth()
+  const navigate = useNavigate()
 
   const [step, setStep] = useState<Step>('start')
   const [phoneNo, setPhoneNo] = useState('')
@@ -198,7 +204,7 @@ export function LoginPrompt() {
       {/* 상단 바 */}
       <div className="relative flex h-14 items-center border-b border-gray-100 px-4">
         <button
-          onClick={() => window.history.back()}
+          onClick={() => (onClose ? onClose() : navigate(-1))}
           className="absolute left-2 rounded-lg p-2 transition-colors hover:bg-gray-50">
           <ChevronLeft
             size={24}

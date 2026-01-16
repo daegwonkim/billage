@@ -1,5 +1,12 @@
 import React, { useRef, useState } from 'react'
-import { X, Plus, Camera, CircleAlert, Loader2 } from 'lucide-react'
+import {
+  ChevronLeft,
+  Plus,
+  Camera,
+  CircleAlert,
+  Loader2,
+  X
+} from 'lucide-react'
 import toast, { Toaster } from 'react-hot-toast'
 import { useMutation } from '@tanstack/react-query'
 import type { RegisterRentalItemRequest } from '@/api/rentall_item/dto/RegisterRentalItem'
@@ -8,6 +15,8 @@ import { generateUploadSignedUrl, removeFile } from '@/api/storage/storage'
 import { formatPrice } from '@/utils/utils'
 import { useNavigate } from 'react-router-dom'
 import { useGetRentalItemCategories } from '@/hooks/useRentalItem'
+import { useAuth } from '@/contexts/AuthContext'
+import { LoginPrompt } from '@/components/auth/LoginPrompt'
 
 interface FormData {
   category: string
@@ -27,16 +36,10 @@ interface ImageData {
   isUploaded: boolean
 }
 
-interface RentalItemRegisterProps {
-  onClose: () => void
-}
-
-export default function RentalItemRegister({
-  onClose
-}: RentalItemRegisterProps) {
+export default function RentalItemRegister() {
   const navigate = useNavigate()
+  const { user } = useAuth()
   const [isOpen, setIsOpen] = useState(false)
-  const [isClosing, setIsClosing] = useState(false)
   const [images, setImages] = useState<ImageData[]>([])
   const [formData, setFormData] = useState<FormData>({
     category: '',
@@ -65,7 +68,6 @@ export default function RentalItemRegister({
     onSuccess: data => {
       toast.success('물품이 등록되었습니다.')
       navigate(`/rental-items/${data.id}`)
-      setIsClosing(true)
     },
     onError: () => {
       toast.error('물품 등록에 실패했습니다. 잠시 후 다시 시도해주세요.')
@@ -74,12 +76,9 @@ export default function RentalItemRegister({
 
   const { data: categoriesData } = useGetRentalItemCategories()
 
-  // 닫기 애니메이션 처리
-  const handleClose = () => {
-    setIsClosing(true)
-    setTimeout(() => {
-      onClose()
-    }, 300) // 애니메이션 duration과 동일
+  // 비로그인 시 LoginPrompt 표시
+  if (!user) {
+    return <LoginPrompt />
   }
 
   // 가격 변경 시 동작하는 함수
@@ -241,353 +240,345 @@ export default function RentalItemRegister({
   }
 
   return (
-    <>
-      {/* Modal Container */}
-      <div className="animate-slide-up pointer-events-none fixed inset-0 z-50 flex items-end justify-center">
-        <div
-          className={`pointer-events-auto flex h-full w-full max-w-md flex-col bg-neutral-50 transition-transform duration-300 ${
-            isClosing ? 'translate-y-full' : 'translate-y-0'
-          }`}>
-          <Toaster
-            position="bottom-center"
-            toastOptions={{ className: 'text-sm' }}
-          />
+    <div className="min-h-screen w-md bg-white pb-20">
+      <Toaster
+        position="bottom-center"
+        toastOptions={{ className: 'text-sm' }}
+      />
 
-          {/* Header */}
-          <div className="sticky top-0 z-10 bg-black">
-            <div className="relative mx-auto flex max-w-2xl items-center px-4 py-4">
-              <button
-                className="text-gray-600"
-                onClick={handleClose}>
-                <X
-                  size={24}
-                  color="white"
-                />
-              </button>
-              <div className="absolute left-1/2 -translate-x-1/2 font-semibold text-white">
-                내 물건 대여하기
-              </div>
-            </div>
-          </div>
-
-          {/* Form Content */}
-          <div className="mx-auto w-full max-w-2xl flex-1 overflow-y-auto">
-            {/* Image Upload Section */}
-            <div className="mb-2 p-4">
-              <div className="mb-3 flex items-center">
-                <Camera
-                  size={20}
-                  className="mr-2 text-gray-600"
-                />
-                <span className="font-medium">사진</span>
-                <span className="ml-2 text-sm text-gray-500">
-                  ({images.length}/10)
-                </span>
-              </div>
-
-              <div className="grid grid-cols-4 gap-2">
-                {images.map((img, index) => (
-                  <div
-                    key={index}
-                    className="relative aspect-square">
-                    <img
-                      src={img.preview}
-                      className="h-full w-full rounded-lg object-cover"
-                    />
-                    {img.isUploading && (
-                      <div className="bg-opacity-50 absolute inset-0 flex items-center justify-center rounded-lg bg-black">
-                        <Loader2
-                          size={24}
-                          className="animate-spin text-white"
-                        />
-                      </div>
-                    )}
-                    <button
-                      type="button"
-                      onClick={() => removeImage(index)}
-                      disabled={img.isUploading}
-                      className="bg-opacity-70 absolute -top-2 -right-2 rounded-full bg-black p-1 text-white disabled:cursor-not-allowed disabled:opacity-50">
-                      <X size={16} />
-                    </button>
-                  </div>
-                ))}
-
-                {images.length < 10 && (
-                  <label className="flex aspect-square cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 transition hover:border-gray-400">
-                    <Plus
-                      size={24}
-                      className="mb-1 text-gray-400"
-                    />
-                    <span className="text-xs text-gray-500">추가</span>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      onChange={handleImageUpload}
-                      className="hidden"
-                    />
-                  </label>
-                )}
-              </div>
-            </div>
-
-            {/* Category */}
-            <div className="mb-2 p-4">
-              <label className="mb-2 block font-medium text-gray-700">
-                카테고리
-              </label>
-              <div className="relative">
-                <button
-                  type="button"
-                  onClick={() => setIsOpen(!isOpen)}
-                  className={`flex w-full items-center justify-between rounded-xl border-2 bg-white px-3 py-2 text-left font-medium transition-all duration-200 focus:outline-none ${
-                    categoryError
-                      ? 'border-red-500 focus:border-red-500'
-                      : 'border-gray-300 focus:border-black'
-                  } ${!formData.category ? 'text-gray-400' : 'text-gray-800'}`}>
-                  <span>
-                    {formData.category
-                      ? categoriesData?.categories.find(
-                          c => c.value === formData.category
-                        )?.label
-                      : '카테고리를 선택해주세요.'}
-                  </span>
-                  <svg
-                    className={`h-5 w-5 transition-transform duration-200 ${
-                      isOpen ? 'rotate-180' : ''
-                    } ${categoryError ? 'text-red-400' : 'text-gray-400'}`}
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor">
-                    <path
-                      fillRule="evenodd"
-                      d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </button>
-
-                {isOpen && (
-                  <>
-                    <div
-                      className="fixed inset-0 z-10"
-                      onClick={() => setIsOpen(false)}
-                    />
-                    <div className="absolute z-20 mt-1 w-full overflow-hidden rounded-xl border-2 border-gray-200 bg-white shadow-lg">
-                      <div className="max-h-60 overflow-y-auto">
-                        {categoriesData?.categories.map((category, index) => (
-                          <button
-                            key={category.value}
-                            type="button"
-                            onClick={() => {
-                              setFormData(prev => ({
-                                ...prev,
-                                category: category.value
-                              }))
-                              setCategoryError(false)
-                              setIsOpen(false)
-                            }}
-                            className={`w-full px-4 py-3 text-left text-sm font-medium transition-colors hover:bg-neutral-50 ${
-                              formData.category === category.value
-                                ? 'bg-neutral-50'
-                                : 'text-gray-800'
-                            } ${index !== categoriesData.categories.length - 1 ? 'border-b border-gray-100' : ''}`}>
-                            {category.label}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div>
-
-              {categoryError && (
-                <div className="mt-2 flex items-center gap-1.5 text-sm text-red-500">
-                  <CircleAlert size={16} />
-                  <span>카테고리는 필수 선택 사항입니다.</span>
-                </div>
-              )}
-            </div>
-
-            {/* Title */}
-            <div className="mb-2 p-4">
-              <label className="mb-2 block font-medium">제목</label>
-              <input
-                ref={titleRef}
-                type="text"
-                value={formData.title}
-                onChange={e => {
-                  setFormData(prev => ({ ...prev, title: e.target.value }))
-                  setTitleError(false)
-                }}
-                placeholder="제목을 입력해주세요."
-                className={`w-full rounded-lg border-2 bg-white px-3 py-2 focus:outline-none ${
-                  titleError
-                    ? 'border-red-500 focus:border-red-500'
-                    : 'border-gray-300 focus:border-black'
-                } `}
-              />
-              {titleError && (
-                <div className="mt-2 flex items-center gap-1 text-sm text-red-500">
-                  <CircleAlert size={18} />
-                  <div>제목은 필수 입력 사항입니다.</div>
-                </div>
-              )}
-            </div>
-
-            {/* Description */}
-            <div className="mb-2 p-4">
-              <label className="mb-2 block font-medium">자세한 설명</label>
-              <textarea
-                ref={descriptionRef}
-                value={formData.description}
-                onChange={e => {
-                  setFormData(prev => ({
-                    ...prev,
-                    description: e.target.value
-                  }))
-                  setDescriptionError(false)
-                }}
-                placeholder="신뢰할 수 있는 거래를 위해 자세한 설명을 적어주세요. 판매 금지 물품은 게시가 제한될 수 있어요."
-                rows={6}
-                className={`w-full resize-none rounded-lg border-2 bg-white px-3 py-2 focus:outline-none ${
-                  descriptionError
-                    ? 'border-red-500 focus:border-red-500'
-                    : 'border-gray-300 focus:border-black'
-                } `}
-              />
-              {descriptionError && (
-                <div className="mt-1 flex items-center gap-1 text-sm text-red-500">
-                  <CircleAlert size={18} />
-                  <div>설명은 필수 입력 사항입니다.</div>
-                </div>
-              )}
-            </div>
-
-            {/* Pricing */}
-            <div className="mb-2 p-4">
-              <label className="mb-3 block font-medium">대여 가격</label>
-
-              <div className="mb-4">
-                <div className="mb-2 flex items-center justify-between">
-                  <label className="text-sm text-gray-600">일 대여 가격</label>
-                  <label className="flex items-center text-sm">
-                    <input
-                      type="checkbox"
-                      checked={!formData.enablePricePerDay}
-                      onChange={e => {
-                        setFormData(prev => ({
-                          ...prev,
-                          enablePricePerDay: !e.target.checked
-                        }))
-                        setPricePerDayError(false)
-                      }}
-                      disabled={!formData.enablePricePerWeek}
-                      className="mr-2 accent-black disabled:cursor-not-allowed"
-                    />
-                    <span
-                      className={
-                        !formData.enablePricePerWeek
-                          ? 'text-gray-400'
-                          : 'text-gray-600'
-                      }>
-                      비활성화
-                    </span>
-                  </label>
-                </div>
-                <div className="flex items-center">
-                  <input
-                    ref={pricePerDayRef}
-                    type="text"
-                    value={formData.pricePerDay}
-                    onChange={e => {
-                      handlePriceChange('pricePerDay', e.target.value)
-                      setPricePerDayError(false)
-                    }}
-                    placeholder="0"
-                    disabled={!formData.enablePricePerDay}
-                    className={`w-full resize-none rounded-lg border-2 bg-white px-3 py-2 text-right focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-100 ${
-                      pricePerDayError
-                        ? 'border-red-500 focus:border-red-500'
-                        : 'border-gray-300 focus:border-black'
-                    } `}
-                  />
-                  <span className="ml-2 font-medium text-gray-700">원</span>
-                </div>
-                {pricePerDayError && (
-                  <div className="mt-2 flex items-center gap-1 text-sm text-red-500">
-                    <CircleAlert size={18} />
-                    <div>가격은 필수 입력 사항입니다.</div>
-                  </div>
-                )}
-              </div>
-
-              <div>
-                <div className="mb-2 flex items-center justify-between">
-                  <label className="text-sm text-gray-600">주 대여 가격</label>
-                  <label className="flex items-center text-sm">
-                    <input
-                      type="checkbox"
-                      checked={!formData.enablePricePerWeek}
-                      onChange={e => {
-                        setFormData(prev => ({
-                          ...prev,
-                          enablePricePerWeek: !e.target.checked
-                        }))
-                        setPricePerWeekError(false)
-                      }}
-                      disabled={!formData.enablePricePerDay}
-                      className="mr-2 accent-black disabled:cursor-not-allowed"
-                    />
-                    <span
-                      className={
-                        !formData.enablePricePerDay
-                          ? 'text-gray-400'
-                          : 'text-gray-600'
-                      }>
-                      비활성화
-                    </span>
-                  </label>
-                </div>
-                <div className="flex items-center">
-                  <input
-                    ref={pricePerWeekRef}
-                    type="text"
-                    value={formData.pricePerWeek}
-                    onChange={e => {
-                      handlePriceChange('pricePerWeek', e.target.value)
-                      setPricePerWeekError(false)
-                    }}
-                    placeholder="0"
-                    disabled={!formData.enablePricePerWeek}
-                    className={`w-full resize-none rounded-lg border-2 bg-white px-3 py-2 text-right focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-100 ${
-                      pricePerWeekError
-                        ? 'border-red-500 focus:border-red-500'
-                        : 'border-gray-300 focus:border-black'
-                    } `}
-                  />
-                  <span className="ml-2 font-medium text-gray-700">원</span>
-                </div>
-                {pricePerWeekError && (
-                  <div className="mt-2 flex items-center gap-1 text-sm text-red-500">
-                    <CircleAlert size={18} />
-                    <div>가격은 필수 입력 사항입니다.</div>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Submit Button */}
-            <div className="sticky bottom-0 z-10 bg-neutral-50 p-4">
-              <button
-                className="w-full rounded-lg bg-black py-3 font-medium text-white"
-                onClick={handleSubmit}>
-                등록하기
-              </button>
-            </div>
+      {/* Header */}
+      <div className="sticky top-0 z-10 border-b border-gray-100 bg-white">
+        <div className="relative flex h-14 items-center px-4">
+          <button
+            onClick={() => navigate(-1)}
+            className="absolute left-2 rounded-lg p-2 transition-colors hover:bg-gray-50">
+            <ChevronLeft
+              size={24}
+              className="text-neutral-700"
+            />
+          </button>
+          <div className="flex-1 text-center text-base font-extrabold text-neutral-900">
+            내 물건 대여하기
           </div>
         </div>
       </div>
-    </>
+
+      {/* Form Content */}
+      <div className="px-4">
+        {/* Image Upload Section */}
+        <div className="mb-2 p-4">
+          <div className="mb-3 flex items-center">
+            <Camera
+              size={20}
+              className="mr-2 text-gray-600"
+            />
+            <span className="font-medium">사진</span>
+            <span className="ml-2 text-sm text-gray-500">
+              ({images.length}/10)
+            </span>
+          </div>
+
+          <div className="grid grid-cols-4 gap-2">
+            {images.map((img, index) => (
+              <div
+                key={index}
+                className="relative aspect-square">
+                <img
+                  src={img.preview}
+                  className="h-full w-full rounded-lg object-cover"
+                />
+                {img.isUploading && (
+                  <div className="bg-opacity-50 absolute inset-0 flex items-center justify-center rounded-lg bg-black">
+                    <Loader2
+                      size={24}
+                      className="animate-spin text-white"
+                    />
+                  </div>
+                )}
+                <button
+                  type="button"
+                  onClick={() => removeImage(index)}
+                  disabled={img.isUploading}
+                  className="bg-opacity-70 absolute -top-2 -right-2 rounded-full bg-black p-1 text-white disabled:cursor-not-allowed disabled:opacity-50">
+                  <X size={16} />
+                </button>
+              </div>
+            ))}
+
+            {images.length < 10 && (
+              <label className="flex aspect-square cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 transition hover:border-gray-400">
+                <Plus
+                  size={24}
+                  className="mb-1 text-gray-400"
+                />
+                <span className="text-xs text-gray-500">추가</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleImageUpload}
+                  className="hidden"
+                />
+              </label>
+            )}
+          </div>
+        </div>
+
+        {/* Category */}
+        <div className="mb-2 p-4">
+          <label className="mb-2 block font-medium text-gray-700">
+            카테고리
+          </label>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setIsOpen(!isOpen)}
+              className={`flex w-full items-center justify-between rounded-xl border-2 bg-white px-3 py-2 text-left font-medium transition-all duration-200 focus:outline-none ${
+                categoryError
+                  ? 'border-red-500 focus:border-red-500'
+                  : 'border-gray-300 focus:border-black'
+              } ${!formData.category ? 'text-gray-400' : 'text-gray-800'}`}>
+              <span>
+                {formData.category
+                  ? categoriesData?.categories.find(
+                      c => c.value === formData.category
+                    )?.label
+                  : '카테고리를 선택해주세요.'}
+              </span>
+              <svg
+                className={`h-5 w-5 transition-transform duration-200 ${
+                  isOpen ? 'rotate-180' : ''
+                } ${categoryError ? 'text-red-400' : 'text-gray-400'}`}
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor">
+                <path
+                  fillRule="evenodd"
+                  d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
+
+            {isOpen && (
+              <>
+                <div
+                  className="fixed inset-0 z-10"
+                  onClick={() => setIsOpen(false)}
+                />
+                <div className="absolute z-20 mt-1 w-full overflow-hidden rounded-xl border-2 border-gray-200 bg-white shadow-lg">
+                  <div className="max-h-60 overflow-y-auto">
+                    {categoriesData?.categories.map((category, index) => (
+                      <button
+                        key={category.value}
+                        type="button"
+                        onClick={() => {
+                          setFormData(prev => ({
+                            ...prev,
+                            category: category.value
+                          }))
+                          setCategoryError(false)
+                          setIsOpen(false)
+                        }}
+                        className={`w-full px-4 py-3 text-left text-sm font-medium transition-colors hover:bg-neutral-50 ${
+                          formData.category === category.value
+                            ? 'bg-neutral-50'
+                            : 'text-gray-800'
+                        } ${index !== categoriesData.categories.length - 1 ? 'border-b border-gray-100' : ''}`}>
+                        {category.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+
+          {categoryError && (
+            <div className="mt-2 flex items-center gap-1.5 text-sm text-red-500">
+              <CircleAlert size={16} />
+              <span>카테고리는 필수 선택 사항입니다.</span>
+            </div>
+          )}
+        </div>
+
+        {/* Title */}
+        <div className="mb-2 p-4">
+          <label className="mb-2 block font-medium">제목</label>
+          <input
+            ref={titleRef}
+            type="text"
+            value={formData.title}
+            onChange={e => {
+              setFormData(prev => ({ ...prev, title: e.target.value }))
+              setTitleError(false)
+            }}
+            placeholder="제목을 입력해주세요."
+            className={`w-full rounded-lg border-2 bg-white px-3 py-2 focus:outline-none ${
+              titleError
+                ? 'border-red-500 focus:border-red-500'
+                : 'border-gray-300 focus:border-black'
+            } `}
+          />
+          {titleError && (
+            <div className="mt-2 flex items-center gap-1 text-sm text-red-500">
+              <CircleAlert size={18} />
+              <div>제목은 필수 입력 사항입니다.</div>
+            </div>
+          )}
+        </div>
+
+        {/* Description */}
+        <div className="mb-2 p-4">
+          <label className="mb-2 block font-medium">자세한 설명</label>
+          <textarea
+            ref={descriptionRef}
+            value={formData.description}
+            onChange={e => {
+              setFormData(prev => ({
+                ...prev,
+                description: e.target.value
+              }))
+              setDescriptionError(false)
+            }}
+            placeholder="신뢰할 수 있는 거래를 위해 자세한 설명을 적어주세요. 판매 금지 물품은 게시가 제한될 수 있어요."
+            rows={6}
+            className={`w-full resize-none rounded-lg border-2 bg-white px-3 py-2 focus:outline-none ${
+              descriptionError
+                ? 'border-red-500 focus:border-red-500'
+                : 'border-gray-300 focus:border-black'
+            } `}
+          />
+          {descriptionError && (
+            <div className="mt-1 flex items-center gap-1 text-sm text-red-500">
+              <CircleAlert size={18} />
+              <div>설명은 필수 입력 사항입니다.</div>
+            </div>
+          )}
+        </div>
+
+        {/* Pricing */}
+        <div className="mb-2 p-4">
+          <label className="mb-3 block font-medium">대여 가격</label>
+
+          <div className="mb-4">
+            <div className="mb-2 flex items-center justify-between">
+              <label className="text-sm text-gray-600">일 대여 가격</label>
+              <label className="flex items-center text-sm">
+                <input
+                  type="checkbox"
+                  checked={!formData.enablePricePerDay}
+                  onChange={e => {
+                    setFormData(prev => ({
+                      ...prev,
+                      enablePricePerDay: !e.target.checked
+                    }))
+                    setPricePerDayError(false)
+                  }}
+                  disabled={!formData.enablePricePerWeek}
+                  className="mr-2 accent-black disabled:cursor-not-allowed"
+                />
+                <span
+                  className={
+                    !formData.enablePricePerWeek
+                      ? 'text-gray-400'
+                      : 'text-gray-600'
+                  }>
+                  비활성화
+                </span>
+              </label>
+            </div>
+            <div className="flex items-center">
+              <input
+                ref={pricePerDayRef}
+                type="text"
+                value={formData.pricePerDay}
+                onChange={e => {
+                  handlePriceChange('pricePerDay', e.target.value)
+                  setPricePerDayError(false)
+                }}
+                placeholder="0"
+                disabled={!formData.enablePricePerDay}
+                className={`w-full resize-none rounded-lg border-2 bg-white px-3 py-2 text-right focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-100 ${
+                  pricePerDayError
+                    ? 'border-red-500 focus:border-red-500'
+                    : 'border-gray-300 focus:border-black'
+                } `}
+              />
+              <span className="ml-2 font-medium text-gray-700">원</span>
+            </div>
+            {pricePerDayError && (
+              <div className="mt-2 flex items-center gap-1 text-sm text-red-500">
+                <CircleAlert size={18} />
+                <div>가격은 필수 입력 사항입니다.</div>
+              </div>
+            )}
+          </div>
+
+          <div>
+            <div className="mb-2 flex items-center justify-between">
+              <label className="text-sm text-gray-600">주 대여 가격</label>
+              <label className="flex items-center text-sm">
+                <input
+                  type="checkbox"
+                  checked={!formData.enablePricePerWeek}
+                  onChange={e => {
+                    setFormData(prev => ({
+                      ...prev,
+                      enablePricePerWeek: !e.target.checked
+                    }))
+                    setPricePerWeekError(false)
+                  }}
+                  disabled={!formData.enablePricePerDay}
+                  className="mr-2 accent-black disabled:cursor-not-allowed"
+                />
+                <span
+                  className={
+                    !formData.enablePricePerDay
+                      ? 'text-gray-400'
+                      : 'text-gray-600'
+                  }>
+                  비활성화
+                </span>
+              </label>
+            </div>
+            <div className="flex items-center">
+              <input
+                ref={pricePerWeekRef}
+                type="text"
+                value={formData.pricePerWeek}
+                onChange={e => {
+                  handlePriceChange('pricePerWeek', e.target.value)
+                  setPricePerWeekError(false)
+                }}
+                placeholder="0"
+                disabled={!formData.enablePricePerWeek}
+                className={`w-full resize-none rounded-lg border-2 bg-white px-3 py-2 text-right focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-100 ${
+                  pricePerWeekError
+                    ? 'border-red-500 focus:border-red-500'
+                    : 'border-gray-300 focus:border-black'
+                } `}
+              />
+              <span className="ml-2 font-medium text-gray-700">원</span>
+            </div>
+            {pricePerWeekError && (
+              <div className="mt-2 flex items-center gap-1 text-sm text-red-500">
+                <CircleAlert size={18} />
+                <div>가격은 필수 입력 사항입니다.</div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Submit Button */}
+      <div className="fixed bottom-0 left-1/2 z-40 w-full max-w-md -translate-x-1/2 bg-white p-4">
+        <button
+          className="w-full rounded-lg bg-black py-3 font-medium text-white"
+          onClick={handleSubmit}>
+          등록하기
+        </button>
+      </div>
+    </div>
   )
 }

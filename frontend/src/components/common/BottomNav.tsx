@@ -29,7 +29,7 @@ export function BottomNav({
   }
 
   return (
-    <nav className="fixed bottom-0 left-1/2 w-full max-w-md -translate-x-1/2 border-t border-gray-200 bg-white">
+    <nav className="fixed bottom-0 left-1/2 z-50 w-full max-w-md -translate-x-1/2 border-t border-gray-200 bg-white">
       <div className="grid h-16 grid-cols-5">
         {NAV_ITEMS.map(({ id, icon: Icon, label }) => (
           <button

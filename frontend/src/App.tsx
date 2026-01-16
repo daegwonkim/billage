@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom'
 import { Home } from './pages/Home'
 import { BottomNav } from './components/common/BottomNav'
@@ -12,8 +11,6 @@ import { AuthProvider } from './contexts/AuthContext'
 const queryClient = new QueryClient()
 
 function AppContent() {
-  const [showRegisterModal, setShowRegisterModal] = useState(false)
-
   const location = useLocation()
   const navigate = useNavigate()
   const hideBottomNavPaths = ['/rental-items/']
@@ -52,16 +49,17 @@ function AppContent() {
             path="/rental-items/:id"
             element={<RentalItemDetail />}
           />
+          <Route
+            path="/rental-items/register"
+            element={<RentalItemRegister />}
+          />
         </Routes>
         {showBottomNav && (
           <BottomNav
             activeTab={activeTab}
             onTabChange={handleTabChange}
-            onRegisterClick={() => setShowRegisterModal(true)}
+            onRegisterClick={() => navigate('/rental-items/register')}
           />
-        )}
-        {showRegisterModal && (
-          <RentalItemRegister onClose={() => setShowRegisterModal(false)} />
         )}
       </div>
     </div>
