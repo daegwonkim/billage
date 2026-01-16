@@ -15,7 +15,11 @@ const NAV_ITEMS = [
   { id: 'my' as NavTab, icon: User, label: 'My 빌리지' }
 ]
 
-export function BottomNav({ activeTab, onTabChange, onRegisterClick }: BottomNavProps) {
+export function BottomNav({
+  activeTab,
+  onTabChange,
+  onRegisterClick
+}: BottomNavProps) {
   const handleTabClick = (tab: NavTab) => {
     if (tab === 'add') {
       onRegisterClick()

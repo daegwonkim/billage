@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom'
 import { Home } from './pages/Home'
 import { BottomNav } from './components/common/BottomNav'
 import type { NavTab } from './types'
@@ -15,6 +15,7 @@ function AppContent() {
   const [showRegisterModal, setShowRegisterModal] = useState(false)
 
   const location = useLocation()
+  const navigate = useNavigate()
   const hideBottomNavPaths = ['/rental-items/']
   const showBottomNav = !hideBottomNavPaths.some(path =>
     location.pathname.includes(path)
@@ -25,9 +26,9 @@ function AppContent() {
 
   const handleTabChange = (tab: NavTab) => {
     if (tab === 'home') {
-      window.location.href = '/'
+      navigate('/')
     } else if (tab === 'my') {
-      window.location.href = '/my'
+      navigate('/my')
     }
   }
 
