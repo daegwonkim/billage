@@ -39,12 +39,12 @@ export function FilterModal({
     <>
       {/* 배경 오버레이 */}
       <div
-        className="fixed inset-0 z-50 bg-black/50"
+        className="fixed inset-0 z-60 bg-black/50"
         onClick={onClose}
       />
 
       {/* 모달 */}
-      <div className="fixed top-1/2 left-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-white shadow-xl">
+      <div className="fixed top-1/2 left-1/2 z-60 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-white shadow-xl">
         {/* 헤더 */}
         <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
           <h3 className="text-lg font-semibold text-gray-800">필터</h3>
