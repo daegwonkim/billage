@@ -1,5 +1,7 @@
 package io.github.daegwonkim.backend.config
 
+import io.github.daegwonkim.backend.jwt.JwtAccessDeniedHandler
+import io.github.daegwonkim.backend.jwt.JwtAuthenticationEntryPoint
 import io.github.daegwonkim.backend.jwt.JwtAuthenticationFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -15,7 +17,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
-    private val jwtAuthenticationFilter: JwtAuthenticationFilter
+    private val jwtAuthenticationFilter: JwtAuthenticationFilter,
+    private val jwtAuthenticationEntryPoint: JwtAuthenticationEntryPoint,
+    private val jwtAccessDeniedHandler: JwtAccessDeniedHandler
 ) {
 
     @Bean
@@ -33,6 +37,10 @@ class SecurityConfig(
                 auth.requestMatchers("/api/neighborhoods/**").permitAll()
                 auth.requestMatchers("/api/rental-items/**").permitAll()
                 auth.anyRequest().authenticated()
+            }
+            .exceptionHandling { ex ->
+                ex.authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                ex.accessDeniedHandler(jwtAccessDeniedHandler)
             }
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
 
