@@ -28,7 +28,7 @@ export function BottomSheet({
 
       {/* 바텀 시트 */}
       <div
-        className={`fixed right-0 bottom-0 left-0 z-50 mx-auto w-full max-w-md transform rounded-t-2xl bg-white shadow-xl transition-transform duration-300 ${
+        className={`fixed right-0 bottom-0 left-0 z-60 mx-auto w-full max-w-md transform rounded-t-2xl bg-white shadow-xl transition-transform duration-300 ${
           isOpen ? 'translate-y-0' : 'translate-y-full'
         }`}>
         {/* 헤더 */}
