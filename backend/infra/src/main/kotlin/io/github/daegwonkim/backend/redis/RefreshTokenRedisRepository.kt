@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit
 @Service
 class RefreshTokenRedisRepository(
     private val stringRedisTemplate: StringRedisTemplate,
-    @Value($$"${jwt.refresh-token-expiration.milliseconds}")
+    @Value($$"${jwt.refresh-token-expiration}")
     private val refreshTokenExpiration: Long
 ) {
     companion object {
