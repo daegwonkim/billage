@@ -6,6 +6,7 @@ server:
 #    key-store-password: changeit
 #    key-store-type: PKCS12
 
+
 spring:
   config:
     import:
