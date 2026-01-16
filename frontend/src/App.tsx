@@ -1,4 +1,10 @@
-import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom'
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  useLocation,
+  useNavigate
+} from 'react-router-dom'
 import { Home } from './pages/Home'
 import { BottomNav } from './components/common/BottomNav'
 import type { NavTab } from './types'

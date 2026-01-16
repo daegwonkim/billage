@@ -19,6 +19,36 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null)
 
+// 토큰 재발급 중복 요청 방지
+let isRefreshing = false
+let refreshPromise: Promise<boolean> | null = null
+
+async function tryReissueToken(): Promise<boolean> {
+  // 이미 재발급 중이면 기존 Promise 재사용
+  if (isRefreshing && refreshPromise) {
+    return refreshPromise
+  }
+
+  isRefreshing = true
+  refreshPromise = (async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/auth/token/reissue`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include'
+      })
+      return response.ok
+    } catch {
+      return false
+    } finally {
+      isRefreshing = false
+      refreshPromise = null
+    }
+  })()
+
+  return refreshPromise
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<GetMeResponse | null>(null)
   const [loading, setLoading] = useState(true)
@@ -29,10 +59,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const checkAuthenticated = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/users/me`, {
-        credentials: 'include',
-        cache: 'no-store'
-      })
+      const fetchGetMe = async () => {
+        return await fetch(`${API_BASE_URL}/api/users/me`, {
+          credentials: 'include',
+          cache: 'no-store'
+        })
+      }
+
+      let response = await fetchGetMe()
+
+      if (response.status === 401) {
+        const reissued = await tryReissueToken()
+        if (reissued) {
+          response = await fetchGetMe()
+        } else {
+          setUser(null)
+        }
+      }
 
       if (response.ok) {
         const userData = await response.json()
