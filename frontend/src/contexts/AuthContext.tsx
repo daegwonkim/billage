@@ -99,7 +99,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   if (loading) {
-    return <Loader2 />
+    return <Loader2 className="animate-spin" />
   }
 
   return (
