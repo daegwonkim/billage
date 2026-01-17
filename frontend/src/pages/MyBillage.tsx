@@ -3,10 +3,13 @@ import {
   ChevronLeft,
   ChevronRight,
   EllipsisVertical,
+  LogOut,
   MapPinCheck,
   PackageCheck,
-  Star
+  Star,
+  UserX
 } from 'lucide-react'
+import { useState } from 'react'
 import defaultProfileImage from '@/assets/default-profile.png'
 import { useAuth } from '@/contexts/AuthContext'
 import { LoginPrompt } from '@/components/auth/LoginPrompt'
@@ -16,6 +19,7 @@ import { useNavigate } from 'react-router-dom'
 export function MyBillage() {
   const navigate = useNavigate()
   const { user, logout } = useAuth()
+  const [showMenu, setShowMenu] = useState(false)
 
   if (!user) {
     return <LoginPrompt />
@@ -161,12 +165,46 @@ export function MyBillage() {
           </div>
 
           {/* 설정 아이콘 */}
-          <button className="rounded-lg p-2 transition-colors hover:bg-gray-50">
-            <EllipsisVertical
-              size={24}
-              className="text-gray-600"
-            />
-          </button>
+          <div className="relative">
+            <button
+              onClick={() => setShowMenu(!showMenu)}
+              className="rounded-lg p-2 transition-colors hover:bg-gray-50">
+              <EllipsisVertical
+                size={24}
+                className={`icon-rotate text-gray-600 ${showMenu ? 'active' : ''}`}
+              />
+            </button>
+
+            {/* 드롭다운 메뉴 */}
+            {showMenu && (
+              <>
+                <div
+                  className="animate-fade-in fixed inset-0 z-10"
+                  onClick={() => setShowMenu(false)}
+                />
+                <div className="animate-dropdown absolute top-9 right-2 z-20 w-27 origin-top-right rounded-lg border border-gray-200 bg-white py-1 shadow-lg">
+                  <button
+                    onClick={() => {
+                      setShowMenu(false)
+                      handleLogout()
+                    }}
+                    className="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-neutral-700 transition-colors hover:bg-gray-50">
+                    <LogOut size={16} />
+                    로그아웃
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowMenu(false)
+                      // TODO: 회원탈퇴 처리
+                    }}
+                    className="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-red-500 transition-colors hover:bg-gray-50">
+                    <UserX size={16} />
+                    회원탈퇴
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
 
         <div className="space-y-2">
@@ -199,9 +237,12 @@ export function MyBillage() {
       <div className="py-4">
         <div className="flex items-center justify-between px-4 pb-3">
           <h3 className="text-base font-bold text-neutral-900">대여 물품 13</h3>
-          <button className="flex items-center text-sm text-neutral-500">
+          <button className="group flex items-center text-sm text-neutral-500">
             전체보기
-            <ChevronRight size={16} />
+            <ChevronRight
+              size={16}
+              className="icon-arrow-move"
+            />
           </button>
         </div>
         <div className="scrollbar-hide flex gap-3 overflow-x-auto px-4">
@@ -234,9 +275,12 @@ export function MyBillage() {
       <div className="border-t border-gray-100 py-4">
         <div className="flex items-center justify-between px-4 pb-3">
           <h3 className="text-base font-bold text-neutral-900">받은 후기 9</h3>
-          <button className="flex items-center text-sm text-neutral-500">
+          <button className="group flex items-center text-sm text-neutral-500">
             전체보기
-            <ChevronRight size={16} />
+            <ChevronRight
+              size={16}
+              className="icon-arrow-move"
+            />
           </button>
         </div>
         <div className="px-4">
@@ -292,15 +336,6 @@ export function MyBillage() {
             </div>
           ))}
         </div>
-      </div>
-
-      {/* 로그아웃 버튼 */}
-      <div className="mt-6 px-4">
-        <button
-          className="w-full rounded-lg py-3 text-sm font-medium text-neutral-500 transition-colors hover:bg-gray-50"
-          onClick={handleLogout}>
-          로그아웃
-        </button>
       </div>
     </div>
   )
