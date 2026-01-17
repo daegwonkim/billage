@@ -21,6 +21,18 @@ class SecurityConfig(
     private val jwtAuthenticationEntryPoint: JwtAuthenticationEntryPoint,
     private val jwtAccessDeniedHandler: JwtAccessDeniedHandler
 ) {
+    companion object {
+        private val PUBLIC_PATHS = arrayOf(
+            "/api/auth/verification-code/**",
+            "/api/auth/confirm-registered",
+            "/api/auth/sign-up",
+            "/api/auth/sign-in",
+            "/api/auth/sign-out",
+            "/api/auth/token/reissue",
+            "/api/neighborhoods/**",
+            "/api/rental-items/**"
+        )
+    }
 
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
@@ -29,13 +41,8 @@ class SecurityConfig(
             .cors { it.configurationSource(corsConfigurationSource()) }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests { auth ->
-                auth.requestMatchers("/api/auth/verification-code/**").permitAll()
-                auth.requestMatchers("/api/auth/confirm-registered").permitAll()
-                auth.requestMatchers("/api/auth/sign-up").permitAll()
-                auth.requestMatchers("/api/auth/sign-in").permitAll()
-                auth.requestMatchers("/api/auth/token/reissue").permitAll()
-                auth.requestMatchers("/api/neighborhoods/**").permitAll()
-                auth.requestMatchers("/api/rental-items/**").permitAll()
+                auth.requestMatchers(*PUBLIC_PATHS).permitAll()
+                auth.requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 auth.anyRequest().authenticated()
             }
             .exceptionHandling { ex ->
