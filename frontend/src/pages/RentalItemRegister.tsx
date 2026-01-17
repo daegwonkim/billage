@@ -17,6 +17,7 @@ import { useNavigate } from 'react-router-dom'
 import { useGetRentalItemCategories } from '@/hooks/useRentalItem'
 import { useAuth } from '@/contexts/AuthContext'
 import { LoginPrompt } from '@/components/auth/LoginPrompt'
+import { ApiError } from '@/api/error'
 
 interface FormData {
   category: string
@@ -141,8 +142,12 @@ export default function RentalItemRegister() {
               : img
           )
         )
-      } catch (error) {
-        alert('이미지 업로드에 실패했습니다.')
+      } catch (err) {
+        if (err instanceof ApiError && err.status === 401) {
+          toast.error('세션이 만료됐어요. 다시 로그인 해주세요')
+        } else {
+          toast.error('이미지 업로드에 실패했어요')
+        }
 
         // 업로드에 실패한 이미지 제거
         setImages(prev => prev.filter((_, i) => i !== newImageIndex))
