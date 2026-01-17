@@ -112,6 +112,13 @@ class RentalItemJooqRepository(
             .fetchInto(GetOtherRentalItemsBySellerItemProjection::class.java)
     }
 
+    fun incrementViewCount(rentalItemId: Long): Int {
+        return dslContext.update(RENTAL_ITEMS)
+            .set(RENTAL_ITEMS.VIEW_COUNT, RENTAL_ITEMS.VIEW_COUNT.plus(1))
+            .where(RENTAL_ITEMS.ID.eq(rentalItemId))
+            .execute()
+    }
+
     private fun thumbnailImageUrlSubquery() =
         dslContext.select(RENTAL_ITEM_IMAGES.KEY)
             .from(RENTAL_ITEM_IMAGES)

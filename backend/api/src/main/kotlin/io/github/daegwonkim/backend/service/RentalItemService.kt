@@ -24,6 +24,7 @@ import io.github.daegwonkim.backend.repository.RentalItemJooqRepository
 import io.github.daegwonkim.backend.repository.RentalItemRepository
 import io.github.daegwonkim.backend.repository.projection.GetOtherRentalItemsBySellerItemProjection
 import io.github.daegwonkim.backend.repository.projection.GetRentalItemsProjection
+import io.github.daegwonkim.backend.redis.RentalItemViewRedisRepository
 import io.github.daegwonkim.backend.supabase.SupabaseStorageClient
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationEventPublisher
@@ -36,6 +37,7 @@ class RentalItemService(
     private val rentalItemRepository: RentalItemRepository,
     private val rentalItemImageRepository: RentalItemImageRepository,
     private val rentalItemJooqRepository: RentalItemJooqRepository,
+    private val rentalItemViewRedisRepository: RentalItemViewRedisRepository,
 
     private val supabaseStorageClient: SupabaseStorageClient,
     private val eventPublisher: ApplicationEventPublisher,
@@ -74,15 +76,19 @@ class RentalItemService(
         return GetRentalItemsResponse.from(result, content)
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     fun getRentalItem(userId: Long?, rentalItemId: Long): GetRentalItemResponse {
-        val rentalItem = rentalItemJooqRepository.getRentalItem(rentalItemId, userId)
+        val rentalItemProjection = rentalItemJooqRepository.getRentalItem(rentalItemId, userId)
             ?: throw ResourceNotFoundException(rentalItemId, RentalItemErrorCode.RENTAL_ITEM_NOT_FOUND)
 
+        if (userId != null && rentalItemViewRedisRepository.markViewed(rentalItemId, userId)) {
+            rentalItemJooqRepository.incrementViewCount(rentalItemId)
+        }
+
         return GetRentalItemResponse.from(
-            item = rentalItem,
-            imageUrls = getRentalItemImageUrls(rentalItem.id),
-            sellerProfileImageUrl = rentalItem.sellerProfileImageKey?.let {
+            item = rentalItemProjection,
+            imageUrls = getRentalItemImageUrls(rentalItemId),
+            sellerProfileImageUrl = rentalItemProjection.sellerProfileImageKey?.let {
                 supabaseStorageClient.getPublicUrl(userProfileImagesBucket, it)
             }
         )
