@@ -15,7 +15,7 @@ export function BottomSheetItem({
       onClick={onClick}>
       <div className="flex items-center justify-between">
         <span className="text-base text-gray-800">{label}</span>
-        {selected && <div className="h-2 w-2 rounded-full bg-red-400" />}
+        {selected && <div className="h-2 w-2 rounded-full bg-black" />}
       </div>
     </div>
   )
