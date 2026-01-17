@@ -2,7 +2,7 @@ package io.github.daegwonkim.backend.jwt
 
 import io.github.daegwonkim.backend.log.logger
 import io.github.daegwonkim.backend.jwt.vo.GeneratedTokens
-import io.github.daegwonkim.backend.jwt.vo.TokenClaims
+import io.github.daegwonkim.backend.jwt.vo.RefreshTokenClaims
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
@@ -31,18 +31,23 @@ class JwtTokenProvider(
         return GeneratedTokens(accessToken, refreshToken)
     }
 
-    fun validateAndGetClaims(token: String): TokenClaims {
-        val claims = getClaims(token)
-        val userId = claims.subject.toLong()
-        val familyId = claims["familyId"] as String
-        val version = claims["version"] as Int
-
-        return TokenClaims(userId, familyId, version)
+    fun getSubject(token: String): Long? {
+        return runCatching {
+            val claims = extractClaims(token)
+            claims.subject.toLong()
+        }.onFailure { logger.warn { "유효하지 않은 AccessToken: message=${it.message}" } }
+            .getOrNull()
     }
 
-    fun validateAndGetUserIdOrNull(token: String): Long? {
-        return runCatching { getClaims(token).subject.toLong() }
-            .onFailure { logger.warn { "유효하지 않은 JWT 토큰: token=$token, message=${it.message}" } }
+    fun getRefreshTokenClaims(token: String): RefreshTokenClaims? {
+        return runCatching {
+            val claims = extractClaims(token)
+            RefreshTokenClaims(
+                userId = claims.subject.toLong(),
+                familyId = claims["familyId"] as String,
+                version = claims["version"] as Int
+            )
+        }.onFailure { logger.warn { "유효하지 않은 RefreshToken: message=${it.message}" } }
             .getOrNull()
     }
 
@@ -74,7 +79,7 @@ class JwtTokenProvider(
             .compact()
     }
 
-    private fun getClaims(token: String): Claims {
+    private fun extractClaims(token: String): Claims {
         return Jwts.parser()
             .verifyWith(secretKey)
             .build()

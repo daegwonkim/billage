@@ -1,6 +1,6 @@
 package io.github.daegwonkim.backend.jwt.vo
 
-data class TokenClaims(
+data class RefreshTokenClaims(
     val userId: Long,
     val familyId: String,
     val version: Int

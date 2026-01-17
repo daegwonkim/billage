@@ -21,6 +21,7 @@ import io.github.daegwonkim.backend.redis.VerifiedTokenRedisRepository
 import io.github.daegwonkim.backend.repository.UserRepository
 import io.github.daegwonkim.backend.util.NicknameGenerator
 import io.github.daegwonkim.backend.jwt.vo.GeneratedTokens
+import io.github.daegwonkim.backend.jwt.vo.RefreshTokenClaims
 import io.github.daegwonkim.backend.vo.Neighborhood
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -101,17 +102,7 @@ class AuthService(
     }
 
     fun reissueToken(refreshToken: String): ReissueTokenResponse {
-        val claims = jwtTokenProvider.validateAndGetClaims(refreshToken)
-        val storedVersion = refreshTokenRedisRepository.find(claims.familyId)
-
-        when {
-            storedVersion == null -> throw AuthenticationException(logMessage = "세션 만료")
-            storedVersion != claims.version -> {
-                refreshTokenRedisRepository.delete(claims.familyId)
-                throw AuthenticationException(logMessage = "토큰 재사용 감지: claims=$claims")
-            }
-        }
-
+        val claims = validateRefreshToken(refreshToken)
         val newVersion = claims.version + 1
         val generatedTokens = generateTokensAndSaveRefreshToken(claims.userId, claims.familyId, newVersion)
 
@@ -119,7 +110,7 @@ class AuthService(
     }
 
     fun signOut(accessToken: String) {
-        val claims = jwtTokenProvider.validateAndGetClaims(accessToken)
+        val claims = jwtTokenProvider.getRefreshTokenClaims(accessToken) ?: return
         refreshTokenRedisRepository.delete(claims.familyId)
     }
 
@@ -185,6 +176,23 @@ class AuthService(
         refreshTokenRedisRepository.save(familyId, version)
 
         return generatedTokens
+    }
+
+    private fun validateRefreshToken(refreshToken: String): RefreshTokenClaims {
+        val claims = jwtTokenProvider.getRefreshTokenClaims(refreshToken)
+            ?: throw AuthenticationException(logMessage = "유효하지 않은 Refresh Token")
+
+        val storedVersion = refreshTokenRedisRepository.find(claims.familyId)
+
+        when {
+            storedVersion == null -> throw AuthenticationException(logMessage = "세션 만료")
+            storedVersion != claims.version -> {
+                refreshTokenRedisRepository.delete(claims.familyId)
+                throw AuthenticationException(logMessage = "토큰 재사용 감지: claims=$claims")
+            }
+        }
+
+        return claims
     }
 
     private fun buildVerificationCodeMessage(verificationCode: String): String =

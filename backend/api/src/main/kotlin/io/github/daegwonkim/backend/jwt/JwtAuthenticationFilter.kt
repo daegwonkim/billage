@@ -22,7 +22,7 @@ class JwtAuthenticationFilter(
     ) {
         val token = cookieUtil.getTokenFromCookie(request, "accessToken")
 
-        token?.let { jwtTokenProvider.validateAndGetUserIdOrNull(it) }?.let { userId ->
+        token?.let { jwtTokenProvider.getSubject(it) }?.let { userId ->
             val authentication = UsernamePasswordAuthenticationToken(userId, null, emptyList())
             authentication.details = WebAuthenticationDetailsSource().buildDetails(request)
             SecurityContextHolder.getContext().authentication = authentication

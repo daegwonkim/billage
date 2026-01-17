@@ -61,7 +61,7 @@ class AuthController(
     @PostMapping("/token/reissue")
     fun reissueToken(request: HttpServletRequest, response: HttpServletResponse) {
         val refreshToken = cookieUtil.getTokenFromCookie(request, "refreshToken")
-            ?: throw AuthenticationException(AuthErrorCode.AUTHENTICATION_FAILED, "쿠키에 RefreshToken이 존재하지 않음")
+            ?: throw AuthenticationException(AuthErrorCode.AUTHENTICATION_FAILED, "세션 만료")
 
         val reissueTokenResponse = authService.reissueToken(refreshToken)
         response.addCookie(cookieUtil.createAccessTokenCookie(reissueTokenResponse.accessToken))
@@ -74,10 +74,9 @@ class AuthController(
         request: HttpServletRequest,
         response: HttpServletResponse
     ) {
-        val accessToken = cookieUtil.getTokenFromCookie(request, "accessToken")
-            ?: throw AuthenticationException(AuthErrorCode.AUTHENTICATION_FAILED, "쿠키에 AccessToken이 존재하지 않음")
+        val refreshToken = cookieUtil.getTokenFromCookie(request, "refreshToken")
+        refreshToken?.let { authService.signOut(it) }
 
-        authService.signOut(accessToken)
         response.addCookie(cookieUtil.deleteCookie("accessToken"))
         response.addCookie(cookieUtil.deleteCookie("refreshToken"))
     }
