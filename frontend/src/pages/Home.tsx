@@ -1,7 +1,7 @@
 import { RentalItems } from '@/components/main/RentalItems'
 import { Header } from '../components/common/Header'
 import { FilterSortBar } from '../components/main/FilterSortBar'
-import { FilterModal } from '../components/main/FilterModal'
+import { FilterBottomSheet } from '../components/main/FilterBottomSheet'
 import { SortBottomSheet } from '../components/main/SortBottomSheet'
 import { HomeSkeleton } from '../components/main/HomeSkeleton'
 import { useNavigate } from 'react-router-dom'
@@ -220,7 +220,7 @@ export function Home() {
       )}
 
       {/* 필터 모달 */}
-      <FilterModal
+      <FilterBottomSheet
         isOpen={showFilterModal}
         onClose={() => setShowFilterModal(false)}
         selectedCategory={selectedCategory}

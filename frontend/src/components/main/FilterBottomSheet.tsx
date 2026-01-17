@@ -10,7 +10,7 @@ interface FilterModalProps {
   onApply: (category?: string) => void
 }
 
-export function FilterModal({
+export function FilterBottomSheet({
   isOpen,
   onClose,
   selectedCategory,
