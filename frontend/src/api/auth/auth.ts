@@ -9,7 +9,7 @@ import type {
   ConfirmRegisteredRequest,
   ConfirmRegisteredResponse
 } from './dto/ConfirmMember'
-import { customFetch } from '../fetch'
+import { customFetch } from '../customFetch'
 
 export async function sendVerificationCode(
   request: SendVerificationCodeRequest

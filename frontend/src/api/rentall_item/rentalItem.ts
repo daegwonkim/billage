@@ -8,7 +8,7 @@ import type { GetSimilarRentalItemsResponse } from './dto/GetSimilarRentalItems'
 import type { GetRentalItemResponse } from './dto/GetRentalItem'
 import type { GetRentalItemCategoriesResponse } from './dto/GetRentalItemCategories'
 import type { GetRentalItemSortOptionsResponse } from './dto/GetRentalItemSortOptions'
-import { customFetch } from '../fetch'
+import { customFetch } from '../customFetch'
 
 export async function getRentalItemCategories(): Promise<GetRentalItemCategoriesResponse> {
   return await customFetch<GetRentalItemCategoriesResponse>(

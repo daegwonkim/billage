@@ -1,4 +1,4 @@
-import { customFetch } from '../fetch'
+import { customFetch } from '../customFetch'
 import type { GetMeResponse } from './dto/GetMe'
 
 export async function getMe(): Promise<GetMeResponse> {

@@ -1,4 +1,4 @@
-import { customFetch } from '../fetch'
+import { customFetch } from '../customFetch'
 import type {
   GenerateSignedUrlRequest,
   GenerateSignedUrlResponse

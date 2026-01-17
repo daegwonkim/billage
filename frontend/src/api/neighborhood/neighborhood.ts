@@ -6,7 +6,7 @@ import type {
   NearbyNeighborhoodsRequest,
   NearbyNeighborhoodsResponse
 } from './dto/NearbyNeighborhoods'
-import { customFetch } from '../fetch'
+import { customFetch } from '../customFetch'
 
 export async function nearbyNeighborhoods(
   request: NearbyNeighborhoodsRequest
