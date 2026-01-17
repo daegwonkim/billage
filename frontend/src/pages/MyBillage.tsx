@@ -1,4 +1,10 @@
-import { ChevronLeft, ChevronRight, Settings } from 'lucide-react'
+import {
+  CalendarCheck,
+  ChevronLeft,
+  ChevronRight,
+  MapPinCheck,
+  PackageCheck
+} from 'lucide-react'
 import defaultProfileImage from '@/assets/default-profile.png'
 import { useAuth } from '@/contexts/AuthContext'
 import { LoginPrompt } from '@/components/auth/LoginPrompt'
@@ -45,9 +51,9 @@ export function MyBillage() {
 
       {/* 프로필 섹션 */}
       <div className="border-b border-gray-100 bg-white px-4 py-6">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 pb-3">
           {/* 프로필 이미지 */}
-          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gray-100">
+          <div className="flex h-18 w-18 items-center justify-center rounded-full bg-gray-100">
             <img
               src={
                 user.profileImageUrl
@@ -64,26 +70,43 @@ export function MyBillage() {
             <h2 className="mb-1 text-xl font-bold text-neutral-900">
               {user.nickname}
             </h2>
-            {user.neighborhood.sigungu} {user.neighborhood.eupmyeondong}
+            <div className="flex gap-1 text-sm">
+              <div>
+                {user.neighborhood.sigungu} {user.neighborhood.eupmyeondong} •
+                최근 3일 이내 활동
+              </div>
+            </div>
           </div>
+        </div>
 
-          {/* 설정 아이콘 */}
-          <button className="rounded-lg p-2 transition-colors hover:bg-gray-50">
-            <Settings
-              size={24}
-              className="text-gray-600"
-            />
-          </button>
+        <div className="space-y-2">
+          <div className="flex items-center gap-1 text-sm">
+            <CalendarCheck size={19} />
+            <div>2025년 11월 30일 가입</div>
+          </div>
+          <div className="flex items-center gap-1 text-sm">
+            <MapPinCheck size={19} />
+            <div className="flex gap-1">
+              <div>동네 인증 (3개월째)</div>·
+              <div className="text-neutral-500">
+                {user.neighborhood.sigungu} {user.neighborhood.eupmyeondong}
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-1 text-sm">
+            <PackageCheck size={19} />
+            <div>대여해준 횟수 12회 · 빌린 횟수 5회</div>
+          </div>
         </div>
 
         {/* 프로필 편집 버튼 */}
-        <button className="mt-4 w-full rounded-lg border border-gray-200 py-2.5 text-sm font-medium text-neutral-700 transition-colors hover:bg-gray-50">
+        <button className="mt-4 w-full rounded-lg border bg-black py-2.5 text-sm font-medium text-white transition-colors hover:bg-neutral-800">
           프로필 편집
         </button>
       </div>
 
       {/* 메뉴 리스트 */}
-      <div className="mt-2">
+      <div>
         {menuItems.map((item, index) => (
           <button
             key={item.id}
