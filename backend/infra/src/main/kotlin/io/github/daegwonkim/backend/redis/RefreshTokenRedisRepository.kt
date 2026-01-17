@@ -15,23 +15,23 @@ class RefreshTokenRedisRepository(
         private const val REFRESH_TOKEN_PREFIX = "refreshToken:"
     }
 
-    fun save(userId: Long, refreshToken: String) {
-        val key = REFRESH_TOKEN_PREFIX + userId
+    fun save(familyId: String, version: Int) {
+        val key = REFRESH_TOKEN_PREFIX + familyId
         stringRedisTemplate.opsForValue().set(
             key,
-            refreshToken,
+            version.toString(),
             refreshTokenExpiration,
             TimeUnit.MILLISECONDS
         )
     }
 
-    fun find(userId: Long): String? {
-        val key = REFRESH_TOKEN_PREFIX + userId
-        return stringRedisTemplate.opsForValue().get(key)
+    fun find(familyId: String): Int? {
+        val key = REFRESH_TOKEN_PREFIX + familyId
+        return stringRedisTemplate.opsForValue().get(key)?.toIntOrNull()
     }
 
-    fun delete(userId: Long): Boolean {
-        val key = REFRESH_TOKEN_PREFIX + userId
+    fun delete(familyId: String): Boolean {
+        val key = REFRESH_TOKEN_PREFIX + familyId
         return stringRedisTemplate.delete(key)
     }
 }

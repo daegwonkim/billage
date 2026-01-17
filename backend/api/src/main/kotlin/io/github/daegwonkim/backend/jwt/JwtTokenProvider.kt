@@ -1,7 +1,8 @@
 package io.github.daegwonkim.backend.jwt
 
-import io.github.daegwonkim.backend.exception.business.AuthenticationException
 import io.github.daegwonkim.backend.log.logger
+import io.github.daegwonkim.backend.jwt.vo.GeneratedTokens
+import io.github.daegwonkim.backend.jwt.vo.TokenClaims
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
@@ -23,17 +24,20 @@ class JwtTokenProvider(
         Keys.hmacShaKeyFor(secret.toByteArray())
     }
 
-    fun generateAccessToken(userId: Long): String =
-        buildToken(userId, accessTokenExpiration, "ACCESS")
+    fun generateToken(userId: Long, familyId: String, version: Int): GeneratedTokens {
+        val accessToken = buildAccessToken(userId)
+        val refreshToken = buildRefreshToken(userId, familyId, version)
 
-    fun generateRefreshToken(userId: Long): String =
-        buildToken(userId, refreshTokenExpiration, "REFRESH")
+        return GeneratedTokens(accessToken, refreshToken)
+    }
 
-    fun validateAndGetUserId(token: String): Long {
-        return runCatching { getClaims(token).subject.toLong() }
-            .getOrElse {
-                throw AuthenticationException(logMessage = "유효하지 않은 JWT 토큰: token=$token, message=${it.message}")
-            }
+    fun validateAndGetClaims(token: String): TokenClaims {
+        val claims = getClaims(token)
+        val userId = claims.subject.toLong()
+        val familyId = claims["familyId"] as String
+        val version = claims["version"] as Int
+
+        return TokenClaims(userId, familyId, version)
     }
 
     fun validateAndGetUserIdOrNull(token: String): Long? {
@@ -44,13 +48,28 @@ class JwtTokenProvider(
 
     // Private helper methods
 
-    private fun buildToken(userId: Long, expiry: Long, type: String): String {
+    private fun buildAccessToken(userId: Long): String {
         val now = Date()
         return Jwts.builder()
+            .issuer("BILLAGE")
             .subject(userId.toString())
-            .claim("type", type)
+            .claim("type", "ACCESS")
             .issuedAt(now)
-            .expiration(Date(now.time + expiry))
+            .expiration(Date(now.time + accessTokenExpiration))
+            .signWith(secretKey)
+            .compact()
+    }
+
+    private fun buildRefreshToken(userId: Long, familyId: String, version: Int): String {
+        val now = Date()
+        return Jwts.builder()
+            .issuer("BILLAGE")
+            .subject(userId.toString())
+            .claim("type", "REFRESH")
+            .claim("familyId", familyId)
+            .claim("version", version)
+            .issuedAt(now)
+            .expiration(Date(now.time + refreshTokenExpiration))
             .signWith(secretKey)
             .compact()
     }

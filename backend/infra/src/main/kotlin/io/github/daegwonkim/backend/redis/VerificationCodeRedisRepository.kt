@@ -4,8 +4,6 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Component
 import java.util.concurrent.TimeUnit
-import kotlin.text.get
-import kotlin.text.set
 
 @Component
 class VerificationCodeRedisRepository(

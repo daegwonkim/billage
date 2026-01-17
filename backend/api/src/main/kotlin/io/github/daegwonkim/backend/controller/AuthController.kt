@@ -15,7 +15,6 @@ import io.swagger.v3.oas.annotations.Operation
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
-import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -72,10 +71,13 @@ class AuthController(
     @Operation(summary = "로그아웃", description = "로그아웃하고 토큰을 무효화합니다")
     @PostMapping("/sign-out")
     fun signOut(
-        @AuthenticationPrincipal userId: Long,
+        request: HttpServletRequest,
         response: HttpServletResponse
     ) {
-        authService.signOut(userId)
+        val accessToken = cookieUtil.getTokenFromCookie(request, "accessToken")
+            ?: throw AuthenticationException(AuthErrorCode.AUTHENTICATION_FAILED, "쿠키에 AccessToken이 존재하지 않음")
+
+        authService.signOut(accessToken)
         response.addCookie(cookieUtil.deleteCookie("accessToken"))
         response.addCookie(cookieUtil.deleteCookie("refreshToken"))
     }

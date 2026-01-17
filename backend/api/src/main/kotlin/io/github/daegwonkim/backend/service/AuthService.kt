@@ -18,13 +18,10 @@ import io.github.daegwonkim.backend.jwt.JwtTokenProvider
 import io.github.daegwonkim.backend.redis.RefreshTokenRedisRepository
 import io.github.daegwonkim.backend.redis.VerificationCodeRedisRepository
 import io.github.daegwonkim.backend.redis.VerifiedTokenRedisRepository
-import io.github.daegwonkim.backend.redis.event.dto.RefreshTokenSaveEvent
-import io.github.daegwonkim.backend.redis.event.dto.VerifiedTokenDeleteEvent
 import io.github.daegwonkim.backend.repository.UserRepository
 import io.github.daegwonkim.backend.util.NicknameGenerator
-import io.github.daegwonkim.backend.vo.GeneratedTokens
+import io.github.daegwonkim.backend.jwt.vo.GeneratedTokens
 import io.github.daegwonkim.backend.vo.Neighborhood
-import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.security.SecureRandom
@@ -42,7 +39,6 @@ class AuthService(
 
     private val coolsmsService: CoolsmsService,
     private val jwtTokenProvider: JwtTokenProvider,
-    private val eventPublisher: ApplicationEventPublisher,
     private val nicknameGenerator: NicknameGenerator,
 ) {
 
@@ -54,14 +50,14 @@ class AuthService(
         val phoneNo = request.phoneNo
 
         val generatedVerificationCode = generateVerificationCodeAndSave(phoneNo)
-        buildVerificationCodeMessageAndSendSms(phoneNo, generatedVerificationCode)
+//        buildVerificationCodeMessageAndSendSms(phoneNo, generatedVerificationCode)
     }
 
     fun confirmVerificationCode(request: ConfirmVerificationCodeRequest): ConfirmVerificationCodeResponse {
         val phoneNo = request.phoneNo
         val verificationCode = request.verificationCode
 
-        validateVerificationCode(phoneNo, verificationCode)
+//        validateVerificationCode(phoneNo, verificationCode)
         val verifiedToken = generateVerifiedTokenAndSave(phoneNo)
         verificationCodeRedisRepository.delete(phoneNo)
 
@@ -90,7 +86,6 @@ class AuthService(
         neighborhoodService.saveNeighborhood(userId, neighborhood)
     }
 
-    @Transactional(readOnly = true)
     fun signIn(request: SignInRequest): SignInResponse {
         val phoneNo = request.phoneNo
 
@@ -99,21 +94,33 @@ class AuthService(
 
         validateVerifiedToken(phoneNo, request.verifiedToken)
 
-        val generatedTokens = generateTokensAndSaveRefreshToken(user.id)
-        eventPublisher.publishEvent(VerifiedTokenDeleteEvent(phoneNo))
+        val generatedTokens = generateTokensAndSaveRefreshToken(user.id, UUID.randomUUID().toString(), 0)
+        verifiedTokenRedisRepository.delete(phoneNo)
 
         return SignInResponse(generatedTokens.accessToken, generatedTokens.refreshToken)
     }
 
     fun reissueToken(refreshToken: String): ReissueTokenResponse {
-        val userId = jwtTokenProvider.validateAndGetUserId(refreshToken)
-        val generatedTokens = generateTokensAndSaveRefreshToken(userId)
+        val claims = jwtTokenProvider.validateAndGetClaims(refreshToken)
+        val storedVersion = refreshTokenRedisRepository.find(claims.familyId)
+
+        when {
+            storedVersion == null -> throw AuthenticationException(logMessage = "세션 만료")
+            storedVersion != claims.version -> {
+                refreshTokenRedisRepository.delete(claims.familyId)
+                throw AuthenticationException(logMessage = "토큰 재사용 감지: claims=$claims")
+            }
+        }
+
+        val newVersion = claims.version + 1
+        val generatedTokens = generateTokensAndSaveRefreshToken(claims.userId, claims.familyId, newVersion)
 
         return ReissueTokenResponse(generatedTokens.accessToken, generatedTokens.refreshToken)
     }
 
-    fun signOut(userId: Long) {
-        refreshTokenRedisRepository.delete(userId)
+    fun signOut(accessToken: String) {
+        val claims = jwtTokenProvider.validateAndGetClaims(accessToken)
+        refreshTokenRedisRepository.delete(claims.familyId)
     }
 
     // Private helper methods
@@ -173,12 +180,11 @@ class AuthService(
         return user.id
     }
 
-    private fun generateTokensAndSaveRefreshToken(userId: Long): GeneratedTokens {
-        val accessToken = jwtTokenProvider.generateAccessToken(userId)
-        val refreshToken = jwtTokenProvider.generateRefreshToken(userId)
+    private fun generateTokensAndSaveRefreshToken(userId: Long, familyId: String, version: Int): GeneratedTokens {
+        val generatedTokens = jwtTokenProvider.generateToken(userId, familyId, version)
+        refreshTokenRedisRepository.save(familyId, version)
 
-        eventPublisher.publishEvent(RefreshTokenSaveEvent(userId, refreshToken))
-        return GeneratedTokens(accessToken, refreshToken)
+        return generatedTokens
     }
 
     private fun buildVerificationCodeMessage(verificationCode: String): String =

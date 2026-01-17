@@ -5,8 +5,6 @@ import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Component
 import java.util.UUID
 import java.util.concurrent.TimeUnit
-import kotlin.text.get
-import kotlin.text.set
 
 @Component
 class VerifiedTokenRedisRepository(
@@ -28,6 +26,10 @@ class VerifiedTokenRedisRepository(
             verifiedTokenExpiration,
             TimeUnit.MINUTES
         )
+    }
+
+    fun delete(phoneNo: String) {
+        stringRedisTemplate.delete(verifiedTokenKey(phoneNo))
     }
 
     private fun verifiedTokenKey(phoneNo: String) = "$VERIFIED_TOKEN_KEY_PREFIX$phoneNo"
