@@ -16,6 +16,10 @@ import {
   useQuery
 } from '@tanstack/react-query'
 
+interface UseGetRentalItemsOptions {
+  keepPreviousData?: boolean
+}
+
 export function useGetRentalItemCategories() {
   return useQuery<GetRentalItemCategoriesResponse>({
     queryKey: ['categories'],
@@ -40,11 +44,16 @@ export function useGetRentalItem(id: string) {
   })
 }
 
-export function useGetRentalItems(sortBy: string, category?: string) {
+export function useGetRentalItems(
+  sortBy: string,
+  category?: string,
+  keyword?: string,
+  options: UseGetRentalItemsOptions = { keepPreviousData: true }
+) {
   return useInfiniteQuery<GetRentalItemsResponse>({
-    queryKey: ['rentalItems', category, sortBy],
+    queryKey: ['rentalItems', category, keyword, sortBy],
     queryFn: ({ pageParam }) =>
-      getRentalItems(pageParam as number, 10, sortBy, category),
+      getRentalItems(pageParam as number, 10, sortBy, category, keyword),
     getNextPageParam: lastPage => {
       if (lastPage.hasNext) {
         return lastPage.currentPage + 1
@@ -52,7 +61,7 @@ export function useGetRentalItems(sortBy: string, category?: string) {
       return undefined
     },
     initialPageParam: 0,
-    placeholderData: keepPreviousData
+    placeholderData: options.keepPreviousData ? keepPreviousData : undefined
   })
 }
 

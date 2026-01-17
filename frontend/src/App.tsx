@@ -14,6 +14,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import RentalItemRegister from './pages/RentalItemRegister'
 import { MyBillage } from './pages/MyBillage'
 import { AuthProvider } from './contexts/AuthContext'
+import { Search } from './pages/Search'
 
 const queryClient = new QueryClient()
 
@@ -65,6 +66,10 @@ function AppContent() {
           <Route
             path="/rental-items/register"
             element={<RentalItemRegister />}
+          />
+          <Route
+            path="/search"
+            element={<Search />}
           />
         </Routes>
         {showBottomNav && (

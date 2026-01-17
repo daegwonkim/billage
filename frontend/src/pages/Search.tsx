@@ -1,37 +1,44 @@
-import { useState, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { X, Search as SearchIcon } from 'lucide-react'
+import { useState, useRef, useEffect } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { X, Search as SearchIcon, ChevronLeft } from 'lucide-react'
+import { useGetRentalItems } from '@/hooks/useRentalItem'
+import { RentalItemCard } from '@/components/main/RentalItemCard'
 
-interface SearchProps {
-  isOpen: boolean
-  onClose: () => void
-}
-
-export function Search({ isOpen, onClose }: SearchProps) {
+export function Search() {
   const navigate = useNavigate()
-  const [searchQuery, setSearchQuery] = useState('')
+  const [searchParams, setSearchParams] = useSearchParams()
+  const keyword = searchParams.get('keyword') ?? ''
+  const [searchQuery, setSearchQuery] = useState(keyword)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    inputRef.current?.focus()
+  }, [])
+
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useGetRentalItems('LATEST', undefined, keyword || undefined, {
+      keepPreviousData: false
+    })
+
+  const items = data?.pages.flatMap(page => page.content) ?? []
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     if (searchQuery.trim()) {
-      // TODO: 검색 로직 구현
-      console.log('검색:', searchQuery)
+      setSearchParams({ keyword: searchQuery.trim() }, { replace: true })
     }
   }
-
-  if (!isOpen) return null
 
   return (
     <>
       {/* 검색 페이지 */}
-      <div className="fixed top-0 left-1/2 z-50 h-full w-md bg-white shadow-xl">
+      <div className="min-h-screen w-md bg-white shadow-xl">
         {/* 헤더 */}
         <div className="flex items-center gap-3 border-b border-gray-200 px-4 py-3">
           <button
-            onClick={onClose}
+            onClick={() => navigate(-1)}
             className="rounded-lg p-1 transition-colors hover:bg-gray-100">
-            <X
+            <ChevronLeft
               size={24}
               className="text-gray-700"
             />
@@ -68,9 +75,9 @@ export function Search({ isOpen, onClose }: SearchProps) {
         </div>
 
         {/* 검색 내용 */}
-        <div className="h-full overflow-y-auto p-4">
+        <div className="h-full overflow-y-auto">
           {/* 검색어가 없을 때 */}
-          {!searchQuery && (
+          {!keyword && (
             <div className="flex flex-col items-center justify-center py-20">
               <SearchIcon
                 size={48}
@@ -81,11 +88,42 @@ export function Search({ isOpen, onClose }: SearchProps) {
             </div>
           )}
 
-          {/* 검색 결과 (TODO: 실제 검색 결과로 교체) */}
-          {searchQuery && (
-            <div className="space-y-2">
-              <p className="text-sm text-gray-500">'{searchQuery}' 검색 결과</p>
-              {/* 검색 결과 리스트가 여기에 들어갑니다 */}
+          {/* 로딩 중 */}
+          {keyword && isLoading && (
+            <div className="flex items-center justify-center py-20">
+              <p className="text-sm text-gray-500">검색 중...</p>
+            </div>
+          )}
+
+          {/* 검색 결과 */}
+          {keyword && !isLoading && (
+            <div>
+              <p className="px-4 py-2 text-sm text-gray-500">
+                '{keyword}' 검색 결과 {data?.pages[0]?.totalElements ?? 0}건
+              </p>
+              {items.length > 0 ? (
+                <>
+                  {items.map(item => (
+                    <RentalItemCard
+                      key={item.id}
+                      rentalItem={item}
+                      onClick={() => navigate(`/rental-items/${item.id}`)}
+                    />
+                  ))}
+                  {hasNextPage && (
+                    <button
+                      onClick={() => fetchNextPage()}
+                      disabled={isFetchingNextPage}
+                      className="w-full py-4 text-sm text-gray-500 hover:bg-gray-50">
+                      {isFetchingNextPage ? '불러오는 중...' : '더 보기'}
+                    </button>
+                  )}
+                </>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-20">
+                  <p className="text-sm text-gray-500">검색 결과가 없습니다</p>
+                </div>
+              )}
             </div>
           )}
         </div>

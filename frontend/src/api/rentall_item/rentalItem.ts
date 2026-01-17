@@ -26,16 +26,17 @@ export async function getRentalItems(
   page = 0,
   size = 10,
   sortBy = 'LATEST',
-  category?: string
+  category?: string,
+  keyword?: string
 ): Promise<GetRentalItemsResponse> {
   const params = new URLSearchParams({
     page: page.toString(),
     size: size.toString(),
     sortBy
   })
-  if (category) {
-    params.append('category', category)
-  }
+  if (category) params.append('category', category)
+  if (keyword) params.append('keyword', keyword)
+
   return await customFetch<GetRentalItemsResponse>(
     `/api/rental-items?${params}`
   )

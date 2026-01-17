@@ -1,6 +1,9 @@
 import { Search, Bell } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
 export function Header() {
+  const navigate = useNavigate()
+
   return (
     <header className="sticky top-0 z-40 bg-white">
       <div className="flex items-center justify-between px-4 py-3">
@@ -12,7 +15,9 @@ export function Header() {
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <button className="cursor-pointer border-none bg-transparent p-0 text-gray-600 transition-colors hover:text-black">
+          <button
+            className="cursor-pointer border-none bg-transparent p-0 text-gray-600 transition-colors hover:text-black"
+            onClick={() => navigate('/search')}>
             <Search
               size={22}
               strokeWidth={1.5}
