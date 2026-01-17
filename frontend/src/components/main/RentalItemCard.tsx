@@ -61,17 +61,35 @@ export function RentalItemCard({ rentalItem, onClick }: RentalItemCardProps) {
 
           <div>
             <div className="mb-1 flex items-baseline gap-0.5">
-              <span className="text-sm font-extrabold text-gray-900">
-                {formatCompactPrice(rentalItem.pricePerDay)}
-              </span>
-              <span className="text-xs text-gray-500">원 / 일</span>
+              {rentalItem.pricePerDay > 0 ? (
+                <>
+                  <span className="text-sm font-extrabold text-gray-900">
+                    {formatCompactPrice(rentalItem.pricePerDay)}
+                  </span>
+                  <span className="text-xs text-gray-500">원 / 일</span>
+                </>
+              ) : (
+                <>
+                  <span className="text-sm font-extrabold text-gray-400">-</span>
+                  <span className="text-xs text-gray-400">원 / 일</span>
+                </>
+              )}
             </div>
             <div className="flex items-center justify-between">
               <div className="flex items-baseline gap-1">
-                <span className="text-sm font-extrabold text-gray-900">
-                  {formatCompactPrice(rentalItem.pricePerWeek)}
-                </span>
-                <span className="text-xs text-gray-500">원 / 주</span>
+                {rentalItem.pricePerWeek > 0 ? (
+                  <>
+                    <span className="text-sm font-extrabold text-gray-900">
+                      {formatCompactPrice(rentalItem.pricePerWeek)}
+                    </span>
+                    <span className="text-xs text-gray-500">원 / 주</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-sm font-extrabold text-gray-400">-</span>
+                    <span className="text-xs text-gray-400">원 / 주</span>
+                  </>
+                )}
               </div>
               <div className="flex items-center gap-2.5 text-xs text-gray-400">
                 {rentalItem.rentalCount > 0 && (

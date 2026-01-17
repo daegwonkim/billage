@@ -23,12 +23,30 @@ export function RentalItemDetailBottom({
       />
       <div className="flex-1 text-lg font-extrabold">
         <div>
-          {formatCompactPrice(pricePerDay)}
-          <span className="text-sm text-gray-600">원 / 일</span>
+          {pricePerDay > 0 ? (
+            <>
+              {formatCompactPrice(pricePerDay)}
+              <span className="text-sm text-gray-600"> 원 / 일</span>
+            </>
+          ) : (
+            <>
+              <span className="text-gray-400">-</span>
+              <span className="text-sm text-gray-400"> 원 / 일</span>
+            </>
+          )}
         </div>
         <div>
-          {formatCompactPrice(pricePerWeek)}
-          <span className="text-sm text-gray-600">원 / 주</span>
+          {pricePerWeek > 0 ? (
+            <>
+              {formatCompactPrice(pricePerWeek)}
+              <span className="text-sm text-gray-600"> 원 / 주</span>
+            </>
+          ) : (
+            <>
+              <span className="text-gray-400">-</span>
+              <span className="text-sm text-gray-400"> 원 / 주</span>
+            </>
+          )}
         </div>
       </div>
       <button className="cursor-pointer rounded-lg bg-black px-8 py-4 text-base font-bold text-white">
