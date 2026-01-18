@@ -46,7 +46,6 @@ CREATE TABLE IF NOT EXISTS rental_items (
     price_per_day INTEGER NULL,
     price_per_week INTEGER NULL,
     view_count INTEGER NOT NULL DEFAULT 0,
-    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL,
     modified_at TIMESTAMP WITH TIME ZONE NOT NULL,
     CONSTRAINT rental_items_pk PRIMARY KEY (id),
