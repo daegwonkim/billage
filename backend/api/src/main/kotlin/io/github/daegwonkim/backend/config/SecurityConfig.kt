@@ -5,6 +5,7 @@ import io.github.daegwonkim.backend.jwt.JwtAuthenticationEntryPoint
 import io.github.daegwonkim.backend.jwt.JwtAuthenticationFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
@@ -29,8 +30,7 @@ class SecurityConfig(
             "/api/auth/sign-in",
             "/api/auth/sign-out",
             "/api/auth/token/reissue",
-            "/api/neighborhoods/**",
-            "/api/rental-items/**"
+            "/api/neighborhoods/**"
         )
     }
 
@@ -42,6 +42,8 @@ class SecurityConfig(
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests { auth ->
                 auth.requestMatchers(*PUBLIC_PATHS).permitAll()
+                auth.requestMatchers(HttpMethod.GET,"/api/rental-items").permitAll()
+                auth.requestMatchers(HttpMethod.POST,"/api/rental-items").authenticated()
                 auth.requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 auth.anyRequest().authenticated()
             }
