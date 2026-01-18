@@ -1,6 +1,6 @@
 package io.github.daegwonkim.backend.dto.rental_item
 
-import io.github.daegwonkim.backend.repository.projection.GetRentalItemProjection
+import io.github.daegwonkim.backend.repository.projection.RentalItemProjection
 import java.time.LocalDateTime
 
 data class GetRentalItemResponse(
@@ -27,7 +27,7 @@ data class GetRentalItemResponse(
 
     companion object {
         fun from(
-            item: GetRentalItemProjection,
+            item: RentalItemProjection,
             imageUrls: List<String>,
             sellerProfileImageUrl: String?
         ): GetRentalItemResponse = GetRentalItemResponse(

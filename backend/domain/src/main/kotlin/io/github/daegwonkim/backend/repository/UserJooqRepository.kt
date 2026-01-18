@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository
 class UserJooqRepository(
     private val dslContext: DSLContext
 ) {
-    fun selectUserProfile(userId: Long): UserProfileProjection? {
+    fun findUserProfile(userId: Long): UserProfileProjection? {
         return dslContext.select(
             USERS.NICKNAME,
             USERS.PROFILE_IMAGE_KEY,

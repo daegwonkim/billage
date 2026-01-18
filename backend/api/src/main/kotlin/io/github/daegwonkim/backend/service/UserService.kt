@@ -19,7 +19,7 @@ class UserService(
 ) {
     @Transactional(readOnly = true)
     fun getMe(userId: Long): GetMeResponse {
-        val userProfile = userJooqRepository.selectUserProfile(userId)
+        val userProfile = userJooqRepository.findUserProfile(userId)
             ?: throw ResourceNotFoundException(userId, UserErrorCode.USER_NOT_FOUND)
 
         return GetMeResponse.from(

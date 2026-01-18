@@ -21,7 +21,7 @@ class NeighborhoodService(
     private val userNeighborhoodRepository: UserNeighborhoodRepository
 ) {
     fun locate(latitude: Double, longitude: Double): LocateNeighborhoodResponse {
-        val neighborhood = neighborhoodJooqRepository.findByCoordinate(latitude, longitude)
+        val neighborhood = neighborhoodJooqRepository.findContainingNeighborhood(latitude, longitude)
             ?: throw UnsupportedRegionException(latitude, longitude)
 
         return LocateNeighborhoodResponse.from(neighborhood)
@@ -35,7 +35,7 @@ class NeighborhoodService(
     }
 
     fun validateNeighborhood(requestedNeighborhood: Neighborhood) {
-        val neighborhood = neighborhoodJooqRepository.findByCoordinate(
+        val neighborhood = neighborhoodJooqRepository.findContainingNeighborhood(
             requestedNeighborhood.latitude,
             requestedNeighborhood.longitude
         ) ?: throw UnsupportedRegionException(requestedNeighborhood.latitude, requestedNeighborhood.longitude)

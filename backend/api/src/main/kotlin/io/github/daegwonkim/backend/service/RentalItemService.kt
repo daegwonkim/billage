@@ -22,8 +22,8 @@ import io.github.daegwonkim.backend.exception.business.ResourceNotFoundException
 import io.github.daegwonkim.backend.repository.RentalItemImageRepository
 import io.github.daegwonkim.backend.repository.RentalItemJooqRepository
 import io.github.daegwonkim.backend.repository.RentalItemRepository
-import io.github.daegwonkim.backend.repository.projection.GetOtherRentalItemsBySellerItemProjection
-import io.github.daegwonkim.backend.repository.projection.GetRentalItemsProjection
+import io.github.daegwonkim.backend.repository.projection.OtherRentalItemsBySellerItemProjection
+import io.github.daegwonkim.backend.repository.projection.RentalItemsProjection
 import io.github.daegwonkim.backend.redis.RentalItemViewRedisRepository
 import io.github.daegwonkim.backend.supabase.SupabaseStorageClient
 import org.springframework.beans.factory.annotation.Value
@@ -65,7 +65,7 @@ class RentalItemService(
     @Transactional(readOnly = true)
     fun getRentalItems(request: GetRentalItemsRequest): GetRentalItemsResponse {
         val pageable = PageRequest.of(request.page, request.size)
-        val result = rentalItemJooqRepository.getRentalItems(
+        val result = rentalItemJooqRepository.findRentalItems(
             category = request.category,
             keyword = request.keyword,
             sortBy = request.sortBy,
@@ -78,11 +78,11 @@ class RentalItemService(
 
     @Transactional
     fun getRentalItem(userId: Long?, rentalItemId: Long): GetRentalItemResponse {
-        val rentalItemProjection = rentalItemJooqRepository.getRentalItem(rentalItemId, userId)
+        val rentalItemProjection = rentalItemJooqRepository.findRentalItem(rentalItemId, userId)
             ?: throw ResourceNotFoundException(rentalItemId, RentalItemErrorCode.RENTAL_ITEM_NOT_FOUND)
 
         if (userId != null && rentalItemViewRedisRepository.markViewed(rentalItemId, userId)) {
-            rentalItemJooqRepository.incrementViewCount(rentalItemId)
+            rentalItemJooqRepository.incrementViewCountById(rentalItemId)
         }
 
         return GetRentalItemResponse.from(
@@ -101,7 +101,7 @@ class RentalItemService(
 
     @Transactional(readOnly = true)
     fun getOtherRentalItemsBySeller(id: Long, sellerId: Long): GetOtherRentalItemsBySellerResponse {
-        val otherRentalItems = rentalItemJooqRepository.getOtherRentalItemsBySeller(id, sellerId)
+        val otherRentalItems = rentalItemJooqRepository.findOtherRentalItemsBySeller(id, sellerId)
             .map(::toGetOtherRentalItemsBySellerResponse)
 
         return GetOtherRentalItemsBySellerResponse(otherRentalItems)
@@ -165,7 +165,7 @@ class RentalItemService(
         rentalItemImageRepository.saveAll(newRentalItemImages)
     }
 
-    private fun toGetRentalItemsResponse(rentalItem: GetRentalItemsProjection): GetRentalItemsResponse.RentalItem =
+    private fun toGetRentalItemsResponse(rentalItem: RentalItemsProjection): GetRentalItemsResponse.RentalItem =
         GetRentalItemsResponse.RentalItem(
             rentalItem.id,
             rentalItem.title,
@@ -184,7 +184,7 @@ class RentalItemService(
             .findAllByRentalItemIdOrderBySequence(rentalItemId)
             .map { image -> supabaseStorageClient.getPublicUrl(rentalItemImagesBucket, image.key) }
 
-    private fun toGetOtherRentalItemsBySellerResponse(rentalItem: GetOtherRentalItemsBySellerItemProjection): GetOtherRentalItemsBySellerResponse.RentalItem =
+    private fun toGetOtherRentalItemsBySellerResponse(rentalItem: OtherRentalItemsBySellerItemProjection): GetOtherRentalItemsBySellerResponse.RentalItem =
         GetOtherRentalItemsBySellerResponse.RentalItem(
             rentalItem.id,
             supabaseStorageClient.getPublicUrl(rentalItemImagesBucket, rentalItem.thumbnailImageKey),

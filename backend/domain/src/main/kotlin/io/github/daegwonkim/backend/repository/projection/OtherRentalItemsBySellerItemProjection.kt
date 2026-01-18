@@ -1,7 +1,6 @@
 package io.github.daegwonkim.backend.repository.projection
 
-
-data class GetOtherRentalItemsBySellerItemProjection(
+data class OtherRentalItemsBySellerItemProjection(
     val id: Long,
     val title: String,
     val thumbnailImageKey: String,

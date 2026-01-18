@@ -8,9 +8,9 @@ import io.github.daegwonkim.backend.jooq.Tables.RENTAL_ITEMS
 import io.github.daegwonkim.backend.jooq.Tables.RENTAL_ITEM_IMAGES
 import io.github.daegwonkim.backend.jooq.Tables.RENTAL_ITEM_LIKE_RECORDS
 import io.github.daegwonkim.backend.jooq.Tables.USER_NEIGHBORHOODS
-import io.github.daegwonkim.backend.repository.projection.GetOtherRentalItemsBySellerItemProjection
-import io.github.daegwonkim.backend.repository.projection.GetRentalItemProjection
-import io.github.daegwonkim.backend.repository.projection.GetRentalItemsProjection
+import io.github.daegwonkim.backend.repository.projection.OtherRentalItemsBySellerItemProjection
+import io.github.daegwonkim.backend.repository.projection.RentalItemProjection
+import io.github.daegwonkim.backend.repository.projection.RentalItemsProjection
 import org.jooq.DSLContext
 import org.jooq.impl.DSL
 import org.jooq.impl.DSL.concat
@@ -29,12 +29,12 @@ class RentalItemJooqRepository(
     @Value($$"${supabase.url}")
     private val supabaseUrl: String
 ) {
-    fun getRentalItems(
+    fun findRentalItems(
         category: RentalItemCategory?,
         keyword: String?,
         sortBy: RentalItemSortOption,
         pageable: Pageable
-    ): Page<GetRentalItemsProjection> {
+    ): Page<RentalItemsProjection> {
         val baseQuery = dslContext.select(
             RENTAL_ITEMS.ID,
             RENTAL_ITEMS.TITLE,
@@ -61,12 +61,12 @@ class RentalItemJooqRepository(
         val results = baseQuery
             .limit(pageable.pageSize)
             .offset(pageable.offset)
-            .fetchInto(GetRentalItemsProjection::class.java)
+            .fetchInto(RentalItemsProjection::class.java)
 
         return PageImpl(results, pageable, totalCount)
     }
 
-    fun getRentalItem(rentalItemId: Long, userId: Long?): GetRentalItemProjection? {
+    fun findRentalItem(rentalItemId: Long, userId: Long?): RentalItemProjection? {
         return dslContext.select(
             USERS.ID.`as`("seller_id"),
             USERS.NICKNAME.`as`("seller_nickname"),
@@ -87,13 +87,13 @@ class RentalItemJooqRepository(
             .join(USER_NEIGHBORHOODS).on(USER_NEIGHBORHOODS.USER_ID.eq(RENTAL_ITEMS.USER_ID))
             .join(NEIGHBORHOODS).on(NEIGHBORHOODS.ID.eq(USER_NEIGHBORHOODS.NEIGHBORHOOD_ID))
             .where(RENTAL_ITEMS.ID.eq(rentalItemId))
-            .fetchOneInto(GetRentalItemProjection::class.java)
+            .fetchOneInto(RentalItemProjection::class.java)
     }
 
-    fun getOtherRentalItemsBySeller(
+    fun findOtherRentalItemsBySeller(
         rentalItemId: Long,
         sellerId: Long
-    ): List<GetOtherRentalItemsBySellerItemProjection> {
+    ): List<OtherRentalItemsBySellerItemProjection> {
         return dslContext.select(
             RENTAL_ITEMS.ID,
             RENTAL_ITEMS.TITLE,
@@ -105,10 +105,10 @@ class RentalItemJooqRepository(
             .where(RENTAL_ITEMS.ID.ne(rentalItemId)
                 .and(USERS.ID.eq(sellerId)))
             .limit(10)
-            .fetchInto(GetOtherRentalItemsBySellerItemProjection::class.java)
+            .fetchInto(OtherRentalItemsBySellerItemProjection::class.java)
     }
 
-    fun incrementViewCount(rentalItemId: Long): Int {
+    fun incrementViewCountById(rentalItemId: Long): Int {
         return dslContext.update(RENTAL_ITEMS)
             .set(RENTAL_ITEMS.VIEW_COUNT, RENTAL_ITEMS.VIEW_COUNT.plus(1))
             .where(RENTAL_ITEMS.ID.eq(rentalItemId))

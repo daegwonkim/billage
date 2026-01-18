@@ -3,7 +3,7 @@ package io.github.daegwonkim.backend.repository.projection
 import io.github.daegwonkim.backend.enumerate.RentalItemCategory
 import java.time.LocalDateTime
 
-data class GetRentalItemProjection(
+data class RentalItemProjection(
     val id: Long,
     val sellerId: Long,
     val sellerNickname: String,

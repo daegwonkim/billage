@@ -1,6 +1,6 @@
 package io.github.daegwonkim.backend.dto.rental_item
 
-import io.github.daegwonkim.backend.repository.projection.GetRentalItemsProjection
+import io.github.daegwonkim.backend.repository.projection.RentalItemsProjection
 import org.springframework.data.domain.Page
 import java.time.LocalDateTime
 
@@ -27,7 +27,7 @@ data class GetRentalItemsResponse(
     )
 
     companion object {
-        fun from(result: Page<GetRentalItemsProjection>, content: List<RentalItem>): GetRentalItemsResponse =
+        fun from(result: Page<RentalItemsProjection>, content: List<RentalItem>): GetRentalItemsResponse =
             GetRentalItemsResponse(
                 content,
                 result.number,

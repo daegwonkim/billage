@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository
 class NeighborhoodJooqRepository(
     private val dslContext: DSLContext
 ) {
-    fun findByCoordinate(latitude: Double, longitude: Double): NeighborhoodProjection? {
+    fun findContainingNeighborhood(latitude: Double, longitude: Double): NeighborhoodProjection? {
         return dslContext.select(
             NEIGHBORHOODS.ID,
             NEIGHBORHOODS.CODE,
