@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom'
 import { useEffect, useRef, useState } from 'react'
 import { useGetRentalItems } from '@/hooks/useRentalItem'
 import { useLocateNeighborhood } from '@/hooks/useNeighborhood'
+import { Ellipsis } from 'lucide-react'
 
 export function Home() {
   const navigate = useNavigate()
@@ -67,7 +68,11 @@ export function Home() {
     }) ?? requestLocation()
   }, [])
 
-  const { data: neighborhoodData } = useLocateNeighborhood(
+  const {
+    data: neighborhoodData,
+    isLoading,
+    isError
+  } = useLocateNeighborhood(
     {
       latitude: location?.latitude ?? '',
       longitude: location?.longitude ?? ''
@@ -145,12 +150,13 @@ export function Home() {
         onFilterClick={handleFilterClick}
         onSortClick={handleSortClick}
         neighborhood={
-          neighborhoodData
-            ? {
-                sigungu: neighborhoodData.sigungu,
-                eupmyeondong: neighborhoodData.eupmyeondong
-              }
-            : undefined
+          isLoading ? (
+            <Ellipsis className="animate-bounce" />
+          ) : isError || !neighborhoodData ? (
+            '위치 정보 없음'
+          ) : (
+            `${neighborhoodData.sigungu} ${neighborhoodData.eupmyeondong}`
+          )
         }
       />
 

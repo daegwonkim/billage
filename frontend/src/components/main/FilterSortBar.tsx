@@ -1,12 +1,10 @@
 import { SlidersHorizontal, ArrowUpDown, MapPin } from 'lucide-react'
+import type { ReactNode } from 'react'
 
 interface FilterSortBarProps {
   onFilterClick: () => void
   onSortClick: () => void
-  neighborhood?: {
-    sigungu: string
-    eupmyeondong: string
-  }
+  neighborhood?: ReactNode
 }
 
 export function FilterSortBar({
@@ -24,9 +22,7 @@ export function FilterSortBar({
             className="text-neutral-600"
           />
           <span className="text-[15px] font-semibold text-neutral-900">
-            {neighborhood
-              ? `${neighborhood.sigungu} ${neighborhood.eupmyeondong}`
-              : '위치 정보 없음'}
+            {neighborhood}
           </span>
         </div>
 
