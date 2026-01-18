@@ -15,6 +15,11 @@ import { useAuth } from '@/contexts/AuthContext'
 import { LoginPrompt } from '@/components/auth/LoginPrompt'
 import { signOut } from '@/api/auth/auth'
 import { useNavigate } from 'react-router-dom'
+import {
+  formatJoinDate,
+  formatNeighborhoodVerifiedPeriod,
+  formatRecentActivitySimple
+} from '@/utils/utils'
 
 export function MyBillage() {
   const navigate = useNavigate()
@@ -158,8 +163,8 @@ export function MyBillage() {
             </h2>
             <div className="flex gap-1 text-sm">
               <div>
-                {user.neighborhood.sigungu} {user.neighborhood.eupmyeondong} •
-                최근 3일 이내 활동
+                {user.neighborhood.sigungu} {user.neighborhood.eupmyeondong} •{' '}
+                {formatRecentActivitySimple(user.lastActiveAt)}
               </div>
             </div>
           </div>
@@ -210,12 +215,15 @@ export function MyBillage() {
         <div className="space-y-2">
           <div className="flex items-center gap-1 text-sm">
             <CalendarCheck size={19} />
-            <div>2025년 11월 30일 가입</div>
+            <div>{formatJoinDate(user.createdAt)}</div>
           </div>
           <div className="flex items-center gap-1 text-sm">
             <MapPinCheck size={19} />
             <div className="flex gap-1">
-              <div>동네 인증 (3개월째)</div>·
+              <div>
+                {formatNeighborhoodVerifiedPeriod(user.neighborhoodVerifiedAt)}
+              </div>
+              ·
               <div className="text-neutral-500">
                 {user.neighborhood.sigungu} {user.neighborhood.eupmyeondong}
               </div>
@@ -223,7 +231,10 @@ export function MyBillage() {
           </div>
           <div className="flex items-center gap-1 text-sm">
             <PackageCheck size={19} />
-            <div>대여해준 횟수 12회 · 빌린 횟수 5회</div>
+            <div>
+              대여해준 횟수 {user.rentOutCount}회 · 빌린 횟수 {user.rentInCount}
+              회
+            </div>
           </div>
         </div>
 
