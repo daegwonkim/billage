@@ -98,9 +98,9 @@ class RentalItemJooqRepository(
             RENTAL_ITEMS.PRICE_PER_DAY,
             RENTAL_ITEMS.PRICE_PER_WEEK
         ).from(RENTAL_ITEMS)
-            .where(RENTAL_ITEMS.USER_ID.eq(userId)
-                .and(RENTAL_ITEMS.ID.ne(excludeRentalItemId))
-                .and(RENTAL_ITEMS.IS_DELETED.eq(false)))
+            .where(RENTAL_ITEMS.USER_ID.eq(userId))
+            .and(RENTAL_ITEMS.IS_DELETED.eq(false))
+            .and(excludeRentalItemId?.let { RENTAL_ITEMS.ID.ne(it) } ?: DSL.noCondition())
             .fetchInto(UserRentalItemsProjection::class.java)
     }
 
