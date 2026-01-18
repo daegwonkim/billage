@@ -87,7 +87,7 @@ class AuthService(
 
         val userId = saveUser(phoneNo)
         neighborhoodService.saveNeighborhood(userId, neighborhood)
-        userJooqRepository.updateNeighborhoodVerifiedAtByUserId(userId)
+        userJooqRepository.updateNeighborhoodVerifiedAtById(userId)
     }
 
     @Transactional
@@ -102,7 +102,7 @@ class AuthService(
         val generatedTokens = generateTokensAndSaveRefreshToken(user.id, UUID.randomUUID().toString(), 0)
         verifiedTokenRedisRepository.delete(phoneNo)
 
-        userJooqRepository.updateLastActiveAtByUserId(user.id)
+        userJooqRepository.updateLastActiveAtById(user.id)
 
         return SignInResponse(generatedTokens.accessToken, generatedTokens.refreshToken)
     }

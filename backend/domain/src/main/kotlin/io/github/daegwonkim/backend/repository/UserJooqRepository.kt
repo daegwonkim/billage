@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository
 class UserJooqRepository(
     private val dslContext: DSLContext
 ) {
-    fun findUserProfile(userId: Long): UserProfileProjection? {
+    fun findUserProfileById(userId: Long): UserProfileProjection? {
         return dslContext.select(
             USERS.ID,
             USERS.PUBLIC_ID,
@@ -33,21 +33,21 @@ class UserJooqRepository(
             .fetchOneInto(UserProfileProjection::class.java)
     }
 
-    fun updateLastActiveAtByUserId(userId: Long) {
+    fun updateLastActiveAtById(userId: Long) {
         dslContext.update(USERS)
             .set(USERS.LAST_ACTIVE_AT, DSL.currentOffsetDateTime())
             .where(USERS.ID.eq(userId))
             .execute()
     }
 
-    fun updateNeighborhoodVerifiedAtByUserId(userId: Long) {
+    fun updateNeighborhoodVerifiedAtById(userId: Long) {
         dslContext.update(USERS)
             .set(USERS.NEIGHBORHOOD_VERIFIED_AT, DSL.currentOffsetDateTime())
             .where(USERS.ID.eq(userId))
             .execute()
     }
 
-    fun updateIsWithdrawnByUserId(userId: Long, isWithdrawn: Boolean): Boolean {
+    fun updateIsWithdrawnById(userId: Long, isWithdrawn: Boolean): Boolean {
         val affectedRow = dslContext.update(USERS)
             .set(USERS.IS_WITHDRAWN, isWithdrawn)
             .where(USERS.ID.eq(userId))

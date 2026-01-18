@@ -38,12 +38,14 @@ class SecurityConfig(
                 authorize("/api/auth/sign-out", permitAll)
                 authorize("/api/auth/token/reissue", permitAll)
                 authorize("/api/neighborhoods/**", permitAll)
-                authorize("/api/users/**", permitAll)
+                authorize("/api/users/*/profile", permitAll)
+                authorize("/api/users/*/rental-items", permitAll)
 
                 // Public Read
                 authorize(HttpMethod.GET, "/api/rental-items/**", permitAll)
 
                 // Authenticated
+                authorize("/api/users/me", authenticated)
                 authorize(HttpMethod.POST, "/api/rental-items", authenticated)
 
                 // Dev Tools

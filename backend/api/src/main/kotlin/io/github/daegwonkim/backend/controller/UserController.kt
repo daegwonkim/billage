@@ -1,6 +1,6 @@
 package io.github.daegwonkim.backend.controller
 
-import io.github.daegwonkim.backend.dto.user.GetMeResponse
+import io.github.daegwonkim.backend.dto.user.GetProfileResponse
 import io.github.daegwonkim.backend.dto.user.GetUserRentalItemsResponse
 import io.github.daegwonkim.backend.service.UserService
 import io.swagger.v3.oas.annotations.Operation
@@ -16,10 +16,16 @@ import org.springframework.web.bind.annotation.RestController
 class UserController(
     private val userService: UserService
 ) {
-    @Operation(summary = "내 정보 조회", description = "현재 로그인한 사용자 정보를 조회합니다")
+    @Operation(summary = "내 프로필 조회", description = "나의 프로필 정보를 조회합니다")
     @GetMapping("/me")
-    fun getMe(@AuthenticationPrincipal userId: Long): GetMeResponse {
-        return userService.getMe(userId)
+    fun getMe(@AuthenticationPrincipal id: Long): GetProfileResponse {
+        return userService.getProfile(id)
+    }
+
+    @Operation(summary = "사용자 프로필 조회", description = "다른 사용자의 프로필 정보를 조회합니다")
+    @GetMapping("/{id}/profile")
+    fun getProfile(@PathVariable("id") id: Long): GetProfileResponse {
+        return userService.getProfile(id)
     }
 
     @Operation(summary = "대여 상품 목록 조회", description = "사용자가 대여 상품으로 등록한 상품 목록을 조회합니다")

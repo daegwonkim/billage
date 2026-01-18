@@ -3,7 +3,7 @@ package io.github.daegwonkim.backend.dto.user
 import io.github.daegwonkim.backend.repository.projection.UserProfileProjection
 import java.time.LocalDateTime
 
-data class GetMeResponse(
+data class GetProfileResponse(
     val id: Long,
     val publicId: String,
     val nickname: String,
@@ -17,7 +17,7 @@ data class GetMeResponse(
 ) {
     companion object {
         fun from(userProfile: UserProfileProjection, profileImageUrl: String?) =
-            GetMeResponse(
+            GetProfileResponse(
                 userProfile.id,
                 userProfile.publicId,
                 userProfile.nickname,
