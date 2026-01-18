@@ -19,13 +19,14 @@ class UserService(
 ) {
     @Transactional(readOnly = true)
     fun getMe(userId: Long): GetMeResponse {
-        val me = userJooqRepository.getMe(userId)
+        val userProfile = userJooqRepository.selectUserProfile(userId)
             ?: throw ResourceNotFoundException(userId, UserErrorCode.USER_NOT_FOUND)
 
-        return GetMeResponse(
-            me.nickname,
-            me.profileImageKey?.let { supabaseStorageClient.getPublicUrl(userProfileImagesBucket, it) },
-            GetMeResponse.Neighborhood(me.sido, me.sigungu, me.eupmyeondong)
+        return GetMeResponse.from(
+            userProfile,
+            userProfile.profileImageKey?.let {
+                supabaseStorageClient.getPublicUrl(userProfileImagesBucket, it)
+            }
         )
     }
 }

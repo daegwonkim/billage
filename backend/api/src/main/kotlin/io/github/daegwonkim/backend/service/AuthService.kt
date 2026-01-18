@@ -22,6 +22,7 @@ import io.github.daegwonkim.backend.repository.UserRepository
 import io.github.daegwonkim.backend.util.NicknameGenerator
 import io.github.daegwonkim.backend.jwt.vo.GeneratedTokens
 import io.github.daegwonkim.backend.jwt.vo.RefreshTokenClaims
+import io.github.daegwonkim.backend.repository.UserJooqRepository
 import io.github.daegwonkim.backend.vo.Neighborhood
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -37,6 +38,7 @@ class AuthService(
     private val verificationCodeRedisRepository: VerificationCodeRedisRepository,
 
     private val userRepository: UserRepository,
+    private val userJooqRepository: UserJooqRepository,
 
     private val coolsmsService: CoolsmsService,
     private val jwtTokenProvider: JwtTokenProvider,
@@ -85,8 +87,10 @@ class AuthService(
 
         val userId = saveUser(phoneNo)
         neighborhoodService.saveNeighborhood(userId, neighborhood)
+        userJooqRepository.updateNeighborhoodVerifiedAtByUserId(userId)
     }
 
+    @Transactional
     fun signIn(request: SignInRequest): SignInResponse {
         val phoneNo = request.phoneNo
 
@@ -97,6 +101,8 @@ class AuthService(
 
         val generatedTokens = generateTokensAndSaveRefreshToken(user.id, UUID.randomUUID().toString(), 0)
         verifiedTokenRedisRepository.delete(phoneNo)
+
+        userJooqRepository.updateLastActiveAtByUserId(user.id)
 
         return SignInResponse(generatedTokens.accessToken, generatedTokens.refreshToken)
     }
