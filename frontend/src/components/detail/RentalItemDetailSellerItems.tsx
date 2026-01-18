@@ -76,8 +76,6 @@ export function RentalItemDetailSellerItems({
     error: sellerRentalItemError
   } = useGetUserRentalItems(seller.id, rentalItemId)
 
-  console.log(sellerRentalItemData)
-
   if (sellerRentalItemLoading) {
     return <div>Loading...</div>
   }
