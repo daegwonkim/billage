@@ -37,7 +37,10 @@ class RentalItem(
     var pricePerWeek: Int?,
 
     @Column(name = "view_count", nullable = false)
-    var viewCount: Int = 0
+    var viewCount: Int = 0,
+
+    @Column(name = "is_deleted", nullable = false)
+    var isDeleted: Boolean = false
 ) : BaseEntity() {
 
     fun modify(
