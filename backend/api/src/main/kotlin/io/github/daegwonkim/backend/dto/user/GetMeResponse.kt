@@ -4,6 +4,7 @@ import io.github.daegwonkim.backend.repository.projection.UserProfileProjection
 import java.time.LocalDateTime
 
 data class GetMeResponse(
+    val id: Long,
     val publicId: String,
     val nickname: String,
     val profileImageUrl: String?,
@@ -17,6 +18,7 @@ data class GetMeResponse(
     companion object {
         fun from(userProfile: UserProfileProjection, profileImageUrl: String?) =
             GetMeResponse(
+                userProfile.id,
                 userProfile.publicId,
                 userProfile.nickname,
                 profileImageUrl,

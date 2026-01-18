@@ -1,6 +1,5 @@
 package io.github.daegwonkim.backend.service
 
-import io.github.daegwonkim.backend.dto.rental_item.GetOtherRentalItemsBySellerResponse
 import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemCategoriesResponse
 import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemResponse
 import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemForModifyResponse
@@ -22,7 +21,6 @@ import io.github.daegwonkim.backend.exception.business.ResourceNotFoundException
 import io.github.daegwonkim.backend.repository.RentalItemImageRepository
 import io.github.daegwonkim.backend.repository.RentalItemJooqRepository
 import io.github.daegwonkim.backend.repository.RentalItemRepository
-import io.github.daegwonkim.backend.repository.projection.OtherRentalItemsBySellerItemProjection
 import io.github.daegwonkim.backend.repository.projection.RentalItemsProjection
 import io.github.daegwonkim.backend.redis.RentalItemViewRedisRepository
 import io.github.daegwonkim.backend.supabase.SupabaseStorageClient
@@ -97,14 +95,6 @@ class RentalItemService(
     @Transactional(readOnly = true)
     fun getSimilarRentalItems(id: Long): GetSimilarRentalItemsResponse {
         return GetSimilarRentalItemsResponse(listOf())
-    }
-
-    @Transactional(readOnly = true)
-    fun getOtherRentalItemsBySeller(id: Long, sellerId: Long): GetOtherRentalItemsBySellerResponse {
-        val otherRentalItems = rentalItemJooqRepository.findOtherRentalItemsBySeller(id, sellerId)
-            .map(::toGetOtherRentalItemsBySellerResponse)
-
-        return GetOtherRentalItemsBySellerResponse(otherRentalItems)
     }
 
     @Transactional
@@ -183,15 +173,6 @@ class RentalItemService(
         rentalItemImageRepository
             .findAllByRentalItemIdOrderBySequence(rentalItemId)
             .map { image -> supabaseStorageClient.getPublicUrl(rentalItemImagesBucket, image.key) }
-
-    private fun toGetOtherRentalItemsBySellerResponse(rentalItem: OtherRentalItemsBySellerItemProjection): GetOtherRentalItemsBySellerResponse.RentalItem =
-        GetOtherRentalItemsBySellerResponse.RentalItem(
-            rentalItem.id,
-            supabaseStorageClient.getPublicUrl(rentalItemImagesBucket, rentalItem.thumbnailImageKey),
-            rentalItem.title,
-            rentalItem.pricePerDay,
-            rentalItem.pricePerWeek
-        )
 
     private fun saveRentalItemImages(rentalItemId: Long, imageKeys: List<String>) {
         val rentalItemImages = imageKeys.mapIndexed { index, key ->

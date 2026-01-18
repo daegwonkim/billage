@@ -1,6 +1,5 @@
 package io.github.daegwonkim.backend.controller
 
-import io.github.daegwonkim.backend.dto.rental_item.GetOtherRentalItemsBySellerResponse
 import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemCategoriesResponse
 import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemResponse
 import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemForModifyResponse
@@ -69,15 +68,6 @@ class RentalItemController(
         @PathVariable("id") id: Long
     ): GetSimilarRentalItemsResponse {
         return rentalItemService.getSimilarRentalItems(id)
-    }
-
-    @Operation(summary = "판매자 상품 목록 조회", description = "현재 보고있는 상품 판매자의 다른 상품 목록을 조회합니다")
-    @GetMapping("/{id}/other/{sellerId}")
-    fun getOtherRentalItemsBySeller(
-        @PathVariable("id") id: Long,
-        @PathVariable("sellerId") sellerId: Long
-    ): GetOtherRentalItemsBySellerResponse {
-        return rentalItemService.getOtherRentalItemsBySeller(id, sellerId)
     }
 
     @Operation(summary = "대여 상품 등록", description = "새로운 대여 상품을 등록합니다")

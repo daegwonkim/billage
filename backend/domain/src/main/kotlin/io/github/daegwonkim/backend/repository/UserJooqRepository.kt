@@ -14,6 +14,7 @@ class UserJooqRepository(
 ) {
     fun findUserProfile(userId: Long): UserProfileProjection? {
         return dslContext.select(
+            USERS.ID,
             USERS.PUBLIC_ID,
             USERS.NICKNAME,
             USERS.PROFILE_IMAGE_KEY,

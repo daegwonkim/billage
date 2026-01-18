@@ -8,9 +8,9 @@ import io.github.daegwonkim.backend.jooq.Tables.RENTAL_ITEMS
 import io.github.daegwonkim.backend.jooq.Tables.RENTAL_ITEM_IMAGES
 import io.github.daegwonkim.backend.jooq.Tables.RENTAL_ITEM_LIKE_RECORDS
 import io.github.daegwonkim.backend.jooq.Tables.USER_NEIGHBORHOODS
-import io.github.daegwonkim.backend.repository.projection.OtherRentalItemsBySellerItemProjection
 import io.github.daegwonkim.backend.repository.projection.RentalItemProjection
 import io.github.daegwonkim.backend.repository.projection.RentalItemsProjection
+import io.github.daegwonkim.backend.repository.projection.UserRentalItemsProjection
 import org.jooq.DSLContext
 import org.jooq.impl.DSL
 import org.jooq.impl.DSL.concat
@@ -90,22 +90,18 @@ class RentalItemJooqRepository(
             .fetchOneInto(RentalItemProjection::class.java)
     }
 
-    fun findOtherRentalItemsBySeller(
-        rentalItemId: Long,
-        sellerId: Long
-    ): List<OtherRentalItemsBySellerItemProjection> {
+    fun findRentalItemsByUserId(userId: Long, excludeRentalItemId: Long?): List<UserRentalItemsProjection> {
         return dslContext.select(
             RENTAL_ITEMS.ID,
             RENTAL_ITEMS.TITLE,
+            thumbnailImageUrlSubquery(),
             RENTAL_ITEMS.PRICE_PER_DAY,
-            RENTAL_ITEMS.PRICE_PER_WEEK,
-            thumbnailImageUrlSubquery())
-            .from(RENTAL_ITEMS)
-            .join(USERS).on(USERS.ID.eq(RENTAL_ITEMS.USER_ID))
-            .where(RENTAL_ITEMS.ID.ne(rentalItemId)
-                .and(USERS.ID.eq(sellerId)))
-            .limit(10)
-            .fetchInto(OtherRentalItemsBySellerItemProjection::class.java)
+            RENTAL_ITEMS.PRICE_PER_WEEK
+        ).from(RENTAL_ITEMS)
+            .where(RENTAL_ITEMS.USER_ID.eq(userId)
+                .and(RENTAL_ITEMS.ID.ne(excludeRentalItemId))
+                .and(RENTAL_ITEMS.IS_DELETED.eq(false)))
+            .fetchInto(UserRentalItemsProjection::class.java)
     }
 
     fun incrementViewCountById(rentalItemId: Long): Int {

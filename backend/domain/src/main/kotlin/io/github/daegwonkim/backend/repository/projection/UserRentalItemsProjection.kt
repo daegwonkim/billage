@@ -1,9 +1,9 @@
 package io.github.daegwonkim.backend.repository.projection
 
-data class OtherRentalItemsBySellerItemProjection(
+data class UserRentalItemsProjection(
     val id: Long,
+    val thumbnailImageKey: String?,
     val title: String,
-    val thumbnailImageKey: String,
     val pricePerDay: Int,
     val pricePerWeek: Int
 )
