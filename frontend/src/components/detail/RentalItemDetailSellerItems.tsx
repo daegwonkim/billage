@@ -34,7 +34,7 @@ export function RentalItemDetailSellerItems({
     e.preventDefault()
     setHasMoved(true)
     const x = e.pageX - scrollRef.current.offsetLeft
-    const walk = (x - startX) * 2
+    const walk = x - startX
     scrollRef.current.scrollLeft = scrollLeft - walk
   }
 
@@ -62,7 +62,7 @@ export function RentalItemDetailSellerItems({
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!isDragging || !scrollRef.current) return
     const x = e.touches[0].pageX - scrollRef.current.offsetLeft
-    const walk = (x - startX) * 2
+    const walk = x - startX
     scrollRef.current.scrollLeft = scrollLeft - walk
   }
 
@@ -74,7 +74,9 @@ export function RentalItemDetailSellerItems({
     data: sellerRentalItemData,
     isLoading: sellerRentalItemLoading,
     error: sellerRentalItemError
-  } = useGetUserRentalItems(rentalItemId, seller.id)
+  } = useGetUserRentalItems(seller.id, rentalItemId)
+
+  console.log(sellerRentalItemData)
 
   if (sellerRentalItemLoading) {
     return <div>Loading...</div>

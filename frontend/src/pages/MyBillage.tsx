@@ -237,7 +237,7 @@ export function MyBillage() {
             <></>
           )}
         </div>
-        <div className="scrollbar-hide flex justify-center gap-3 overflow-x-auto px-4">
+        <div className="scrollbar-hide flex justify-center gap-3 overflow-x-auto">
           {hasItems ? (
             <div
               className={`hide-scrollbar flex gap-2.5 overflow-x-auto overflow-y-hidden px-4 select-none`}
