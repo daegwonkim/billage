@@ -18,7 +18,9 @@ class UserService(
     private val supabaseStorageClient: SupabaseStorageClient,
 
     @Value($$"${supabase.storage.bucket.user-profile-images}")
-    private val userProfileImagesBucket: String
+    private val userProfileImagesBucket: String,
+    @Value($$"${supabase.storage.bucket.rental-item-images}")
+    private val rentalItemImagesBucket: String
 ) {
     @Transactional(readOnly = true)
     fun getMe(userId: Long): GetMeResponse {
@@ -40,7 +42,7 @@ class UserService(
                 GetUserRentalItemsResponse.RentalItem.from(
                     rentalItem,
                     rentalItem.thumbnailImageKey?.let {
-                        supabaseStorageClient.getPublicUrl(userProfileImagesBucket, it)
+                        supabaseStorageClient.getPublicUrl(rentalItemImagesBucket, it)
                     }
                 )
             }
