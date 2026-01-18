@@ -10,7 +10,7 @@ import {
   Star,
   UserX
 } from 'lucide-react'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import defaultProfileImage from '@/assets/default-profile.png'
 import { useAuth } from '@/contexts/AuthContext'
 import { LoginPrompt } from '@/components/auth/LoginPrompt'
@@ -29,8 +29,63 @@ export function MyBillage() {
   const { user, logout } = useAuth()
   const [showMenu, setShowMenu] = useState(false)
 
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const [isDragging, setIsDragging] = useState(false)
+  const [startX, setStartX] = useState(0)
+  const [scrollLeft, setScrollLeft] = useState(0)
+  const [hasMoved, setHasMoved] = useState(false)
+
   if (!user) {
     return <LoginPrompt />
+  }
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!scrollRef.current) return
+    setIsDragging(true)
+    setHasMoved(false)
+    setStartX(e.pageX - scrollRef.current.offsetLeft)
+    setScrollLeft(scrollRef.current.scrollLeft)
+  }
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || !scrollRef.current) return
+    e.preventDefault()
+    setHasMoved(true)
+    const x = e.pageX - scrollRef.current.offsetLeft
+    const walk = x - startX
+    scrollRef.current.scrollLeft = scrollLeft - walk
+  }
+
+  const handleMouseUp = () => {
+    setIsDragging(false)
+  }
+
+  const handleItemClick = (itemId: number) => {
+    if (!hasMoved) {
+      navigate(`/rental-items/${itemId}`)
+    }
+  }
+
+  const handleMouseLeave = () => {
+    setIsDragging(false)
+  }
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (!scrollRef.current) return
+    setIsDragging(true)
+    setStartX(e.touches[0].pageX - scrollRef.current.offsetLeft)
+    setScrollLeft(scrollRef.current.scrollLeft)
+  }
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging || !scrollRef.current) return
+    const x = e.touches[0].pageX - scrollRef.current.offsetLeft
+    const walk = x - startX
+    scrollRef.current.scrollLeft = scrollLeft - walk
+  }
+
+  const handleTouchEnd = () => {
+    setIsDragging(false)
   }
 
   const {
@@ -240,6 +295,14 @@ export function MyBillage() {
         <div className="scrollbar-hide flex justify-center gap-3 overflow-x-auto">
           {hasItems ? (
             <div
+              ref={scrollRef}
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseLeave}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
               className={`hide-scrollbar flex gap-2.5 overflow-x-auto overflow-y-hidden px-4 select-none`}
               style={{
                 scrollbarWidth: 'none',
@@ -249,6 +312,7 @@ export function MyBillage() {
               {userRentalItemData.rentalItems.map(item => (
                 <div
                   key={item.id}
+                  onClick={() => handleItemClick(item.id)}
                   className="flex w-[110px] shrink-0 cursor-pointer flex-col">
                   <img
                     src={item.thumbnailImageUrl}
