@@ -3,6 +3,7 @@ package io.github.daegwonkim.backend.repository.projection
 import java.time.LocalDateTime
 
 data class UserProfileProjection(
+    val publicId: String,
     val nickname: String,
     val profileImageKey: String?,
     val lastActiveAt: LocalDateTime,
