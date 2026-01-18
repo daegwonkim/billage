@@ -11,15 +11,15 @@ import {
 } from 'react'
 
 interface AuthContextType {
-  user: GetMeResponse | null
-  login: (user: GetMeResponse) => void
+  isAuthenticated: boolean
+  login: () => void
   logout: () => void
 }
 
 const AuthContext = createContext<AuthContextType | null>(null)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<GetMeResponse | null>(null)
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -28,23 +28,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const checkAuthenticated = async () => {
     try {
-      const userData = await customFetch<GetMeResponse>(`/api/users/me`, {
+      await customFetch<GetMeResponse>('/api/users/me', {
         cache: 'no-store'
       })
-      setUser(userData)
+      setIsAuthenticated(true)
     } catch {
-      setUser(null)
+      setIsAuthenticated(false)
     } finally {
       setLoading(false)
     }
   }
 
-  const login = useCallback((user: GetMeResponse) => {
-    setUser(user)
+  const login = useCallback(() => {
+    setIsAuthenticated(true)
   }, [])
 
   const logout = useCallback(() => {
-    setUser(null)
+    setIsAuthenticated(false)
   }, [])
 
   if (loading) {
@@ -52,7 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
       {children}
     </AuthContext.Provider>
   )

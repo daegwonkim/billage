@@ -22,11 +22,11 @@ import {
   formatNeighborhoodVerifiedPeriod,
   formatRecentActivitySimple
 } from '@/utils/utils'
-import { useGetUserRentalItems } from '@/hooks/useUser'
+import { useGetMe, useGetUserRentalItems } from '@/hooks/useUser'
 
 export function MyBillage() {
   const navigate = useNavigate()
-  const { user, logout } = useAuth()
+  const { isAuthenticated, logout } = useAuth()
   const [showMenu, setShowMenu] = useState(false)
 
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -35,7 +35,7 @@ export function MyBillage() {
   const [scrollLeft, setScrollLeft] = useState(0)
   const [hasMoved, setHasMoved] = useState(false)
 
-  if (!user) {
+  if (!isAuthenticated) {
     return <LoginPrompt />
   }
 
@@ -89,13 +89,25 @@ export function MyBillage() {
   }
 
   const {
+    data: userProfileData,
+    isLoading: userProfileLoading,
+    isError: userProfileError
+  } = useGetMe()
+
+  const {
     data: userRentalItemData,
     isLoading: userRentalItemLoading,
     error: userRentalItemError
-  } = useGetUserRentalItems(user.id)
+  } = useGetUserRentalItems(userProfileData?.id ?? 0, undefined, {
+    enabled: !!userProfileData?.id
+  })
+
+  if (userProfileError || !userProfileData) {
+    return <div>사용자 정보 오류</div>
+  }
 
   if (userRentalItemError || !userRentalItemData) {
-    return
+    return <div>아이템 정보 오류</div>
   }
 
   const hasItems = userRentalItemData.rentalItems.length > 0
@@ -126,7 +138,7 @@ export function MyBillage() {
       images: []
     },
     {
-      id: 2,
+      id: 3,
       reviewer: '망고스틴',
       profileImageUrl: defaultProfileImage,
       neighborhood: '영등포구 당산동',
@@ -136,7 +148,7 @@ export function MyBillage() {
       images: []
     },
     {
-      id: 2,
+      id: 4,
       reviewer: '망고스틴',
       profileImageUrl: defaultProfileImage,
       neighborhood: '영등포구 당산동',
@@ -177,8 +189,8 @@ export function MyBillage() {
           <div className="flex h-18 w-18 items-center justify-center rounded-full bg-gray-100">
             <img
               src={
-                user.profileImageUrl
-                  ? user.profileImageUrl
+                userProfileData.profileImageUrl
+                  ? userProfileData.profileImageUrl
                   : defaultProfileImage
               }
               alt="프로필"
@@ -189,12 +201,12 @@ export function MyBillage() {
           {/* 사용자 정보 */}
           <div className="flex-1">
             <h2 className="mb-1 text-xl font-bold text-neutral-900">
-              {user.nickname}
+              {userProfileData.nickname}
             </h2>
             <div className="flex gap-1 text-sm">
               <div>
-                #{user.publicId} •{' '}
-                {formatRecentActivitySimple(user.lastActiveAt)}
+                #{userProfileData.publicId} •{' '}
+                {formatRecentActivitySimple(userProfileData.lastActiveAt)}
               </div>
             </div>
           </div>
@@ -245,25 +257,28 @@ export function MyBillage() {
         <div className="space-y-2">
           <div className="flex items-center gap-1 text-sm">
             <CalendarCheck size={19} />
-            <div>{formatJoinDate(user.createdAt)}</div>
+            <div>{formatJoinDate(userProfileData.createdAt)}</div>
           </div>
           <div className="flex items-center gap-1 text-sm">
             <MapPinCheck size={19} />
             <div className="flex gap-1">
               <div>
-                {formatNeighborhoodVerifiedPeriod(user.neighborhoodVerifiedAt)}
+                {formatNeighborhoodVerifiedPeriod(
+                  userProfileData.neighborhoodVerifiedAt
+                )}
               </div>
               ·
               <div className="text-neutral-500">
-                {user.neighborhood.sigungu} {user.neighborhood.eupmyeondong}
+                {userProfileData.neighborhood.sigungu}{' '}
+                {userProfileData.neighborhood.eupmyeondong}
               </div>
             </div>
           </div>
           <div className="flex items-center gap-1 text-sm">
             <PackageCheck size={19} />
             <div>
-              대여해준 횟수 {user.rentOutCount}회 · 빌린 횟수 {user.rentInCount}
-              회
+              대여해준 횟수 {userProfileData.rentOutCount}회 · 빌린 횟수{' '}
+              {userProfileData.rentInCount}회
             </div>
           </div>
         </div>

@@ -108,8 +108,7 @@ export function LoginPrompt() {
           phoneNo: cleanPhoneNo,
           verifiedToken: confirmVerificationCodeRes.verifiedToken
         })
-        const user = await getMe()
-        login(user)
+        login()
         navigate(-1)
       }
     } catch (err) {
@@ -183,8 +182,7 @@ export function LoginPrompt() {
         phoneNo: cleanPhoneNo,
         verifiedToken: verifiedToken
       })
-      const user = await getMe()
-      login(user)
+      login()
       navigate(-1)
     } catch (err) {
       if (err instanceof ApiError) {

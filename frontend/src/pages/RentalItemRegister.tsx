@@ -40,7 +40,7 @@ interface ImageData {
 export default function RentalItemRegister() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
-  const { user } = useAuth()
+  const { isAuthenticated } = useAuth()
   const [isOpen, setIsOpen] = useState(false)
   const [images, setImages] = useState<ImageData[]>([])
   const [formData, setFormData] = useState<FormData>({
@@ -79,7 +79,7 @@ export default function RentalItemRegister() {
   const { data: categoriesData } = useGetRentalItemCategories()
 
   // 비로그인 시 LoginPrompt 표시
-  if (!user) {
+  if (!isAuthenticated) {
     return <LoginPrompt />
   }
 
