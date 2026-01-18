@@ -6,6 +6,7 @@ import io.github.daegwonkim.backend.jwt.JwtAuthenticationFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
+import org.springframework.security.config.annotation.web.invoke
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
@@ -22,36 +23,42 @@ class SecurityConfig(
     private val jwtAuthenticationEntryPoint: JwtAuthenticationEntryPoint,
     private val jwtAccessDeniedHandler: JwtAccessDeniedHandler
 ) {
-    companion object {
-        private val PUBLIC_PATHS = arrayOf(
-            "/api/auth/verification-code/**",
-            "/api/auth/confirm-registered",
-            "/api/auth/sign-up",
-            "/api/auth/sign-in",
-            "/api/auth/sign-out",
-            "/api/auth/token/reissue",
-            "/api/neighborhoods/**"
-        )
-    }
-
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
-        http
-            .csrf { it.disable() }
-            .cors { it.configurationSource(corsConfigurationSource()) }
-            .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
-            .authorizeHttpRequests { auth ->
-                auth.requestMatchers(*PUBLIC_PATHS).permitAll()
-                auth.requestMatchers(HttpMethod.GET,"/api/rental-items").permitAll()
-                auth.requestMatchers(HttpMethod.POST,"/api/rental-items").authenticated()
-                auth.requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                auth.anyRequest().authenticated()
+        http {
+            csrf { disable() }
+            cors { configurationSource = corsConfigurationSource() }
+            sessionManagement { sessionCreationPolicy = SessionCreationPolicy.STATELESS }
+            authorizeHttpRequests {
+                // Public
+                authorize("/api/auth/verification-code/**", permitAll)
+                authorize("/api/auth/confirm-registered", permitAll)
+                authorize("/api/auth/sign-up", permitAll)
+                authorize("/api/auth/sign-in", permitAll)
+                authorize("/api/auth/sign-out", permitAll)
+                authorize("/api/auth/token/reissue", permitAll)
+                authorize("/api/neighborhoods/**", permitAll)
+                authorize("/api/users/**", permitAll)
+
+                // Public Read
+                authorize(HttpMethod.GET, "/api/rental-items/**", permitAll)
+
+                // Authenticated
+                authorize(HttpMethod.POST, "/api/rental-items", authenticated)
+
+                // Dev Tools
+                authorize("/swagger-ui/**", permitAll)
+                authorize("/v3/api-docs/**", permitAll)
+
+                // Default
+                authorize(anyRequest, authenticated)
             }
-            .exceptionHandling { ex ->
-                ex.authenticationEntryPoint(jwtAuthenticationEntryPoint)
-                ex.accessDeniedHandler(jwtAccessDeniedHandler)
+            exceptionHandling {
+                authenticationEntryPoint = jwtAuthenticationEntryPoint
+                accessDeniedHandler = jwtAccessDeniedHandler
             }
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
+            addFilterBefore<UsernamePasswordAuthenticationFilter>(jwtAuthenticationFilter)
+        }
 
         return http.build()
     }
