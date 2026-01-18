@@ -46,4 +46,13 @@ class UserJooqRepository(
             .where(USERS.ID.eq(userId))
             .execute()
     }
+
+    fun updateIsWithdrawnByUserId(userId: Long, isWithdrawn: Boolean): Boolean {
+        val affectedRow = dslContext.update(USERS)
+            .set(USERS.IS_WITHDRAWN, isWithdrawn)
+            .where(USERS.ID.eq(userId))
+            .execute()
+
+        return affectedRow > 0
+    }
 }
