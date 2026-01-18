@@ -27,7 +27,7 @@ export function RentalItemDetailImages({
   }
 
   return (
-    <div className="relative aspect-square w-full overflow-hidden bg-gray-100">
+    <div className="relative aspect-square w-full overflow-hidden bg-gray-100 shadow-[0_0_60px_rgba(0,0,0,0.1)]">
       <style>{`
         .custom-dots {
           position: absolute;

@@ -1,11 +1,13 @@
 import type { GetRentalItemResponse } from '@/api/rentall_item/dto/GetRentalItem'
 import type { GetRentalItemCategoriesResponse } from '@/api/rentall_item/dto/GetRentalItemCategories'
+import type { GetRentalItemForModifyResponse } from '@/api/rentall_item/dto/GetRentalItemForModify'
 import type { GetRentalItemsResponse } from '@/api/rentall_item/dto/GetRentalItems'
 import type { GetRentalItemSortOptionsResponse } from '@/api/rentall_item/dto/GetRentalItemSortOptions'
 import type { GetSimilarRentalItemsResponse } from '@/api/rentall_item/dto/GetSimilarRentalItems'
 import {
   getRentalItem,
   getRentalItemCategories,
+  getRentalItemForModify,
   getRentalItems,
   getRentalItemSortOptions,
   getSimilarRentalItems
@@ -69,5 +71,12 @@ export function useGetSimilarRentalItems(rentalItemId: number) {
   return useQuery<GetSimilarRentalItemsResponse>({
     queryKey: ['similarRentalItems', rentalItemId],
     queryFn: () => getSimilarRentalItems(rentalItemId)
+  })
+}
+
+export function useGetRentalItemForModify(rentalItemId: number) {
+  return useQuery<GetRentalItemForModifyResponse>({
+    queryKey: ['rentalItemForModify', rentalItemId],
+    queryFn: () => getRentalItemForModify(rentalItemId)
   })
 }

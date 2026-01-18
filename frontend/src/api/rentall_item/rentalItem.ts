@@ -8,6 +8,11 @@ import type { GetRentalItemResponse } from './dto/GetRentalItem'
 import type { GetRentalItemCategoriesResponse } from './dto/GetRentalItemCategories'
 import type { GetRentalItemSortOptionsResponse } from './dto/GetRentalItemSortOptions'
 import { customFetch } from '../customFetch'
+import type { GetRentalItemForModifyResponse } from './dto/GetRentalItemForModify'
+import type {
+  ModifyRentalItemRequest,
+  ModifyRentalItemResponse
+} from './dto/ModifyRentalItem'
 
 export async function getRentalItemCategories(): Promise<GetRentalItemCategoriesResponse> {
   return await customFetch<GetRentalItemCategoriesResponse>(
@@ -67,4 +72,28 @@ export async function register(
     },
     body: JSON.stringify(request)
   })
+}
+
+export async function getRentalItemForModify(
+  rentalItemId: number
+): Promise<GetRentalItemForModifyResponse> {
+  return await customFetch<GetRentalItemForModifyResponse>(
+    `/api/rental-items/modify/${rentalItemId}`
+  )
+}
+
+export async function modify(
+  id: number,
+  request: ModifyRentalItemRequest
+): Promise<ModifyRentalItemResponse> {
+  return await customFetch<ModifyRentalItemResponse>(
+    `/api/rental-items/modify/${id}`,
+    {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(request)
+    }
+  )
 }
