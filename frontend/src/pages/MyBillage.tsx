@@ -163,7 +163,7 @@ export function MyBillage() {
             </h2>
             <div className="flex gap-1 text-sm">
               <div>
-                {user.neighborhood.sigungu} {user.neighborhood.eupmyeondong} •{' '}
+                #{user.publicId} •{' '}
                 {formatRecentActivitySimple(user.lastActiveAt)}
               </div>
             </div>
