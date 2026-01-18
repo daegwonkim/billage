@@ -2,13 +2,11 @@ package io.github.daegwonkim.backend.repository
 
 import io.github.daegwonkim.backend.enumerate.RentalItemCategory
 import io.github.daegwonkim.backend.enumerate.RentalItemSortOption
-import io.github.daegwonkim.backend.enumerate.RentalStatus
 import io.github.daegwonkim.backend.jooq.Tables.USERS
 import io.github.daegwonkim.backend.jooq.Tables.NEIGHBORHOODS
 import io.github.daegwonkim.backend.jooq.Tables.RENTAL_ITEMS
 import io.github.daegwonkim.backend.jooq.Tables.RENTAL_ITEM_IMAGES
 import io.github.daegwonkim.backend.jooq.Tables.RENTAL_ITEM_LIKE_RECORDS
-import io.github.daegwonkim.backend.jooq.Tables.RENTAL_RECORDS
 import io.github.daegwonkim.backend.jooq.Tables.USER_NEIGHBORHOODS
 import io.github.daegwonkim.backend.repository.projection.GetOtherRentalItemsBySellerItemProjection
 import io.github.daegwonkim.backend.repository.projection.GetRentalItemProjection
@@ -45,7 +43,6 @@ class RentalItemJooqRepository(
             RENTAL_ITEMS.VIEW_COUNT,
             RENTAL_ITEMS.CREATED_AT,
             thumbnailImageUrlSubquery(),
-            rentalCountSubquery(),
             likeCountSubquery(),
             addressField())
             .from(RENTAL_ITEMS)
@@ -82,7 +79,6 @@ class RentalItemJooqRepository(
             RENTAL_ITEMS.PRICE_PER_WEEK,
             RENTAL_ITEMS.VIEW_COUNT,
             RENTAL_ITEMS.CREATED_AT,
-            rentalCountSubquery(),
             likeCountSubquery(),
             addressField(),
             likedSubquery(userId = userId))
@@ -126,13 +122,6 @@ class RentalItemJooqRepository(
             .orderBy(RENTAL_ITEM_IMAGES.SEQUENCE.asc())
             .limit(1)
             .asField<String>("thumbnail_image_key")
-
-    private fun rentalCountSubquery() =
-        dslContext.selectCount()
-            .from(RENTAL_RECORDS)
-            .where(RENTAL_RECORDS.RENTAL_ITEM_ID.eq(RENTAL_ITEMS.ID)
-                .and(RENTAL_RECORDS.STATUS.eq(RentalStatus.RETURNED.name)))
-            .asField<Int>("rental_count")
 
     private fun likeCountSubquery() =
         dslContext.selectCount()
