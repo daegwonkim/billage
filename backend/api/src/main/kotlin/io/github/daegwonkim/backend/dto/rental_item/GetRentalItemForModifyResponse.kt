@@ -10,15 +10,10 @@ data class GetRentalItemForModifyResponse(
     val category: RentalItemCategory,
     val pricePerDay: Int?,
     val pricePerWeek: Int?,
-    val images: List<RentalItemImage>
+    val images: List<String>
 ) {
-    data class RentalItemImage(
-        val key: String,
-        val sequence: Int
-    )
-
     companion object {
-        fun from(rentalItem: RentalItem, rentalItemImages: List<RentalItemImage>) =
+        fun from(rentalItem: RentalItem, images: List<String>) =
             GetRentalItemForModifyResponse(
                 rentalItem.id,
                 rentalItem.title,
@@ -26,7 +21,7 @@ data class GetRentalItemForModifyResponse(
                 rentalItem.category,
                 rentalItem.pricePerDay,
                 rentalItem.pricePerWeek,
-                rentalItemImages
+                images
             )
     }
 }

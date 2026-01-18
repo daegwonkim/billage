@@ -121,9 +121,9 @@ class RentalItemService(
     fun getForModify(id: Long): GetRentalItemForModifyResponse {
         val rentalItem = rentalItemRepository.findById(id)
             .orElseThrow { throw ResourceNotFoundException(id, RentalItemErrorCode.RENTAL_ITEM_NOT_FOUND) }
-        val rentalItemImages = getRentalItemImages(rentalItem.id)
+        val images = getRentalItemImages(rentalItem.id)
 
-        return GetRentalItemForModifyResponse.from(rentalItem, rentalItemImages)
+        return GetRentalItemForModifyResponse.from(rentalItem, images)
     }
 
     @Transactional
@@ -185,12 +185,9 @@ class RentalItemService(
         rentalItemImageRepository.saveAll(rentalItemImages)
     }
 
-    private fun getRentalItemImages(rentalItemId: Long): List<GetRentalItemForModifyResponse.RentalItemImage> {
-        val rentalItemImages = rentalItemImageRepository.findAllByRentalItemIdOrderBySequence(rentalItemId)
-
-        return rentalItemImages.map { image ->
-            GetRentalItemForModifyResponse.RentalItemImage(image.key, image.sequence)
-        }
+    private fun getRentalItemImages(rentalItemId: Long): List<String> {
+        return rentalItemImageRepository.findAllByRentalItemIdOrderBySequence(rentalItemId)
+            .map { image -> supabaseStorageClient.getPublicUrl(rentalItemImagesBucket, image.key) }
     }
 
     private fun deleteRemovedImages(deleteImageKeys: List<String>) {
