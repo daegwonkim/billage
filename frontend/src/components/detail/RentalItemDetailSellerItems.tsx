@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom'
 
 interface RentalItemDetailSellerItemsProps {
   seller: Seller
-  rentalItemId: string
+  rentalItemId: number
 }
 
 export function RentalItemDetailSellerItems({
@@ -42,7 +42,7 @@ export function RentalItemDetailSellerItems({
     setIsDragging(false)
   }
 
-  const handleItemClick = (itemId: string) => {
+  const handleItemClick = (itemId: number) => {
     if (!hasMoved) {
       navigate(`/rental-items/${itemId}`)
     }

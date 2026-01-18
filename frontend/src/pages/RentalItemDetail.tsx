@@ -12,7 +12,8 @@ import { useGetRentalItem } from '@/hooks/useRentalItem'
 export function RentalItemDetail() {
   const navigate = useNavigate()
 
-  const { id } = useParams<{ id: string }>()
+  let { id } = useParams<{ id: string }>()
+  const numericId = Number(id)
 
   if (!id) {
     return (
@@ -38,7 +39,7 @@ export function RentalItemDetail() {
     data: rentalItemData,
     isLoading: rentalItemLoading,
     error: rentalItemError
-  } = useGetRentalItem(id)
+  } = useGetRentalItem(numericId)
 
   if (rentalItemLoading) {
     return <RentalItemDetailSkeleton />
@@ -74,11 +75,11 @@ export function RentalItemDetail() {
       <hr className="mx-auto h-[0.5px] w-[90%] border-none bg-neutral-400 opacity-50" />
       <RentalItemDetailInfo rentalItem={rentalItemData} />
       <hr className="mx-auto h-[0.5px] w-[90%] border-none bg-neutral-400 opacity-50" />
-      <RentalItemDetailSimilarItems rentalItemId={id} />
+      <RentalItemDetailSimilarItems rentalItemId={numericId} />
       <hr className="mx-auto h-[0.5px] w-[90%] border-none bg-neutral-400 opacity-50" />
       <RentalItemDetailSellerItems
         seller={rentalItemData.seller}
-        rentalItemId={id}
+        rentalItemId={numericId}
       />
       <RentalItemDetailBottom
         liked={rentalItemData.likeed}

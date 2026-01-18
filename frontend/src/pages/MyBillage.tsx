@@ -6,6 +6,7 @@ import {
   LogOut,
   MapPinCheck,
   PackageCheck,
+  PackageOpen,
   Star,
   UserX
 } from 'lucide-react'
@@ -16,10 +17,12 @@ import { LoginPrompt } from '@/components/auth/LoginPrompt'
 import { signOut } from '@/api/auth/auth'
 import { useNavigate } from 'react-router-dom'
 import {
+  formatCompactPrice,
   formatJoinDate,
   formatNeighborhoodVerifiedPeriod,
   formatRecentActivitySimple
 } from '@/utils/utils'
+import { useGetUserRentalItems } from '@/hooks/useUser'
 
 export function MyBillage() {
   const navigate = useNavigate()
@@ -30,45 +33,17 @@ export function MyBillage() {
     return <LoginPrompt />
   }
 
-  // 임시 데이터 - 나중에 API로 대체
-  const myItems = [
-    {
-      id: 1,
-      title: '캠핑 텐트 4인용',
-      price: 15000,
-      imageUrl: 'https://placehold.co/120x120'
-    },
-    {
-      id: 2,
-      title: '소니 카메라 A7C',
-      price: 30000,
-      imageUrl: 'https://placehold.co/120x120'
-    },
-    {
-      id: 3,
-      title: '전동 킥보드',
-      price: 10000,
-      imageUrl: 'https://placehold.co/120x120'
-    },
-    {
-      id: 4,
-      title: '캠핑 텐트 4인용',
-      price: 15000,
-      imageUrl: 'https://placehold.co/120x120'
-    },
-    {
-      id: 5,
-      title: '소니 카메라 A7C',
-      price: 30000,
-      imageUrl: 'https://placehold.co/120x120'
-    },
-    {
-      id: 6,
-      title: '전동 킥보드',
-      price: 10000,
-      imageUrl: 'https://placehold.co/120x120'
-    }
-  ]
+  const {
+    data: userRentalItemData,
+    isLoading: userRentalItemLoading,
+    error: userRentalItemError
+  } = useGetUserRentalItems(user.id)
+
+  if (userRentalItemError || !userRentalItemData) {
+    return
+  }
+
+  const hasItems = userRentalItemData.rentalItems.length > 0
 
   const reviews = [
     {
@@ -247,38 +222,72 @@ export function MyBillage() {
       {/* 판매 물품 섹션 - 수평 스크롤 */}
       <div className="py-4">
         <div className="flex items-center justify-between px-4 pb-3">
-          <h3 className="text-base font-bold text-neutral-900">대여 물품 13</h3>
-          <button className="group flex items-center text-sm text-neutral-500">
-            전체보기
-            <ChevronRight
-              size={16}
-              className="icon-arrow-move"
-            />
-          </button>
-        </div>
-        <div className="scrollbar-hide flex gap-3 overflow-x-auto px-4">
-          {myItems.slice(0, 10).map(item => (
-            <div
-              key={item.id}
-              className="w-28 shrink-0 cursor-pointer">
-              <img
-                src={item.imageUrl}
-                alt={item.title}
-                className="mb-2 h-28 w-28 rounded-lg object-cover"
+          <h3 className="text-base font-bold text-neutral-900">
+            대여 물품 {userRentalItemData.rentalItems.length}
+          </h3>
+          {hasItems ? (
+            <button className="group flex items-center text-sm text-neutral-500">
+              전체보기
+              <ChevronRight
+                size={16}
+                className="icon-arrow-move"
               />
-              <p className="truncate text-sm text-neutral-800">{item.title}</p>
-              <p className="text-sm font-semibold text-neutral-900">
-                <div className="font-bold">
-                  {item.price.toLocaleString()}
-                  <span className="text-xs text-gray-500">원 / 일</span>
+            </button>
+          ) : (
+            <></>
+          )}
+        </div>
+        <div className="scrollbar-hide flex justify-center gap-3 overflow-x-auto px-4">
+          {hasItems ? (
+            <div
+              className={`hide-scrollbar flex gap-2.5 overflow-x-auto overflow-y-hidden px-4 select-none`}
+              style={{
+                scrollbarWidth: 'none',
+                msOverflowStyle: 'none',
+                WebkitOverflowScrolling: 'touch'
+              }}>
+              {userRentalItemData.rentalItems.map(item => (
+                <div
+                  key={item.id}
+                  className="flex w-[110px] shrink-0 cursor-pointer flex-col">
+                  <img
+                    src={item.thumbnailImageUrl}
+                    className="pointer-events-none mb-1.5 h-[110px] w-[110px] rounded-[10px] object-cover"
+                  />
+                  <div className="flex flex-1 flex-col gap-0.5">
+                    <div
+                      className="flex-1 overflow-hidden text-sm text-ellipsis"
+                      style={{
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical'
+                      }}>
+                      {item.title}
+                    </div>
+                    <div className="mt-auto">
+                      <div className="text-[15px] font-bold">
+                        {formatCompactPrice(item.pricePerDay)}
+                        <span className="text-[13px] text-gray-600">
+                          원 / 일
+                        </span>
+                      </div>
+                      <div className="text-[15px] font-bold">
+                        {formatCompactPrice(item.pricePerWeek)}
+                        <span className="text-[13px] text-gray-600">
+                          원 / 주
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div className="font-bold">
-                  {item.price.toLocaleString()}
-                  <span className="text-xs text-gray-500">원 / 주</span>
-                </div>
-              </p>
+              ))}
             </div>
-          ))}
+          ) : (
+            <div className="flex flex-col items-center gap-2 px-4 py-8 text-gray-400">
+              <PackageOpen size={32} />
+              <div className="text-sm">아직 등록한 물품이 없어요</div>
+            </div>
+          )}
         </div>
       </div>
 

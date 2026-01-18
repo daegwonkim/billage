@@ -1,5 +1,5 @@
 export interface GetRentalItemResponse {
-  id: string
+  id: number
   seller: Seller
   category: string
   title: string
@@ -15,7 +15,7 @@ export interface GetRentalItemResponse {
 }
 
 export interface Seller {
-  id: string
+  id: number
   nickname: string
   address: string
   profileImageUrl: string

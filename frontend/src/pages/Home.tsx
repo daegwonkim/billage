@@ -75,7 +75,7 @@ export function Home() {
     !!location
   )
 
-  const onRentalItemClick = (rentalItemId: string) => {
+  const onRentalItemClick = (rentalItemId: number) => {
     navigate(`/rental-items/${rentalItemId}`)
   }
 

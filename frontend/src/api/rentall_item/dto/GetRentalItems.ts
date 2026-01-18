@@ -17,7 +17,7 @@ export interface GetRentalItemsResponse {
 }
 
 export interface RentalItem {
-  id: string
+  id: number
   title: string
   thumbnailImageUrl: string
   address: string

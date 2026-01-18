@@ -5,7 +5,7 @@ import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 interface RentalItemDetailSimilarItemsProps {
-  rentalItemId: string
+  rentalItemId: number
 }
 
 export function RentalItemDetailSimilarItems({
@@ -39,7 +39,7 @@ export function RentalItemDetailSimilarItems({
     setIsDragging(false)
   }
 
-  const handleItemClick = (itemId: string) => {
+  const handleItemClick = (itemId: number) => {
     if (!hasMoved) {
       navigate(`/rental-items/${itemId}`)
     }

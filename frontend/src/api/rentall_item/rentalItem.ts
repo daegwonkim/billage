@@ -3,7 +3,6 @@ import type {
   RegisterRentalItemResponse
 } from './dto/RegisterRentalItem'
 import type { GetRentalItemsResponse } from './dto/GetRentalItems'
-import type { GetOtherRentalItemsBySellerResponse } from './dto/GetOtherRentalItemsBySeller'
 import type { GetSimilarRentalItemsResponse } from './dto/GetSimilarRentalItems'
 import type { GetRentalItemResponse } from './dto/GetRentalItem'
 import type { GetRentalItemCategoriesResponse } from './dto/GetRentalItemCategories'
@@ -43,7 +42,7 @@ export async function getRentalItems(
 }
 
 export async function getRentalItem(
-  rentalItemId: string
+  rentalItemId: number
 ): Promise<GetRentalItemResponse> {
   return await customFetch<GetRentalItemResponse>(
     `/api/rental-items/${rentalItemId}`
@@ -51,19 +50,10 @@ export async function getRentalItem(
 }
 
 export async function getSimilarRentalItems(
-  rentalItemId: string
+  rentalItemId: number
 ): Promise<GetSimilarRentalItemsResponse> {
   return await customFetch<GetSimilarRentalItemsResponse>(
     `/api/rental-items/${rentalItemId}/similar`
-  )
-}
-
-export async function getOtherRentalItemsBySeller(
-  excludeRentalItemId: string,
-  sellerId: string
-): Promise<GetOtherRentalItemsBySellerResponse> {
-  return await customFetch<GetOtherRentalItemsBySellerResponse>(
-    `/api/rental-items/${excludeRentalItemId}/other/${sellerId}`
   )
 }
 

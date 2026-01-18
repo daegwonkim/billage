@@ -1,4 +1,5 @@
 export interface GetMeResponse {
+  id: number
   publicId: string
   nickname: string
   profileImageUrl: string

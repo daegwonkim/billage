@@ -36,7 +36,7 @@ export function useGetRentalItemSortOptions() {
   })
 }
 
-export function useGetRentalItem(id: string) {
+export function useGetRentalItem(id: number) {
   return useQuery<GetRentalItemResponse>({
     queryKey: ['rentalItem', id],
     queryFn: () => getRentalItem(id),
@@ -65,7 +65,7 @@ export function useGetRentalItems(
   })
 }
 
-export function useGetSimilarRentalItems(rentalItemId: string) {
+export function useGetSimilarRentalItems(rentalItemId: number) {
   return useQuery<GetSimilarRentalItemsResponse>({
     queryKey: ['similarRentalItems', rentalItemId],
     queryFn: () => getSimilarRentalItems(rentalItemId)

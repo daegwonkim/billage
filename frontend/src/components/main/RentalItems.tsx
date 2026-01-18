@@ -4,7 +4,7 @@ import { Loader2 } from 'lucide-react'
 
 interface RentalItemsProps {
   rentalItems: RentalItem[]
-  onRentalItemClick: (rentalItemId: string) => void
+  onRentalItemClick: (rentalItemId: number) => void
   isFetchingNextPage: boolean
 }
 

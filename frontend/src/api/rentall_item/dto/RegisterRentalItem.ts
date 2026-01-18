@@ -8,5 +8,5 @@ export interface RegisterRentalItemRequest {
 }
 
 export interface RegisterRentalItemResponse {
-  id: string
+  id: number
 }

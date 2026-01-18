@@ -1,9 +1,9 @@
-export interface GetOtherRentalItemsBySellerResponse {
+export interface GetUserRentalItemsResponse {
   rentalItems: RentalItem[]
 }
 
 export interface RentalItem {
-  id: string
+  id: number
   title: string
   thumbnailImageUrl: string
   pricePerDay: number
