@@ -13,6 +13,7 @@ import { RentalItemDetail } from './pages/RentalItemDetail'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import RentalItemRegister from './pages/RentalItemRegister'
 import { MyBillage } from './pages/MyBillage'
+import { MySettings } from './pages/MySettings'
 import { AuthProvider } from './contexts/AuthContext'
 import { Search } from './pages/Search'
 import { Toaster } from 'react-hot-toast'
@@ -80,6 +81,10 @@ function AppContent() {
             <Route
               path="/search"
               element={<Search />}
+            />
+            <Route
+              path="/my/settings"
+              element={<MySettings />}
             />
           </Routes>
           {showBottomNav && (

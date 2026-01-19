@@ -1,15 +1,11 @@
 import {
   CalendarCheck,
-  EllipsisVertical,
   Frown,
-  LogOut,
   MapPinCheck,
   PackageCheck,
-  UserX
+  Settings
 } from 'lucide-react'
-import { useState } from 'react'
 import defaultProfileImage from '@/assets/default-profile.png'
-import { signOut } from '@/api/auth/auth'
 import { useNavigate } from 'react-router-dom'
 import {
   formatJoinDate,
@@ -17,12 +13,9 @@ import {
   formatRecentActivitySimple
 } from '@/utils/utils'
 import { useGetMe } from '@/hooks/useUser'
-import { useAuth } from '@/contexts/AuthContext'
 
 export function Profile() {
   const navigate = useNavigate()
-  const { logout } = useAuth()
-  const [showMenu, setShowMenu] = useState(false)
 
   const {
     data: userProfileData,
@@ -71,12 +64,6 @@ export function Profile() {
     )
   }
 
-  const handleLogout = async () => {
-    await signOut()
-    logout()
-    navigate('/')
-  }
-
   return (
     <>
       {/* 프로필 섹션 */}
@@ -111,43 +98,13 @@ export function Profile() {
           {/* 설정 아이콘 */}
           <div className="relative">
             <button
-              onClick={() => setShowMenu(!showMenu)}
+              onClick={() => navigate('/my/settings')}
               className="rounded-lg p-2 transition-colors hover:bg-gray-50">
-              <EllipsisVertical
+              <Settings
                 size={24}
-                className={`icon-rotate text-gray-600 ${showMenu ? 'active' : ''}`}
+                className="text-gray-600"
               />
             </button>
-
-            {/* 드롭다운 메뉴 */}
-            {showMenu && (
-              <>
-                <div
-                  className="animate-fade-in fixed inset-0 z-10"
-                  onClick={() => setShowMenu(false)}
-                />
-                <div className="animate-dropdown absolute top-9 right-2 z-20 w-27 origin-top-right rounded-lg border border-gray-200 bg-white py-1 shadow-lg">
-                  <button
-                    onClick={() => {
-                      setShowMenu(false)
-                      handleLogout()
-                    }}
-                    className="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-neutral-700 transition-colors hover:bg-gray-50">
-                    <LogOut size={16} />
-                    로그아웃
-                  </button>
-                  <button
-                    onClick={() => {
-                      setShowMenu(false)
-                      // TODO: 회원탈퇴 처리
-                    }}
-                    className="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-red-500 transition-colors hover:bg-gray-50">
-                    <UserX size={16} />
-                    회원탈퇴
-                  </button>
-                </div>
-              </>
-            )}
           </div>
         </div>
 
