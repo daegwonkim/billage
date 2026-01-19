@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ArrowRight, ChevronLeft, ChevronDown, MapPin } from 'lucide-react'
+import { ArrowRight, ChevronLeft, ChevronDown, MapPin, X } from 'lucide-react'
 import {
   sendVerificationCode,
   confirmVerificationCode,
@@ -20,7 +20,12 @@ interface Neighborhood {
   code: string
 }
 
-export function LoginPrompt() {
+interface LoginPromptProps {
+  isModal?: boolean
+  onClose?: () => void
+}
+
+export function LoginPrompt({ isModal = false, onClose }: LoginPromptProps) {
   const { login } = useAuth()
   const navigate = useNavigate()
 
@@ -108,7 +113,11 @@ export function LoginPrompt() {
           verifiedToken: confirmVerificationCodeRes.verifiedToken
         })
         login(response.userId)
-        navigate(-1)
+        if (isModal && onClose) {
+          onClose()
+        } else {
+          navigate(-1)
+        }
       }
     } catch (err) {
       if (err instanceof ApiError) {
@@ -182,7 +191,11 @@ export function LoginPrompt() {
         verifiedToken: verifiedToken
       })
       login(response.userId)
-      navigate(-1)
+      if (isModal && onClose) {
+        onClose()
+      } else {
+        navigate(-1)
+      }
     } catch (err) {
       if (err instanceof ApiError) {
         setError(err.getMessage())
@@ -194,17 +207,35 @@ export function LoginPrompt() {
     }
   }
 
-  return (
-    <div className="min-h-screen w-md bg-white pb-20">
+  const handleClose = () => {
+    if (isModal && onClose) {
+      onClose()
+    } else {
+      navigate(-1)
+    }
+  }
+
+  const content = (
+    <div
+      className={
+        isModal ? 'w-md bg-white' : 'min-h-screen w-md bg-white pb-20'
+      }>
       {/* 상단 바 */}
       <div className="relative flex h-14 items-center border-b border-gray-100 px-4">
         <button
-          onClick={() => navigate(-1)}
+          onClick={handleClose}
           className="absolute left-2 rounded-lg p-2 transition-colors hover:bg-gray-50">
-          <ChevronLeft
-            size={24}
-            className="text-neutral-700"
-          />
+          {isModal ? (
+            <X
+              size={24}
+              className="text-neutral-700"
+            />
+          ) : (
+            <ChevronLeft
+              size={24}
+              className="text-neutral-700"
+            />
+          )}
         </button>
         <div className="flex-1 text-center text-base font-extrabold text-neutral-900">
           로그인
@@ -390,4 +421,22 @@ export function LoginPrompt() {
       </div>
     </div>
   )
+
+  if (isModal) {
+    return (
+      <>
+        <div
+          className="fixed inset-0 z-50 bg-black/50"
+          onClick={handleClose}
+        />
+        <div className="animate-slide-up fixed inset-x-0 bottom-0 z-60 flex justify-center">
+          <div className="max-h-[90vh] overflow-y-auto rounded-t-2xl">
+            {content}
+          </div>
+        </div>
+      </>
+    )
+  }
+
+  return content
 }

@@ -1,6 +1,9 @@
 import type { RentalItem } from '@/api/rentall_item/dto/GetRentalItems'
 import { formatCompactPrice, getTimeAgo } from '@/utils/utils'
 import { MapPin, Package, Heart, Eye } from 'lucide-react'
+import { useAuth } from '@/contexts/AuthContext'
+import { LoginPrompt } from '../auth/LoginPrompt'
+import { useState } from 'react'
 
 interface RentalItemCardProps {
   rentalItem: RentalItem
@@ -8,7 +11,22 @@ interface RentalItemCardProps {
 }
 
 export function RentalItemCard({ rentalItem, onClick }: RentalItemCardProps) {
+  const { isAuthenticated } = useAuth()
+  const [showLoginModal, setShowLoginModal] = useState(false)
+
+  const handleLikeClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    e.preventDefault()
+
+    if (!isAuthenticated) {
+      setShowLoginModal(true)
+      return
+    }
+
+    // TODO: 좋아요 API 호출
+  }
   return (
+    <>
     <div
       key={rentalItem.id}
       onClick={onClick}
@@ -33,13 +51,13 @@ export function RentalItemCard({ rentalItem, onClick }: RentalItemCardProps) {
                 }}>
                 {rentalItem.title}
               </h3>
-              <div>
+              <button type="button" onClick={handleLikeClick}>
                 <Heart
                   size={22}
                   strokeWidth={1}
                   color="gray"
                 />
-              </div>
+              </button>
             </div>
             <div className="mb-2 flex items-center gap-1.5 text-xs text-gray-500">
               <MapPin
@@ -70,7 +88,9 @@ export function RentalItemCard({ rentalItem, onClick }: RentalItemCardProps) {
                 </>
               ) : (
                 <>
-                  <span className="text-sm font-extrabold text-gray-400">-</span>
+                  <span className="text-sm font-extrabold text-gray-400">
+                    -
+                  </span>
                   <span className="text-xs text-gray-400">원 / 일</span>
                 </>
               )}
@@ -86,7 +106,9 @@ export function RentalItemCard({ rentalItem, onClick }: RentalItemCardProps) {
                   </>
                 ) : (
                   <>
-                    <span className="text-sm font-extrabold text-gray-400">-</span>
+                    <span className="text-sm font-extrabold text-gray-400">
+                      -
+                    </span>
                     <span className="text-xs text-gray-400">원 / 주</span>
                   </>
                 )}
@@ -116,5 +138,10 @@ export function RentalItemCard({ rentalItem, onClick }: RentalItemCardProps) {
         </div>
       </div>
     </div>
+
+    {showLoginModal && (
+      <LoginPrompt isModal onClose={() => setShowLoginModal(false)} />
+    )}
+    </>
   )
 }
