@@ -23,9 +23,10 @@ interface Neighborhood {
 interface LoginPromptProps {
   isModal?: boolean
   onClose?: () => void
+  onLoginSuccess?: () => void
 }
 
-export function LoginPrompt({ isModal = false, onClose }: LoginPromptProps) {
+export function LoginPrompt({ isModal = false, onClose, onLoginSuccess }: LoginPromptProps) {
   const { login } = useAuth()
   const navigate = useNavigate()
 
@@ -113,8 +114,9 @@ export function LoginPrompt({ isModal = false, onClose }: LoginPromptProps) {
           verifiedToken: confirmVerificationCodeRes.verifiedToken
         })
         login(response.userId)
-        if (isModal && onClose) {
-          onClose()
+        if (isModal) {
+          onLoginSuccess?.()
+          onClose?.()
         } else {
           navigate(-1)
         }
@@ -191,8 +193,9 @@ export function LoginPrompt({ isModal = false, onClose }: LoginPromptProps) {
         verifiedToken: verifiedToken
       })
       login(response.userId)
-      if (isModal && onClose) {
-        onClose()
+      if (isModal) {
+        onLoginSuccess?.()
+        onClose?.()
       } else {
         navigate(-1)
       }

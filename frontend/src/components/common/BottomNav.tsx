@@ -60,7 +60,11 @@ export function BottomNav({
       </nav>
 
       {showLoginModal && (
-        <LoginPrompt isModal onClose={() => setShowLoginModal(false)} />
+        <LoginPrompt
+          isModal
+          onClose={() => setShowLoginModal(false)}
+          onLoginSuccess={() => onRegisterClick()}
+        />
       )}
     </>
   )
