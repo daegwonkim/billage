@@ -5,9 +5,11 @@ import {
   Camera,
   CircleAlert,
   Loader2,
-  X
+  X,
+  PackageCheck,
+  PackageX
 } from 'lucide-react'
-import toast, { Toaster } from 'react-hot-toast'
+import toast from 'react-hot-toast'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import type { RegisterRentalItemRequest } from '@/api/rentall_item/dto/RegisterRentalItem'
 import type { ModifyRentalItemRequest } from '@/api/rentall_item/dto/ModifyRentalItem'
@@ -124,9 +126,10 @@ export default function RentalItemRegister({ mode }: RentalItemRegisterProps) {
     onSuccess: data => {
       queryClient.invalidateQueries({ queryKey: ['rentalItems'] })
       navigate(`/rental-items/${data.id}`, { replace: true })
+      toast.success('대여 물품이 등록됐어요')
     },
     onError: () => {
-      toast.error('등록에 실패했어요.')
+      toast.error('대여 물품 등록에 실패했어요')
     }
   })
 
@@ -137,9 +140,10 @@ export default function RentalItemRegister({ mode }: RentalItemRegisterProps) {
       queryClient.invalidateQueries({ queryKey: ['rentalItems'] })
       queryClient.invalidateQueries({ queryKey: ['rentalItem', rentalItemId] })
       navigate(`/rental-items/${data.id}`, { replace: true })
+      toast.success('변경사항이 저장됐어요')
     },
     onError: () => {
-      toast.error('수정에 실패했어요.')
+      toast.error('변경사항 저장에 실패했어요')
     }
   })
 
@@ -347,11 +351,6 @@ export default function RentalItemRegister({ mode }: RentalItemRegisterProps) {
 
   return (
     <div className="min-h-screen w-md bg-white pb-20">
-      <Toaster
-        position="bottom-center"
-        toastOptions={{ className: 'text-sm' }}
-      />
-
       {/* Header */}
       <div className="sticky top-0 z-10 border-b border-gray-100 bg-white">
         <div className="relative flex h-14 items-center px-4">

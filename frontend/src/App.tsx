@@ -15,6 +15,7 @@ import RentalItemRegister from './pages/RentalItemRegister'
 import { MyBillage } from './pages/MyBillage'
 import { AuthProvider } from './contexts/AuthContext'
 import { Search } from './pages/Search'
+import { Toaster } from 'react-hot-toast'
 
 const queryClient = new QueryClient()
 
@@ -44,47 +45,53 @@ function AppContent() {
   }
 
   return (
-    <div className="flex justify-center shadow-[0_0_60px_rgba(0,0,0,0.2)]">
-      <div
-        style={{
-          fontFamily: 'system-ui, -apple-system, sans-serif',
-          position: 'relative'
-        }}>
-        <Routes>
-          <Route
-            path="/"
-            element={<Home />}
-          />
-          <Route
-            path="/my"
-            element={<MyBillage />}
-          />
-          <Route
-            path="/rental-items/:id"
-            element={<RentalItemDetail />}
-          />
-          <Route
-            path="/rental-items/register"
-            element={<RentalItemRegister mode="register" />}
-          />
-          <Route
-            path="/rental-items/:id/modify"
-            element={<RentalItemRegister mode="modify" />}
-          />
-          <Route
-            path="/search"
-            element={<Search />}
-          />
-        </Routes>
-        {showBottomNav && (
-          <BottomNav
-            activeTab={activeTab}
-            onTabChange={handleTabChange}
-            onRegisterClick={() => navigate('/rental-items/register')}
-          />
-        )}
+    <>
+      <Toaster
+        position="top-center"
+        toastOptions={{ className: 'text-sm ' }}
+      />
+      <div className="flex justify-center shadow-[0_0_60px_rgba(0,0,0,0.2)]">
+        <div
+          style={{
+            fontFamily: 'system-ui, -apple-system, sans-serif',
+            position: 'relative'
+          }}>
+          <Routes>
+            <Route
+              path="/"
+              element={<Home />}
+            />
+            <Route
+              path="/my"
+              element={<MyBillage />}
+            />
+            <Route
+              path="/rental-items/:id"
+              element={<RentalItemDetail />}
+            />
+            <Route
+              path="/rental-items/register"
+              element={<RentalItemRegister mode="register" />}
+            />
+            <Route
+              path="/rental-items/:id/modify"
+              element={<RentalItemRegister mode="modify" />}
+            />
+            <Route
+              path="/search"
+              element={<Search />}
+            />
+          </Routes>
+          {showBottomNav && (
+            <BottomNav
+              activeTab={activeTab}
+              onTabChange={handleTabChange}
+              onRegisterClick={() => navigate('/rental-items/register')}
+            />
+          )}
+        </div>
       </div>
-    </div>
+    </>
   )
 }
 

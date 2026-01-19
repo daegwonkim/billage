@@ -15,7 +15,7 @@ import { useState } from 'react'
 import { Pencil, Trash2, Flag } from 'lucide-react'
 import { remove } from '@/api/rentall_item/rentalItem'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import toast, { Toaster } from 'react-hot-toast'
+import toast from 'react-hot-toast'
 
 export function RentalItemDetail() {
   const navigate = useNavigate()
@@ -57,11 +57,11 @@ export function RentalItemDetail() {
     mutationFn: () => remove(numericId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['rentalItems'] })
-      toast.success('대여 물품이 삭제되었어요.')
       navigate('/', { replace: true })
+      toast.success('게시물이 삭제됐어요')
     },
     onError: () => {
-      toast.error('삭제에 실패했어요.')
+      toast.error('게시물 삭제에 실패했어요')
     }
   })
 
@@ -114,10 +114,6 @@ export function RentalItemDetail() {
 
   return (
     <div className="min-h-screen w-md bg-white pb-[115px]">
-      <Toaster
-        position="bottom-center"
-        toastOptions={{ className: 'text-sm' }}
-      />
       <RentalItemDetailHeader
         navigate={navigate}
         onMenuClick={() => setIsMenuOpen(true)}
