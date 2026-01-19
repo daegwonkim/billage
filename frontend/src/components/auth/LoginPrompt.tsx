@@ -357,8 +357,13 @@ export function LoginPrompt({ isModal = false, onClose }: LoginPromptProps) {
                     />
                   </button>
 
-                  {isDropdownOpen && neighborhoods.length > 0 && (
-                    <div className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-gray-200 bg-white shadow-lg">
+                  <div
+                    className={`mt-1 w-full overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg transition-all duration-300 ease-in-out ${
+                      isDropdownOpen && neighborhoods.length > 0
+                        ? 'max-h-60 opacity-100'
+                        : 'max-h-0 border-0 opacity-0'
+                    }`}>
+                    <div className="max-h-60 overflow-auto">
                       {neighborhoods.map(neighborhood => (
                         <button
                           key={neighborhood.code}
@@ -376,7 +381,7 @@ export function LoginPrompt({ isModal = false, onClose }: LoginPromptProps) {
                         </button>
                       ))}
                     </div>
-                  )}
+                  </div>
                 </div>
               )}
             </div>
@@ -430,7 +435,7 @@ export function LoginPrompt({ isModal = false, onClose }: LoginPromptProps) {
           onClick={handleClose}
         />
         <div className="animate-slide-up fixed inset-x-0 bottom-0 z-60 flex justify-center">
-          <div className="max-h-[90vh] overflow-y-auto rounded-t-2xl">
+          <div className="max-h-screen overflow-y-auto rounded-t-2xl">
             {content}
           </div>
         </div>
