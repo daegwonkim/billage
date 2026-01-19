@@ -30,6 +30,7 @@ class RentalItemJooqRepository(
     private val supabaseUrl: String
 ) {
     fun findRentalItems(
+        userId: Long?,
         category: RentalItemCategory?,
         keyword: String?,
         sortBy: RentalItemSortOption,
@@ -44,7 +45,8 @@ class RentalItemJooqRepository(
             RENTAL_ITEMS.CREATED_AT,
             thumbnailImageUrlSubquery(),
             likeCountSubquery(),
-            addressField())
+            addressField(),
+            likedSubquery(userId))
             .from(RENTAL_ITEMS)
             .join(USER_NEIGHBORHOODS).on(USER_NEIGHBORHOODS.USER_ID.eq(RENTAL_ITEMS.USER_ID))
             .join(NEIGHBORHOODS).on(NEIGHBORHOODS.ID.eq(USER_NEIGHBORHOODS.NEIGHBORHOOD_ID))
@@ -143,9 +145,9 @@ class RentalItemJooqRepository(
                     .from(RENTAL_ITEM_LIKE_RECORDS)
                     .where(RENTAL_ITEM_LIKE_RECORDS.RENTAL_ITEM_ID.eq(RENTAL_ITEMS.ID)
                         .and(RENTAL_ITEM_LIKE_RECORDS.USER_ID.eq(userId)))
-            ).`as`("liked")
+            ).`as`("is_liked")
         } else {
-            DSL.`val`(false).`as`("liked")
+            DSL.`val`(false).`as`("is_liked")
         }
 
     private fun addressField() =

@@ -4,6 +4,7 @@ import io.github.daegwonkim.backend.enumerate.RentalItemCategory
 import io.github.daegwonkim.backend.enumerate.RentalItemSortOption
 
 data class GetRentalItemsRequest(
+    val userId: Long?,
     val category: RentalItemCategory?,
     val keyword: String?,
     val page: Int,

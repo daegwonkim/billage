@@ -44,13 +44,14 @@ class RentalItemController(
     @Operation(summary = "대여 상품 목록 조회", description = "조건에 맞는 대여 상품을 모두 조회합니다")
     @GetMapping
     fun getRentalItems(
+        @AuthenticationPrincipal userId: Long?,
         @RequestParam(required = false) category: RentalItemCategory?,
         @RequestParam(required = false) keyword: String?,
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "20") size: Int,
         @RequestParam(defaultValue = "LATEST") sortBy: RentalItemSortOption,
     ): GetRentalItemsResponse {
-        val request = GetRentalItemsRequest(category, keyword, page, size, sortBy)
+        val request = GetRentalItemsRequest(userId, category, keyword, page, size, sortBy)
         return rentalItemService.getRentalItems(request)
     }
 

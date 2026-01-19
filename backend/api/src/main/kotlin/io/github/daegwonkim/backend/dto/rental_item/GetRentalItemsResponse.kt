@@ -23,6 +23,7 @@ data class GetRentalItemsResponse(
         val rentalCount: Int,
         val likeCount: Int,
         val viewCount: Int,
+        val isLiked: Boolean,
         val createdAt: Instant
     )
 

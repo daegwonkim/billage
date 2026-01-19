@@ -67,10 +67,11 @@ class RentalItemService(
     fun getRentalItems(request: GetRentalItemsRequest): GetRentalItemsResponse {
         val pageable = PageRequest.of(request.page, request.size)
         val result = rentalItemJooqRepository.findRentalItems(
-            category = request.category,
-            keyword = request.keyword,
-            sortBy = request.sortBy,
-            pageable = pageable
+            request.userId,
+            request.category,
+            request.keyword,
+            request.sortBy,
+            pageable
         )
         val content = result.content.map(::toGetRentalItemsResponse)
 
@@ -190,6 +191,7 @@ class RentalItemService(
             rentalItem.rentalCount,
             rentalItem.likeCount,
             rentalItem.viewCount,
+            rentalItem.isLiked,
             rentalItem.createdAt
         )
 
