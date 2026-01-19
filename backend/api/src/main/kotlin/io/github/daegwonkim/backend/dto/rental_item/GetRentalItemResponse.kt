@@ -15,7 +15,7 @@ data class GetRentalItemResponse(
     val rentalCount: Int,
     val likeCount: Int,
     val viewCount: Int,
-    val isLiked: Boolean,
+    val liked: Boolean,
     val createdAt: Instant
 ) {
     data class Seller(
@@ -47,7 +47,7 @@ data class GetRentalItemResponse(
             rentalCount = item.rentalCount,
             likeCount = item.likeCount,
             viewCount = item.viewCount,
-            isLiked = item.isLiked,
+            liked = item.liked,
             createdAt = item.createdAt
         )
     }

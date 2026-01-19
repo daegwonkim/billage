@@ -191,7 +191,7 @@ class RentalItemService(
             rentalItem.rentalCount,
             rentalItem.likeCount,
             rentalItem.viewCount,
-            rentalItem.isLiked,
+            rentalItem.liked,
             rentalItem.createdAt
         )
 

@@ -25,6 +25,6 @@ export interface RentalItem {
   rentalCount: number
   likeCount: number
   viewCount: number
-  isLiked: boolean
+  liked: boolean
   createdAt: Date
 }

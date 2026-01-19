@@ -17,6 +17,6 @@ data class RentalItemProjection(
     val rentalCount: Int,
     val likeCount: Int,
     val viewCount: Int,
-    val isLiked: Boolean,
+    val liked: Boolean,
     val createdAt: Instant
 )

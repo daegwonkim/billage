@@ -145,9 +145,9 @@ class RentalItemJooqRepository(
                     .from(RENTAL_ITEM_LIKE_RECORDS)
                     .where(RENTAL_ITEM_LIKE_RECORDS.RENTAL_ITEM_ID.eq(RENTAL_ITEMS.ID)
                         .and(RENTAL_ITEM_LIKE_RECORDS.USER_ID.eq(userId)))
-            ).`as`("is_liked")
+            ).`as`("liked")
         } else {
-            DSL.`val`(false).`as`("is_liked")
+            DSL.`val`(false).`as`("liked")
         }
 
     private fun addressField() =

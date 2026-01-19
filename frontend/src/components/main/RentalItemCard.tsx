@@ -3,8 +3,8 @@ import { formatCompactPrice, getTimeAgo } from '@/utils/utils'
 import { MapPin, Package, Heart, Eye } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { LoginPrompt } from '../auth/LoginPrompt'
-import { useState } from 'react'
-import { useMutation } from '@tanstack/react-query'
+import { useEffect, useState } from 'react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { like, unlike } from '@/api/rentall_item/rentalItem'
 import toast from 'react-hot-toast'
 
@@ -15,10 +15,20 @@ interface RentalItemCardProps {
 
 export function RentalItemCard({ rentalItem, onClick }: RentalItemCardProps) {
   const { isAuthenticated } = useAuth()
+  const queryClient = useQueryClient()
   const [showLoginModal, setShowLoginModal] = useState(false)
+  const [liked, setLiked] = useState(rentalItem.liked ?? false)
+
+  useEffect(() => {
+    setLiked(rentalItem.liked ?? false)
+  }, [rentalItem.liked])
 
   const likeMutation = useMutation({
     mutationFn: () => like(rentalItem.id),
+    onSuccess: () => {
+      setLiked(true)
+      queryClient.invalidateQueries({ queryKey: ['rentalItems'] })
+    },
     onError: () => {
       toast.error('좋아요 등록에 실패했어요')
     }
@@ -26,6 +36,10 @@ export function RentalItemCard({ rentalItem, onClick }: RentalItemCardProps) {
 
   const unlikeMutation = useMutation({
     mutationFn: () => unlike(rentalItem.id),
+    onSuccess: () => {
+      setLiked(false)
+      queryClient.invalidateQueries({ queryKey: ['rentalItems'] })
+    },
     onError: () => {
       toast.error('좋아요 해제에 실패했어요')
     }
@@ -40,7 +54,11 @@ export function RentalItemCard({ rentalItem, onClick }: RentalItemCardProps) {
       return
     }
 
-    // TODO: 좋아요 API 호출
+    if (liked) {
+      unlikeMutation.mutate()
+    } else {
+      likeMutation.mutate()
+    }
   }
 
   return (
@@ -75,7 +93,8 @@ export function RentalItemCard({ rentalItem, onClick }: RentalItemCardProps) {
                   <Heart
                     size={22}
                     strokeWidth={1}
-                    color="gray"
+                    fill={liked ? 'red' : 'none'}
+                    color={liked ? 'red' : 'gray'}
                   />
                 </button>
               </div>
