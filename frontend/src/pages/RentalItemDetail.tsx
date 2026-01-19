@@ -77,7 +77,7 @@ export function RentalItemDetail() {
 
   const handleModify = () => {
     setIsMenuOpen(false)
-    navigate(`/rental-items/${numericId}/modify`)
+    navigate(`/rental-items/${numericId}/modify`, { replace: true })
   }
 
   const handleDelete = () => {
