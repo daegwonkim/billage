@@ -32,7 +32,7 @@ export function RentalItemDetail() {
       <div className="flex min-h-screen w-md items-center justify-center bg-white">
         <div className="text-center">
           <p className="mb-2 text-lg font-semibold text-neutral-800">
-            상품 정보를 불러오는데 실패했습어요
+            물품 정보를 불러오는데 실패했습어요
           </p>
           <p className="mb-4 text-sm text-neutral-500">
             잠시 후 다시 시도해주세요
@@ -74,7 +74,7 @@ export function RentalItemDetail() {
       <div className="flex min-h-screen w-md items-center justify-center bg-white">
         <div className="text-center">
           <p className="mb-2 text-lg font-semibold text-neutral-800">
-            상품 정보를 불러오는데 실패했어요
+            물품 정보를 불러오는데 실패했어요
           </p>
           <p className="mb-4 text-sm text-neutral-500">
             잠시 후 다시 시도해주세요
