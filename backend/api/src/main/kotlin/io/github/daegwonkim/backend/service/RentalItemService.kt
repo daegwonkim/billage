@@ -185,9 +185,13 @@ class RentalItemService(
         rentalItemImageRepository.saveAll(rentalItemImages)
     }
 
-    private fun getRentalItemImages(rentalItemId: Long): List<String> {
+    private fun getRentalItemImages(rentalItemId: Long): List<GetRentalItemForModifyResponse.RentalItemImage> {
         return rentalItemImageRepository.findAllByRentalItemIdOrderBySequence(rentalItemId)
-            .map { image -> supabaseStorageClient.getPublicUrl(rentalItemImagesBucket, image.key) }
+            .map { image ->
+                GetRentalItemForModifyResponse.RentalItemImage(
+                    supabaseStorageClient.getPublicUrl(rentalItemImagesBucket, image.key),
+                    image.key)
+            }
     }
 
     private fun deleteRemovedImages(deleteImageKeys: List<String>) {

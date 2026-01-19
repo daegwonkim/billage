@@ -47,7 +47,6 @@ class SecurityConfig(
 
                 // Authenticated
                 authorize("/api/users/me", authenticated)
-                authorize(HttpMethod.POST, "/api/rental-items", authenticated)
 
                 // Dev Tools
                 authorize("/swagger-ui/**", permitAll)
