@@ -87,7 +87,7 @@ export async function modify(
   request: ModifyRentalItemRequest
 ): Promise<ModifyRentalItemResponse> {
   return await customFetch<ModifyRentalItemResponse>(
-    `/api/rental-items/modify/${id}`,
+    `/api/rental-items/${id}`,
     {
       method: 'PUT',
       headers: {

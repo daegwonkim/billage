@@ -11,7 +11,7 @@ export function RentalItemDetailHeader({
   onMenuClick
 }: RentalItemDetailHeaderProps) {
   return (
-    <div className="sticky top-0 z-50 bg-transparent">
+    <div className="sticky top-0 z-40 bg-transparent">
       <div className="absolute top-0 right-0 left-0 flex items-center justify-between px-4 py-3">
         <button
           onClick={() => navigate(-1)}

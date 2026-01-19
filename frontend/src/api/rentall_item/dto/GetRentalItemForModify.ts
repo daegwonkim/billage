@@ -5,5 +5,10 @@ export interface GetRentalItemForModifyResponse {
   category: string
   pricePerDay: number
   pricePerWeek: number
-  images: string[]
+  images: RentalItemImage[]
+}
+
+interface RentalItemImage {
+  url: string
+  key: string
 }

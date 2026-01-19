@@ -65,7 +65,11 @@ function AppContent() {
           />
           <Route
             path="/rental-items/register"
-            element={<RentalItemRegister />}
+            element={<RentalItemRegister mode="register" />}
+          />
+          <Route
+            path="/rental-items/:id/modify"
+            element={<RentalItemRegister mode="modify" />}
           />
           <Route
             path="/search"

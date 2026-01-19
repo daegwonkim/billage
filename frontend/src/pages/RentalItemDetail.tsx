@@ -75,9 +75,9 @@ export function RentalItemDetail() {
   const imageUrls = rentalItemData.imageUrls
   const isOwner = userId === rentalItemData.seller.id
 
-  const handleEdit = () => {
+  const handleModify = () => {
     setIsMenuOpen(false)
-    navigate(`/rental-items/${numericId}/edit`)
+    navigate(`/rental-items/${numericId}/modify`)
   }
 
   const handleDelete = () => {
@@ -125,7 +125,7 @@ export function RentalItemDetail() {
             <BottomSheetItem
               icon={<Pencil size={20} />}
               label="수정하기"
-              onClick={handleEdit}
+              onClick={handleModify}
             />
             <BottomSheetItem
               icon={<Trash2 size={20} />}

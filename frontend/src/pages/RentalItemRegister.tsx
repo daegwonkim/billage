@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import {
   ChevronLeft,
   Plus,
@@ -10,14 +10,23 @@ import {
 import toast, { Toaster } from 'react-hot-toast'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import type { RegisterRentalItemRequest } from '@/api/rentall_item/dto/RegisterRentalItem'
-import { register } from '@/api/rentall_item/rentalItem'
+import type { ModifyRentalItemRequest } from '@/api/rentall_item/dto/ModifyRentalItem'
+import {
+  register,
+  modify,
+  getRentalItemForModify
+} from '@/api/rentall_item/rentalItem'
 import { generateUploadSignedUrl, removeFile } from '@/api/storage/storage'
 import { formatPrice } from '@/utils/utils'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useGetRentalItemCategories } from '@/hooks/useRentalItem'
 import { useAuth } from '@/contexts/AuthContext'
 import { LoginPrompt } from '@/components/auth/LoginPrompt'
 import { ApiError } from '@/api/error'
+
+interface RentalItemRegisterProps {
+  mode: 'register' | 'modify'
+}
 
 interface FormData {
   category: string
@@ -30,19 +39,25 @@ interface FormData {
 }
 
 interface ImageData {
-  file: File
+  file?: File
   preview: string
   fileKey?: string
   isUploading: boolean
   isUploaded: boolean
+  isExisting?: boolean
 }
 
-export default function RentalItemRegister() {
+export default function RentalItemRegister({ mode }: RentalItemRegisterProps) {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const { isAuthenticated } = useAuth()
+  const { id } = useParams<{ id: string }>()
+  const rentalItemId = id ? Number(id) : null
+
   const [isOpen, setIsOpen] = useState(false)
   const [images, setImages] = useState<ImageData[]>([])
+  const [isLoading, setIsLoading] = useState(mode === 'modify')
+  const [deletedImageKeys, setDeletedImageKeys] = useState<string[]>([])
   const [formData, setFormData] = useState<FormData>({
     category: '',
     title: '',
@@ -52,6 +67,45 @@ export default function RentalItemRegister() {
     enablePricePerDay: true,
     enablePricePerWeek: true
   })
+
+  // 수정 모드일 때 기존 데이터 불러오기
+  useEffect(() => {
+    if (mode === 'modify' && rentalItemId) {
+      getRentalItemForModify(rentalItemId)
+        .then(data => {
+          setFormData({
+            category: data.category,
+            title: data.title,
+            description: data.description,
+            pricePerDay: data.pricePerDay
+              ? formatPrice(String(data.pricePerDay))
+              : '',
+            pricePerWeek: data.pricePerWeek
+              ? formatPrice(String(data.pricePerWeek))
+              : '',
+            enablePricePerDay: !!data.pricePerDay,
+            enablePricePerWeek: !!data.pricePerWeek
+          })
+          // 기존 이미지 설정
+          setImages(
+            data.images.map(image => ({
+              preview: image.url,
+              fileKey: image.key,
+              isUploading: false,
+              isUploaded: true,
+              isExisting: true
+            }))
+          )
+        })
+        .catch(() => {
+          toast.error('데이터를 불러오는데 실패했어요.')
+          navigate(-1)
+        })
+        .finally(() => {
+          setIsLoading(false)
+        })
+    }
+  }, [mode, rentalItemId, navigate])
 
   const categoryRef = useRef<HTMLSelectElement>(null)
   const titleRef = useRef<HTMLInputElement>(null)
@@ -73,6 +127,19 @@ export default function RentalItemRegister() {
     },
     onError: () => {
       toast.error('등록에 실패했어요.')
+    }
+  })
+
+  const modifyMutation = useMutation({
+    mutationFn: (request: ModifyRentalItemRequest) =>
+      modify(rentalItemId!, request),
+    onSuccess: data => {
+      queryClient.invalidateQueries({ queryKey: ['rentalItems'] })
+      queryClient.invalidateQueries({ queryKey: ['rentalItem', rentalItemId] })
+      navigate(`/rental-items/${data.id}`, { replace: true })
+    },
+    onError: () => {
+      toast.error('수정에 실패했어요.')
     }
   })
 
@@ -105,7 +172,13 @@ export default function RentalItemRegister() {
     for (let i = 0; i < filesToProcess; i++) {
       const file = files[i]
       const preview = URL.createObjectURL(file)
-      newImages.push({ file, preview, isUploading: true, isUploaded: false })
+      newImages.push({
+        file,
+        preview,
+        isUploading: true,
+        isUploaded: false,
+        isExisting: false
+      })
     }
 
     setImages(prev => [...prev, ...newImages])
@@ -114,20 +187,21 @@ export default function RentalItemRegister() {
     for (let i = 0; i < newImages.length; i++) {
       const newImage = newImages[i]
       const newImageIndex = images.length + i
+      const file = newImage.file!
 
       try {
         // Signed URL 발급
         const { fileKey, signedUrl } = await generateUploadSignedUrl({
           bucket: 'rental-item-images',
-          fileName: newImage.file.name
+          fileName: file.name
         })
 
         await fetch(signedUrl, {
           method: 'PUT',
           headers: {
-            'Content-Type': newImage.file.type
+            'Content-Type': file.type
           },
-          body: newImage.file
+          body: file
         })
 
         setImages(prev =>
@@ -159,10 +233,15 @@ export default function RentalItemRegister() {
   const removeImage = async (index: number) => {
     const image = images[index]
 
-    URL.revokeObjectURL(image.preview)
+    if (!image.isExisting) {
+      URL.revokeObjectURL(image.preview)
+    }
 
-    // Storage에서 파일 삭제
-    if (image.fileKey && image.isUploaded) {
+    // 기존 이미지는 삭제 목록에 추가 (수정 시 서버에 전달)
+    if (image.isExisting && image.fileKey) {
+      setDeletedImageKeys(prev => [...prev, image.fileKey!])
+    } else if (image.fileKey && image.isUploaded) {
+      // 새로 업로드한 이미지는 Storage에서 바로 삭제
       try {
         await removeFile({
           bucket: 'rental-item-images',
@@ -228,20 +307,41 @@ export default function RentalItemRegister() {
     }
 
     if (!hasError) {
-      registerMutation.mutate({
-        category: formData.category,
-        title: formData.title,
-        description: formData.description,
-        pricePerDay: formData.enablePricePerDay
-          ? Number(formData.pricePerDay.replace(/,/g, ''))
-          : null,
-        pricePerWeek: formData.enablePricePerWeek
-          ? Number(formData.pricePerWeek.replace(/,/g, ''))
-          : null,
-        imageKeys: images
-          .map(img => img.fileKey)
-          .filter(fileKey => fileKey !== undefined)
-      })
+      if (mode === 'register') {
+        registerMutation.mutate({
+          category: formData.category,
+          title: formData.title,
+          description: formData.description,
+          pricePerDay: formData.enablePricePerDay
+            ? Number(formData.pricePerDay.replace(/,/g, ''))
+            : null,
+          pricePerWeek: formData.enablePricePerWeek
+            ? Number(formData.pricePerWeek.replace(/,/g, ''))
+            : null,
+          imageKeys: images
+            .map(img => img.fileKey)
+            .filter(fileKey => fileKey !== undefined)
+        })
+      } else {
+        // 새로 업로드한 이미지만 필터링
+        const newImageKeys = images
+          .filter(img => !img.isExisting && img.fileKey)
+          .map(img => img.fileKey!)
+
+        modifyMutation.mutate({
+          category: formData.category,
+          title: formData.title,
+          description: formData.description,
+          pricePerDay: formData.enablePricePerDay
+            ? Number(formData.pricePerDay.replace(/,/g, ''))
+            : 0,
+          pricePerWeek: formData.enablePricePerWeek
+            ? Number(formData.pricePerWeek.replace(/,/g, ''))
+            : 0,
+          newImageKeys,
+          deleteImageKeys: deletedImageKeys
+        })
+      }
     }
   }
 
@@ -264,7 +364,7 @@ export default function RentalItemRegister() {
             />
           </button>
           <div className="flex-1 text-center text-base font-extrabold text-neutral-900">
-            내 물건 대여하기
+            {mode === 'register' ? '내 물건 대여하기' : '게시글 수정'}
           </div>
         </div>
       </div>
@@ -598,9 +698,10 @@ export default function RentalItemRegister() {
       {/* Submit Button */}
       <div className="fixed bottom-0 left-1/2 z-40 w-full max-w-md -translate-x-1/2 bg-white p-4">
         <button
-          className="w-full rounded-lg bg-black py-3 font-medium text-white"
-          onClick={handleSubmit}>
-          등록하기
+          className="w-full rounded-lg bg-black py-3 font-medium text-white disabled:bg-gray-300"
+          onClick={handleSubmit}
+          disabled={isLoading}>
+          {mode === 'register' ? '등록하기' : '수정하기'}
         </button>
       </div>
     </div>
