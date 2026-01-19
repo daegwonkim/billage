@@ -5,7 +5,7 @@ import io.github.daegwonkim.backend.dto.auth.ConfirmRegisteredRequest
 import io.github.daegwonkim.backend.dto.auth.ConfirmRegisteredResponse
 import io.github.daegwonkim.backend.dto.auth.ReissueTokenResponse
 import io.github.daegwonkim.backend.dto.auth.SignInRequest
-import io.github.daegwonkim.backend.dto.auth.SignInResponse
+import io.github.daegwonkim.backend.dto.auth.SignInResult
 import io.github.daegwonkim.backend.dto.auth.SignUpRequest
 import io.github.daegwonkim.backend.dto.auth.ConfirmVerificationCodeRequest
 import io.github.daegwonkim.backend.dto.auth.ConfirmVerificationCodeResponse
@@ -91,7 +91,7 @@ class AuthService(
     }
 
     @Transactional
-    fun signIn(request: SignInRequest): SignInResponse {
+    fun signIn(request: SignInRequest): SignInResult {
         val phoneNo = request.phoneNo
 
         val user = userRepository.findByPhoneNoAndIsWithdrawnFalse(phoneNo)
@@ -104,7 +104,7 @@ class AuthService(
 
         userJooqRepository.updateLastActiveAtById(user.id)
 
-        return SignInResponse(generatedTokens.accessToken, generatedTokens.refreshToken)
+        return SignInResult(user.id, generatedTokens.accessToken, generatedTokens.refreshToken)
     }
 
     fun reissueToken(refreshToken: String): ReissueTokenResponse {

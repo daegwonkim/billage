@@ -7,6 +7,7 @@ import io.github.daegwonkim.backend.dto.auth.SignUpRequest
 import io.github.daegwonkim.backend.dto.auth.ConfirmVerificationCodeRequest
 import io.github.daegwonkim.backend.dto.auth.ConfirmVerificationCodeResponse
 import io.github.daegwonkim.backend.dto.auth.SendVerificationCodeRequest
+import io.github.daegwonkim.backend.dto.auth.SignInResponse
 import io.github.daegwonkim.backend.exception.errorcode.AuthErrorCode
 import io.github.daegwonkim.backend.exception.business.AuthenticationException
 import io.github.daegwonkim.backend.service.AuthService
@@ -51,10 +52,12 @@ class AuthController(
 
     @Operation(summary = "로그인", description = "기존 계정으로 로그인합니다")
     @PostMapping("/sign-in")
-    fun signIn(@Valid @RequestBody request: SignInRequest, response: HttpServletResponse) {
-        val signInResponse = authService.signIn(request)
-        response.addCookie(cookieUtil.createAccessTokenCookie(signInResponse.accessToken))
-        response.addCookie(cookieUtil.createRefreshTokenCookie(signInResponse.refreshToken))
+    fun signIn(@Valid @RequestBody request: SignInRequest, response: HttpServletResponse): SignInResponse {
+        val signInResult = authService.signIn(request)
+        response.addCookie(cookieUtil.createAccessTokenCookie(signInResult.accessToken))
+        response.addCookie(cookieUtil.createRefreshTokenCookie(signInResult.refreshToken))
+
+        return SignInResponse(signInResult.userId)
     }
 
     @Operation(summary = "토큰 재발급", description = "AccessToken, RefreshToken을 재발급합니다")
