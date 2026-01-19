@@ -5,5 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface RentalItemImageRepository : JpaRepository<RentalItemImage, Long> {
     fun findAllByRentalItemIdOrderBySequence(rentalItemId: Long): List<RentalItemImage>
+    fun findAllByRentalItemId(rentalItemId: Long): List<RentalItemImage>
     fun deleteAllByKeyIn(keys: List<String>)
+    fun deleteAllByRentalItemId(rentalItemId: Long)
 }

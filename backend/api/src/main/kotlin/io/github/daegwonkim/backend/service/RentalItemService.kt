@@ -136,10 +136,20 @@ class RentalItemService(
         rentalItem.modify(modifiedInfo.category, modifiedInfo.title, modifiedInfo.description,
             modifiedInfo.pricePerDay, modifiedInfo.pricePerWeek)
 
-        deleteRemovedImages(modifiedInfo.deleteImageKeys)
+        deleteImages(modifiedInfo.deleteImageKeys)
         saveNewImages(rentalItem.id, modifiedInfo.newImageKeys)
 
         return ModifyRentalItemResponse(id)
+    }
+
+    @Transactional
+    fun remove(id: Long) {
+        rentalItemJooqRepository.updateIsDeletedById(id, true)
+        rentalItemImageRepository.findAllByRentalItemId(id)
+            .forEach { image ->
+                eventPublisher.publishEvent(StorageFileDeleteEvent(rentalItemImagesBucket, image.key))
+            }
+        rentalItemImageRepository.deleteAllByRentalItemId(id)
     }
 
     private fun saveNewImages(rentalItemId: Long, newImageKeys: List<String>) {
@@ -194,7 +204,7 @@ class RentalItemService(
             }
     }
 
-    private fun deleteRemovedImages(deleteImageKeys: List<String>) {
+    private fun deleteImages(deleteImageKeys: List<String>) {
         if (deleteImageKeys.isEmpty()) return
 
         rentalItemImageRepository.deleteAllByKeyIn(deleteImageKeys)

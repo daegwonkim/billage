@@ -13,11 +13,16 @@ import { useGetRentalItem } from '@/hooks/useRentalItem'
 import { useAuth } from '@/contexts/AuthContext'
 import { useState } from 'react'
 import { Pencil, Trash2, Flag } from 'lucide-react'
+import { remove } from '@/api/rentall_item/rentalItem'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import toast, { Toaster } from 'react-hot-toast'
 
 export function RentalItemDetail() {
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const { userId } = useAuth()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
   let { id } = useParams<{ id: string }>()
   const numericId = Number(id)
@@ -27,7 +32,7 @@ export function RentalItemDetail() {
       <div className="flex min-h-screen w-md items-center justify-center bg-white">
         <div className="text-center">
           <p className="mb-2 text-lg font-semibold text-neutral-800">
-            상품 정보를 불러오는데 실패했습니다
+            상품 정보를 불러오는데 실패했습어요
           </p>
           <p className="mb-4 text-sm text-neutral-500">
             잠시 후 다시 시도해주세요
@@ -48,6 +53,18 @@ export function RentalItemDetail() {
     error: rentalItemError
   } = useGetRentalItem(numericId)
 
+  const deleteMutation = useMutation({
+    mutationFn: () => remove(numericId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['rentalItems'] })
+      toast.success('대여 물품이 삭제되었어요.')
+      navigate('/', { replace: true })
+    },
+    onError: () => {
+      toast.error('삭제에 실패했어요.')
+    }
+  })
+
   if (rentalItemLoading) {
     return <RentalItemDetailSkeleton />
   }
@@ -57,7 +74,7 @@ export function RentalItemDetail() {
       <div className="flex min-h-screen w-md items-center justify-center bg-white">
         <div className="text-center">
           <p className="mb-2 text-lg font-semibold text-neutral-800">
-            상품 정보를 불러오는데 실패했습니다
+            상품 정보를 불러오는데 실패했어요
           </p>
           <p className="mb-4 text-sm text-neutral-500">
             잠시 후 다시 시도해주세요
@@ -82,7 +99,12 @@ export function RentalItemDetail() {
 
   const handleDelete = () => {
     setIsMenuOpen(false)
-    // TODO: 삭제 확인 모달 및 삭제 API 호출
+    setIsDeleteModalOpen(true)
+  }
+
+  const confirmDelete = () => {
+    setIsDeleteModalOpen(false)
+    deleteMutation.mutate()
   }
 
   const handleReport = () => {
@@ -92,6 +114,10 @@ export function RentalItemDetail() {
 
   return (
     <div className="min-h-screen w-md bg-white pb-[115px]">
+      <Toaster
+        position="bottom-center"
+        toastOptions={{ className: 'text-sm' }}
+      />
       <RentalItemDetailHeader
         navigate={navigate}
         onMenuClick={() => setIsMenuOpen(true)}
@@ -116,7 +142,7 @@ export function RentalItemDetail() {
       <BottomSheet
         isOpen={isMenuOpen}
         onClose={() => setIsMenuOpen(false)}
-        title={isOwner ? '내 게시글 관리' : '게시글 메뉴'}
+        title={isOwner ? '내 대여 물품 관리' : '대여 물품 메뉴'}
         showCancelButton={true}
         showCloseButton={false}
         showDragHandle={true}>
@@ -143,6 +169,39 @@ export function RentalItemDetail() {
           />
         )}
       </BottomSheet>
+
+      {/* 삭제 확인 모달 */}
+      {isDeleteModalOpen && (
+        <>
+          <div
+            className="fixed inset-0 z-50 bg-black/50"
+            onClick={() => setIsDeleteModalOpen(false)}
+          />
+          <div className="fixed top-1/2 left-1/2 z-60 w-80 -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-white p-6 shadow-xl">
+            <h3 className="mb-2 text-lg font-bold text-neutral-900">
+              등록 물품 삭제
+            </h3>
+            <p className="mb-6 text-sm text-neutral-600">
+              정말로 이 물품을 삭제하시겠어요?
+              <br />
+              삭제된 물품은 복구할 수 없어요.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setIsDeleteModalOpen(false)}
+                className="flex-1 rounded-lg bg-gray-100 py-3 font-medium text-neutral-700 transition-colors hover:bg-gray-200">
+                취소
+              </button>
+              <button
+                onClick={confirmDelete}
+                disabled={deleteMutation.isPending}
+                className="flex-1 rounded-lg bg-red-600 py-3 font-medium text-white transition-colors hover:bg-red-700 disabled:bg-red-300">
+                {deleteMutation.isPending ? '삭제 중...' : '삭제'}
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   )
 }

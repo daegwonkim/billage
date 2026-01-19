@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.web.bind.annotation.DeleteMapping
 
 @RestController
 @RequestMapping("/api/rental-items")
@@ -93,4 +94,10 @@ class RentalItemController(
     ): ModifyRentalItemResponse {
         return rentalItemService.modify(id, modifiedInfo)
     }
+
+    @Operation(summary = "상품 삭제", description = "등록한 대여 상품을 삭제합니다")
+    @DeleteMapping("/{id}")
+    fun remove(
+        @PathVariable("id") id: Long
+    ) = rentalItemService.remove(id)
 }

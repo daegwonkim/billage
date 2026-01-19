@@ -49,6 +49,7 @@ class RentalItemJooqRepository(
             .join(USER_NEIGHBORHOODS).on(USER_NEIGHBORHOODS.USER_ID.eq(RENTAL_ITEMS.USER_ID))
             .join(NEIGHBORHOODS).on(NEIGHBORHOODS.ID.eq(USER_NEIGHBORHOODS.NEIGHBORHOOD_ID))
             .where(buildGetRentalItemsCondition(category = category, keyword = keyword))
+            .and(RENTAL_ITEMS.IS_DELETED.eq(false))
             .orderBy(buildSortOrder(sortBy))
 
         val totalCount = dslContext.selectCount()
@@ -87,6 +88,7 @@ class RentalItemJooqRepository(
             .join(USER_NEIGHBORHOODS).on(USER_NEIGHBORHOODS.USER_ID.eq(RENTAL_ITEMS.USER_ID))
             .join(NEIGHBORHOODS).on(NEIGHBORHOODS.ID.eq(USER_NEIGHBORHOODS.NEIGHBORHOOD_ID))
             .where(RENTAL_ITEMS.ID.eq(rentalItemId))
+            .and(RENTAL_ITEMS.IS_DELETED.eq(false))
             .fetchOneInto(RentalItemProjection::class.java)
     }
 
@@ -109,6 +111,15 @@ class RentalItemJooqRepository(
             .set(RENTAL_ITEMS.VIEW_COUNT, RENTAL_ITEMS.VIEW_COUNT.plus(1))
             .where(RENTAL_ITEMS.ID.eq(rentalItemId))
             .execute()
+    }
+
+    fun updateIsDeletedById(id: Long, isDeleted: Boolean): Boolean {
+        val deleted = dslContext.update(RENTAL_ITEMS)
+            .set(RENTAL_ITEMS.IS_DELETED, isDeleted)
+            .where(RENTAL_ITEMS.ID.eq(id))
+            .execute()
+
+        return deleted > 0
     }
 
     private fun thumbnailImageUrlSubquery() =

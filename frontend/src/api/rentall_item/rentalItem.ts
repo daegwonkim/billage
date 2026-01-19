@@ -97,3 +97,9 @@ export async function modify(
     }
   )
 }
+
+export async function remove(id: number): Promise<void> {
+  await customFetch(`/api/rental-items/${id}`, {
+    method: 'DELETE'
+  })
+}
