@@ -1,18 +1,18 @@
 package io.github.daegwonkim.backend.dto.user
 
 import io.github.daegwonkim.backend.repository.projection.UserProfileProjection
-import java.time.LocalDateTime
+import java.time.Instant
 
 data class GetProfileResponse(
     val id: Long,
     val publicId: String,
     val nickname: String,
     val profileImageUrl: String?,
-    val lastActiveAt: LocalDateTime,
-    val neighborhoodVerifiedAt: LocalDateTime,
+    val lastActiveAt: Instant,
+    val neighborhoodVerifiedAt: Instant,
     val rentOutCount: Int,
     val rentInCount: Int,
-    val createdAt: LocalDateTime,
+    val createdAt: Instant,
     val neighborhood: Neighborhood
 ) {
     companion object {

@@ -1,7 +1,7 @@
 package io.github.daegwonkim.backend.repository.projection
 
 import io.github.daegwonkim.backend.enumerate.RentalItemCategory
-import java.time.LocalDateTime
+import java.time.Instant
 
 data class RentalItemProjection(
     val id: Long,
@@ -18,5 +18,5 @@ data class RentalItemProjection(
     val likeCount: Int,
     val viewCount: Int,
     val liked: Boolean,
-    val createdAt: LocalDateTime
+    val createdAt: Instant
 )

@@ -1,6 +1,6 @@
 package io.github.daegwonkim.backend.repository.projection
 
-import java.time.LocalDateTime
+import java.time.Instant
 
 data class RentalItemsProjection(
     val id: Long,
@@ -12,5 +12,5 @@ data class RentalItemsProjection(
     val rentalCount: Int,
     val likeCount: Int,
     val viewCount: Int,
-    val createdAt: LocalDateTime
+    val createdAt: Instant
 )

@@ -1,7 +1,7 @@
 package io.github.daegwonkim.backend.dto.rental_item
 
 import io.github.daegwonkim.backend.repository.projection.RentalItemProjection
-import java.time.LocalDateTime
+import java.time.Instant
 
 data class GetRentalItemResponse(
     val id: Long,
@@ -16,7 +16,7 @@ data class GetRentalItemResponse(
     val likeCount: Int,
     val viewCount: Int,
     val liked: Boolean,
-    val createdAt: LocalDateTime
+    val createdAt: Instant
 ) {
     data class Seller(
         val id: Long,

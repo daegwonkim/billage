@@ -2,7 +2,7 @@ package io.github.daegwonkim.backend.dto.rental_item
 
 import io.github.daegwonkim.backend.repository.projection.RentalItemsProjection
 import org.springframework.data.domain.Page
-import java.time.LocalDateTime
+import java.time.Instant
 
 data class GetRentalItemsResponse(
     val content: List<RentalItem>,
@@ -23,7 +23,7 @@ data class GetRentalItemsResponse(
         val rentalCount: Int,
         val likeCount: Int,
         val viewCount: Int,
-        val createdAt: LocalDateTime
+        val createdAt: Instant
     )
 
     companion object {

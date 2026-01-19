@@ -4,7 +4,8 @@ import io.github.daegwonkim.backend.dto.storage.GenerateSignedUrlResponse
 import io.github.daegwonkim.backend.dto.storage.GenerateUploadSignedUrlResponse
 import io.github.daegwonkim.backend.supabase.SupabaseStorageClient
 import org.springframework.stereotype.Service
-import java.time.LocalDateTime
+import java.time.Instant
+import java.time.ZoneId
 import java.util.UUID
 
 @Service
@@ -41,10 +42,11 @@ class StorageService(
      * 형식: YYYY/MM/UUID.extension
      */
     private fun generateFileKey(originalFileName: String): String {
-        val now = LocalDateTime.now()
         val extension = getFileExtension(originalFileName)
-        val year = now.year
-        val month = now.monthValue.toString().padStart(2, '0')
+        val now = Instant.now()
+        val zoned = now.atZone(ZoneId.of("Asia/Seoul"))
+        val year = zoned.year
+        val month = zoned.monthValue.toString().padStart(2, '0')
 
         return "$year/$month/${UUID.randomUUID()}.$extension"
     }
