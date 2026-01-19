@@ -35,6 +35,18 @@ export function MyBillage() {
   const [scrollLeft, setScrollLeft] = useState(0)
   const [hasMoved, setHasMoved] = useState(false)
 
+  const {
+    data: userProfileData,
+    isLoading: userProfileLoading,
+    isError: userProfileError
+  } = useGetMe()
+
+  const {
+    data: userRentalItemData,
+    isLoading: userRentalItemLoading,
+    error: userRentalItemError
+  } = useGetUserRentalItems(userProfileData?.id)
+
   if (!isAuthenticated) {
     return <LoginPrompt />
   }
@@ -88,19 +100,9 @@ export function MyBillage() {
     setIsDragging(false)
   }
 
-  const {
-    data: userProfileData,
-    isLoading: userProfileLoading,
-    isError: userProfileError
-  } = useGetMe()
-
-  const {
-    data: userRentalItemData,
-    isLoading: userRentalItemLoading,
-    error: userRentalItemError
-  } = useGetUserRentalItems(userProfileData?.id ?? 0, undefined, {
-    enabled: !!userProfileData?.id
-  })
+  if (userProfileLoading || userRentalItemLoading) {
+    return <div>로딩 중...</div>
+  }
 
   if (userProfileError || !userProfileData) {
     return <div>사용자 정보 오류</div>

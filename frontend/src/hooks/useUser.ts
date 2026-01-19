@@ -11,13 +11,12 @@ export function useGetMe() {
 }
 
 export function useGetUserRentalItems(
-  userId: number,
-  excludeRentalItemId?: number,
-  options?: { enabled?: boolean }
+  userId: number | undefined,
+  excludeRentalItemId?: number
 ) {
   return useQuery<GetUserRentalItemsResponse>({
     queryKey: ['userRentalItems', userId, excludeRentalItemId],
-    queryFn: () => getUserRentalItems(userId, excludeRentalItemId),
-    ...options
+    queryFn: () => getUserRentalItems(userId!, excludeRentalItemId),
+    enabled: !!userId
   })
 }
