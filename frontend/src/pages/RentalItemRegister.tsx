@@ -149,10 +149,6 @@ export default function RentalItemRegister({ mode }: RentalItemRegisterProps) {
 
   const { data: categoriesData } = useGetRentalItemCategories()
 
-  // 비로그인 시 LoginPrompt 표시
-  if (!isAuthenticated) {
-    return <LoginPrompt />
-  }
 
   // 가격 변경 시 동작하는 함수
   // 단위 포맷팅 및 상태 업데이트
@@ -703,6 +699,10 @@ export default function RentalItemRegister({ mode }: RentalItemRegisterProps) {
           {mode === 'register' ? '등록하기' : '수정하기'}
         </button>
       </div>
+
+      {!isAuthenticated && (
+        <LoginPrompt isModal onClose={() => navigate(-1)} />
+      )}
     </div>
   )
 }

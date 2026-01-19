@@ -1,5 +1,8 @@
 import { Home, PanelTop, PlusCircle, MessageCircle, User } from 'lucide-react'
+import { useState } from 'react'
 import type { NavTab } from '../../types'
+import { useAuth } from '@/contexts/AuthContext'
+import { LoginPrompt } from '@/components/auth/LoginPrompt'
 
 interface BottomNavProps {
   activeTab: NavTab
@@ -20,32 +23,45 @@ export function BottomNav({
   onTabChange,
   onRegisterClick
 }: BottomNavProps) {
+  const { isAuthenticated } = useAuth()
+  const [showLoginModal, setShowLoginModal] = useState(false)
+
   const handleTabClick = (tab: NavTab) => {
     if (tab === 'add') {
-      onRegisterClick()
+      if (!isAuthenticated) {
+        setShowLoginModal(true)
+      } else {
+        onRegisterClick()
+      }
     } else {
       onTabChange(tab)
     }
   }
 
   return (
-    <nav className="fixed bottom-0 left-1/2 z-50 w-full max-w-md -translate-x-1/2 border-t border-gray-200 bg-white">
-      <div className="grid h-16 grid-cols-5">
-        {NAV_ITEMS.map(({ id, icon: Icon, label }) => (
-          <button
-            key={id}
-            onClick={() => handleTabClick(id)}
-            className={`flex cursor-pointer flex-col items-center justify-center gap-1 border-none bg-transparent transition-colors ${
-              activeTab === id ? 'text-black' : 'text-gray-500'
-            }`}>
-            <Icon
-              size={22}
-              strokeWidth={activeTab === id ? 2 : 1.5}
-            />
-            <span className="text-[12px]">{label}</span>
-          </button>
-        ))}
-      </div>
-    </nav>
+    <>
+      <nav className="fixed bottom-0 left-1/2 z-50 w-full max-w-md -translate-x-1/2 border-t border-gray-200 bg-white">
+        <div className="grid h-16 grid-cols-5">
+          {NAV_ITEMS.map(({ id, icon: Icon, label }) => (
+            <button
+              key={id}
+              onClick={() => handleTabClick(id)}
+              className={`flex cursor-pointer flex-col items-center justify-center gap-1 border-none bg-transparent transition-colors ${
+                activeTab === id ? 'text-black' : 'text-gray-500'
+              }`}>
+              <Icon
+                size={22}
+                strokeWidth={activeTab === id ? 2 : 1.5}
+              />
+              <span className="text-[12px]">{label}</span>
+            </button>
+          ))}
+        </div>
+      </nav>
+
+      {showLoginModal && (
+        <LoginPrompt isModal onClose={() => setShowLoginModal(false)} />
+      )}
+    </>
   )
 }
