@@ -55,11 +55,11 @@ export function Reviews() {
 
   if (isLoading) {
     return (
-      <div className="animate-pulse border-t border-gray-100 py-4">
+      <div className="border-t border-gray-100 py-4">
         {/* 헤더 */}
         <div className="flex items-center justify-between px-4 pb-3">
-          <div className="h-5 w-24 rounded bg-gray-200" />
-          <div className="h-4 w-16 rounded bg-gray-200" />
+          <div className="h-5 w-24 animate-pulse rounded bg-gray-200" />
+          <div className="h-4 w-16 animate-pulse rounded bg-gray-200" />
         </div>
 
         <div className="px-4">
@@ -68,40 +68,38 @@ export function Reviews() {
               key={index}
               className="flex gap-3 border-b border-gray-100 py-3 last:border-b-0">
               {/* 프로필 이미지 */}
-              <div className="h-10 w-10 shrink-0 rounded-full bg-gray-200" />
+              <div className="h-10 w-10 shrink-0 animate-pulse rounded-full bg-gray-200" />
 
               {/* 내용 */}
-              <div className="flex-1 space-y-2">
-                {/* 이름 / 날짜 */}
-                <div className="flex items-center justify-between">
-                  <div className="flex gap-2">
-                    <div className="h-4 w-16 rounded bg-gray-200" />
-                    <div className="h-3 w-12 rounded bg-gray-200" />
+              <div className="flex-1">
+                {/* 이름 / 동네 / 날짜 */}
+                <div className="mb-2 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="h-4 w-16 animate-pulse rounded bg-gray-200" />
+                    <div className="h-3 w-24 animate-pulse rounded bg-gray-200" />
                   </div>
-                  <div className="h-3 w-10 rounded bg-gray-200" />
+                  <div className="h-3 w-10 animate-pulse rounded bg-gray-200" />
                 </div>
 
                 {/* 별점 */}
-                <div className="flex gap-1">
+                <div className="mb-2 flex items-center gap-0.5">
                   {Array.from({ length: 5 }).map((_, i) => (
                     <div
                       key={i}
-                      className="h-3 w-3 rounded bg-gray-200"
+                      className="h-3 w-3 animate-pulse rounded bg-gray-200"
                     />
                   ))}
                 </div>
 
                 {/* 후기 텍스트 */}
-                <div className="space-y-1">
-                  <div className="h-3 w-2/3 rounded bg-gray-200" />
-                </div>
+                <div className="h-4 w-3/4 animate-pulse rounded bg-gray-200" />
 
                 {/* 이미지 */}
-                <div className="flex gap-2 pt-1">
-                  {Array.from({ length: 2 }).map((_, i) => (
+                <div className="mt-2 flex gap-2">
+                  {Array.from({ length: 3 }).map((_, i) => (
                     <div
                       key={i}
-                      className="h-16 w-16 rounded-lg bg-gray-200"
+                      className="h-16 w-16 animate-pulse rounded-lg bg-gray-200"
                     />
                   ))}
                 </div>

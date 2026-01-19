@@ -32,23 +32,32 @@ export function Profile() {
 
   if (userProfileLoading) {
     return (
-      <div className="border-b border-gray-100 px-4 py-6">
-        <div className="flex items-center gap-3">
+      <div className="border-b border-gray-100 bg-white px-4 py-6">
+        <div className="flex items-center gap-4 pb-3">
           <div className="h-18 w-18 animate-pulse rounded-full bg-gray-200" />
           <div className="flex-1 space-y-2">
-            <div className="h-7 w-45 animate-pulse rounded bg-gray-200" />
-            <div className="h-5 w-60 animate-pulse rounded bg-gray-200" />
+            <div className="h-7 w-32 animate-pulse rounded bg-gray-200" />
+            <div className="h-5 w-40 animate-pulse rounded bg-gray-200" />
           </div>
-          <div className="h-10 w-10 animate-pulse rounded-full bg-gray-200" />
+          <div className="h-10 w-10 animate-pulse rounded-lg bg-gray-200" />
         </div>
 
-        <div className="mt-3 mb-2 flex flex-col gap-2">
-          <div className="h-5 w-60 animate-pulse rounded bg-gray-200" />
-          <div className="h-5 w-60 animate-pulse rounded bg-gray-200" />
-          <div className="h-5 w-60 animate-pulse rounded bg-gray-200" />
+        <div className="space-y-2">
+          <div className="flex items-center gap-1">
+            <div className="h-5 w-5 animate-pulse rounded bg-gray-200" />
+            <div className="h-5 w-36 animate-pulse rounded bg-gray-200" />
+          </div>
+          <div className="flex items-center gap-1">
+            <div className="h-5 w-5 animate-pulse rounded bg-gray-200" />
+            <div className="h-5 w-52 animate-pulse rounded bg-gray-200" />
+          </div>
+          <div className="flex items-center gap-1">
+            <div className="h-5 w-5 animate-pulse rounded bg-gray-200" />
+            <div className="h-5 w-48 animate-pulse rounded bg-gray-200" />
+          </div>
         </div>
 
-        <div className="mt-4 h-10 animate-pulse rounded bg-gray-200 py-2.5" />
+        <div className="mt-4 h-11 w-full animate-pulse rounded-lg bg-gray-200" />
       </div>
     )
   }

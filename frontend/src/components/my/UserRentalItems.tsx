@@ -101,17 +101,17 @@ export function UserRentalItems() {
               key={index}
               className="flex w-[110px] shrink-0 animate-pulse flex-col">
               {/* 이미지 */}
-              <div className="mb-2 h-[110px] w-[110px] rounded-[10px] bg-gray-200" />
+              <div className="mb-1.5 h-[110px] w-[110px] rounded-[10px] bg-gray-200" />
 
               {/* 제목 */}
-              <div className="flex flex-1 flex-col gap-1">
+              <div className="flex flex-1 flex-col gap-0.5">
                 <div className="h-4 w-full rounded bg-gray-200" />
                 <div className="h-4 w-3/4 rounded bg-gray-200" />
 
                 {/* 가격 */}
-                <div className="mt-1.5 space-y-1.5">
-                  <div className="h-4 w-16 rounded bg-gray-200" />
-                  <div className="h-4 w-20 rounded bg-gray-200" />
+                <div className="mt-auto space-y-1">
+                  <div className="h-5 w-20 rounded bg-gray-200" />
+                  <div className="h-5 w-20 rounded bg-gray-200" />
                 </div>
               </div>
             </div>
