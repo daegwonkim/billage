@@ -3,7 +3,6 @@ export interface GetRentalItemsRequest {
   page: number
   size: number
   sortBy: string
-  sortDirection: string
 }
 
 export interface GetRentalItemsResponse {
@@ -26,5 +25,6 @@ export interface RentalItem {
   rentalCount: number
   likeCount: number
   viewCount: number
+  isLiked: boolean
   createdAt: Date
 }

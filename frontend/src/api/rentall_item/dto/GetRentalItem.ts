@@ -10,7 +10,7 @@ export interface GetRentalItemResponse {
   rentalCount: number
   likeCount: number
   viewCount: number
-  likeed: boolean
+  isLiked: boolean
   createdAt: Date
 }
 

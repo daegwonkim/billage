@@ -103,3 +103,15 @@ export async function remove(id: number): Promise<void> {
     method: 'DELETE'
   })
 }
+
+export async function like(id: number): Promise<void> {
+  await customFetch(`/api/rental-items/${id}/likes`, {
+    method: 'POST'
+  })
+}
+
+export async function unlike(id: number): Promise<void> {
+  await customFetch(`/api/rental-items/${id}/likes`, {
+    method: 'DELETE'
+  })
+}
