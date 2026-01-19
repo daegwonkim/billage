@@ -14,6 +14,9 @@ class User(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0L,
 
+    @Column(name = "public_id", nullable = false, unique = true)
+    var publicId: String,
+
     @Column(name = "phone_no", nullable = false, unique = true)
     var phoneNo: String,
 

@@ -171,9 +171,8 @@ class AuthService(
     }
 
     private fun saveUser(phoneNo: String): Long {
-        val user = userRepository.save(
-            User(phoneNo = phoneNo, nickname = nicknameGenerator.generate())
-        )
+        val publicId = UUID.randomUUID().toString().uppercase().substring(0, 8)
+        val user = userRepository.save(User(publicId = publicId, phoneNo = phoneNo, nickname = nicknameGenerator.generate()))
         return user.id
     }
 
