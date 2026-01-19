@@ -100,4 +100,18 @@ class RentalItemController(
     fun remove(
         @PathVariable("id") id: Long
     ) = rentalItemService.remove(id)
+
+    @Operation(summary = "대여 상품 좋아요 등록", description = "대여 상품 좋아요를 등록합니다")
+    @PostMapping("/{id}/likes")
+    fun like(
+        @AuthenticationPrincipal userId: Long,
+        @PathVariable("id") id: Long
+    ) = rentalItemService.like(id, userId)
+
+    @Operation(summary = "대여 상품 좋아요 해제", description = "대여 상품 좋아요를 해제합니다")
+    @DeleteMapping("/{id}/likes")
+    fun unlike(
+        @AuthenticationPrincipal userId: Long,
+        @PathVariable("id") id: Long
+    ) = rentalItemService.unlike(id, userId)
 }

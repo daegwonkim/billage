@@ -13,6 +13,7 @@ import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemsResponse
 import io.github.daegwonkim.backend.dto.rental_item.GetSimilarRentalItemsResponse
 import io.github.daegwonkim.backend.entity.RentalItem
 import io.github.daegwonkim.backend.entity.RentalItemImage
+import io.github.daegwonkim.backend.entity.RentalItemLikeRecord
 import io.github.daegwonkim.backend.enumerate.RentalItemCategory
 import io.github.daegwonkim.backend.enumerate.RentalItemSortOption
 import io.github.daegwonkim.backend.event.dto.StorageFileDeleteEvent
@@ -23,6 +24,7 @@ import io.github.daegwonkim.backend.repository.RentalItemJooqRepository
 import io.github.daegwonkim.backend.repository.RentalItemRepository
 import io.github.daegwonkim.backend.repository.projection.RentalItemsProjection
 import io.github.daegwonkim.backend.redis.RentalItemViewRedisRepository
+import io.github.daegwonkim.backend.repository.RentalItemLikeRecordRepository
 import io.github.daegwonkim.backend.supabase.SupabaseStorageClient
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationEventPublisher
@@ -34,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional
 class RentalItemService(
     private val rentalItemRepository: RentalItemRepository,
     private val rentalItemImageRepository: RentalItemImageRepository,
+    private val rentalItemLikeRecordRepository: RentalItemLikeRecordRepository,
     private val rentalItemJooqRepository: RentalItemJooqRepository,
     private val rentalItemViewRedisRepository: RentalItemViewRedisRepository,
 
@@ -150,6 +153,17 @@ class RentalItemService(
                 eventPublisher.publishEvent(StorageFileDeleteEvent(rentalItemImagesBucket, image.key))
             }
         rentalItemImageRepository.deleteAllByRentalItemId(id)
+    }
+
+    @Transactional
+    fun like(id: Long, userId: Long) {
+        val likeRecord = RentalItemLikeRecord(rentalItemId = id, userId = userId)
+        rentalItemLikeRecordRepository.save(likeRecord)
+    }
+
+    @Transactional
+    fun unlike(id: Long, userId: Long) {
+        rentalItemLikeRecordRepository.deleteByUserIdAndRentalItemId(userId, id)
     }
 
     private fun saveNewImages(rentalItemId: Long, newImageKeys: List<String>) {
