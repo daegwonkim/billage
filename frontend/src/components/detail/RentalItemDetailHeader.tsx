@@ -3,10 +3,12 @@ import type { NavigateFunction } from 'react-router-dom'
 
 interface RentalItemDetailHeaderProps {
   navigate: NavigateFunction
+  onMenuClick: () => void
 }
 
 export function RentalItemDetailHeader({
-  navigate
+  navigate,
+  onMenuClick
 }: RentalItemDetailHeaderProps) {
   return (
     <div className="sticky top-0 z-50 bg-transparent">
@@ -29,7 +31,9 @@ export function RentalItemDetailHeader({
             className="shrink-0"
           />
         </button>
-        <button className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full">
+        <button
+          onClick={onMenuClick}
+          className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full">
           <EllipsisVertical
             size={24}
             color="white"

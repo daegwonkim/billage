@@ -6,11 +6,18 @@ import { RentalItemDetailSellerItems } from '@/components/detail/RentalItemDetai
 import { RentalItemDetailSimilarItems } from '@/components/detail/RentalItemDetailSimilarItems'
 import { RentalItemDetailSeller } from '@/components/detail/RentalItemDetailSeller'
 import { RentalItemDetailSkeleton } from '@/components/detail/RentalItemDetailSkeleton'
+import { BottomSheet } from '@/components/common/BottomSheet'
+import { BottomSheetItem } from '@/components/common/BottomSheetItem'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useGetRentalItem } from '@/hooks/useRentalItem'
+import { useAuth } from '@/contexts/AuthContext'
+import { useState } from 'react'
+import { Pencil, Trash2, Flag } from 'lucide-react'
 
 export function RentalItemDetail() {
   const navigate = useNavigate()
+  const { userId } = useAuth()
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   let { id } = useParams<{ id: string }>()
   const numericId = Number(id)
@@ -66,10 +73,29 @@ export function RentalItemDetail() {
   }
 
   const imageUrls = rentalItemData.imageUrls
+  const isOwner = userId === rentalItemData.seller.id
+
+  const handleEdit = () => {
+    setIsMenuOpen(false)
+    navigate(`/rental-items/${numericId}/edit`)
+  }
+
+  const handleDelete = () => {
+    setIsMenuOpen(false)
+    // TODO: 삭제 확인 모달 및 삭제 API 호출
+  }
+
+  const handleReport = () => {
+    setIsMenuOpen(false)
+    // TODO: 신고 페이지 이동 또는 모달
+  }
 
   return (
     <div className="min-h-screen w-md bg-white pb-[115px]">
-      <RentalItemDetailHeader navigate={navigate} />
+      <RentalItemDetailHeader
+        navigate={navigate}
+        onMenuClick={() => setIsMenuOpen(true)}
+      />
       <RentalItemDetailImages imageUrls={imageUrls} />
       <RentalItemDetailSeller rentalItem={rentalItemData} />
       <hr className="mx-auto h-[0.5px] w-[90%] border-none bg-neutral-400 opacity-50" />
@@ -86,6 +112,37 @@ export function RentalItemDetail() {
         pricePerDay={rentalItemData.pricePerDay}
         pricePerWeek={rentalItemData.pricePerWeek}
       />
+
+      <BottomSheet
+        isOpen={isMenuOpen}
+        onClose={() => setIsMenuOpen(false)}
+        title={isOwner ? '내 게시글 관리' : '게시글 메뉴'}
+        showCancelButton={true}
+        showCloseButton={false}
+        showDragHandle={true}>
+        {isOwner ? (
+          <>
+            <BottomSheetItem
+              icon={<Pencil size={20} />}
+              label="수정하기"
+              onClick={handleEdit}
+            />
+            <BottomSheetItem
+              icon={<Trash2 size={20} />}
+              label="삭제하기"
+              variant="danger"
+              onClick={handleDelete}
+            />
+          </>
+        ) : (
+          <BottomSheetItem
+            icon={<Flag size={20} />}
+            label="신고하기"
+            variant="danger"
+            onClick={handleReport}
+          />
+        )}
+      </BottomSheet>
     </div>
   )
 }

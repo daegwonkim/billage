@@ -11,7 +11,6 @@ import { nearbyNeighborhoods } from '@/api/neighborhood/neighborhood'
 import { ApiError } from '@/api/error'
 import logo from '@/assets/logo.png'
 import { useAuth } from '@/contexts/AuthContext'
-import { getMe } from '@/api/user/user'
 import { useNavigate } from 'react-router-dom'
 
 type Step = 'start' | 'phone' | 'verification' | 'neighborhood'
@@ -104,11 +103,11 @@ export function LoginPrompt() {
         fetchNeighborhoods()
       } else {
         // 기존 회원이면 바로 로그인
-        await signIn({
+        const response = await signIn({
           phoneNo: cleanPhoneNo,
           verifiedToken: confirmVerificationCodeRes.verifiedToken
         })
-        login()
+        login(response.userId)
         navigate(-1)
       }
     } catch (err) {
@@ -178,11 +177,11 @@ export function LoginPrompt() {
         }
       })
 
-      await signIn({
+      const response = await signIn({
         phoneNo: cleanPhoneNo,
         verifiedToken: verifiedToken
       })
-      login()
+      login(response.userId)
       navigate(-1)
     } catch (err) {
       if (err instanceof ApiError) {

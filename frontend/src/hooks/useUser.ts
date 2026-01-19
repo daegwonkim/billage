@@ -11,7 +11,7 @@ export function useGetMe() {
 }
 
 export function useGetUserRentalItems(
-  userId: number | undefined,
+  userId: number | null,
   excludeRentalItemId?: number
 ) {
   return useQuery<GetUserRentalItemsResponse>({

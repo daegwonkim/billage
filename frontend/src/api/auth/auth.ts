@@ -1,4 +1,4 @@
-import type { SignInRequest } from './dto/SignIn'
+import type { SignInRequest, SignInResponse } from './dto/SignIn'
 import type { SignUpRequest } from './dto/SignUp'
 import type {
   ConfirmVerificationCodeRequest,
@@ -67,8 +67,8 @@ export async function signUp(request: SignUpRequest): Promise<void> {
   })
 }
 
-export async function signIn(request: SignInRequest): Promise<void> {
-  await customFetch(`/api/auth/sign-in`, {
+export async function signIn(request: SignInRequest): Promise<SignInResponse> {
+  return await customFetch<SignInResponse>(`/api/auth/sign-in`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

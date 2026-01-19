@@ -26,7 +26,7 @@ import { useGetMe, useGetUserRentalItems } from '@/hooks/useUser'
 
 export function MyBillage() {
   const navigate = useNavigate()
-  const { isAuthenticated, logout } = useAuth()
+  const { isAuthenticated, userId, logout } = useAuth()
   const [showMenu, setShowMenu] = useState(false)
 
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -45,7 +45,7 @@ export function MyBillage() {
     data: userRentalItemData,
     isLoading: userRentalItemLoading,
     error: userRentalItemError
-  } = useGetUserRentalItems(userProfileData?.id)
+  } = useGetUserRentalItems(userId)
 
   if (!isAuthenticated) {
     return <LoginPrompt />
