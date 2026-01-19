@@ -40,6 +40,7 @@ class SecurityConfig(
                 authorize("/api/neighborhoods/**", permitAll)
                 authorize("/api/users/*/profile", permitAll)
                 authorize("/api/users/*/rental-items", permitAll)
+                authorize("/api/health", permitAll)
 
                 // Public Read
                 authorize(HttpMethod.GET, "/api/rental-items/**", permitAll)
