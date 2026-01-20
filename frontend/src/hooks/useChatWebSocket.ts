@@ -40,12 +40,6 @@ export function useChatWebSocket({
           const chatMessage: ChatMessageResponse = JSON.parse(message.body)
           onMessage(chatMessage)
         })
-
-        // 입장 알림
-        client.publish({
-          destination: `/app/chat/${roomId}/join`,
-          body: ''
-        })
       },
       onDisconnect: () => {
         setIsConnected(false)
@@ -63,17 +57,6 @@ export function useChatWebSocket({
 
     clientRef.current = client
     client.activate()
-
-    return () => {
-      if (client.connected) {
-        // 퇴장 알림
-        client.publish({
-          destination: `/app/chat/${roomId}/leave`,
-          body: ''
-        })
-      }
-      client.deactivate()
-    }
   }, [roomId])
 
   const sendMessage = useCallback(
