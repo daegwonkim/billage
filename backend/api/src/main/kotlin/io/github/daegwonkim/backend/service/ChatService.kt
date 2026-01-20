@@ -1,7 +1,7 @@
 package io.github.daegwonkim.backend.service
 
 import io.github.daegwonkim.backend.dto.chat.GetChatRoomResponse
-import io.github.daegwonkim.backend.dto.chat.GetOrCreateChatRoomResponse
+import io.github.daegwonkim.backend.dto.chat.CreateChatRoomResponse
 import io.github.daegwonkim.backend.entity.ChatParticipant
 import io.github.daegwonkim.backend.entity.ChatRoom
 import io.github.daegwonkim.backend.exception.business.ResourceNotFoundException
@@ -21,9 +21,7 @@ class ChatService(
     private val chatRoomJooqRepository: ChatRoomJooqRepository,
     private val rentalItemRepository: RentalItemRepository
 ) {
-    /**
-     * 채팅방 조회 (없으면 null 반환)
-     */
+
     @Transactional(readOnly = true)
     fun getChatRoom(userId: Long, rentalItemId: Long): GetChatRoomResponse {
         val rentalItem = rentalItemRepository.findById(rentalItemId)
@@ -35,28 +33,19 @@ class ChatService(
         return GetChatRoomResponse(chatRoomId)
     }
 
-    /**
-     * 채팅방 조회 또는 생성
-     */
     @Transactional
-    fun getOrCreateChatRoom(userId: Long, rentalItemId: Long): GetOrCreateChatRoomResponse {
+    fun createChatRoom(userId: Long, rentalItemId: Long): CreateChatRoomResponse {
         val rentalItem = rentalItemRepository.findById(rentalItemId)
             .orElseThrow { ResourceNotFoundException(rentalItemId, RentalItemErrorCode.RENTAL_ITEM_NOT_FOUND) }
 
-        val participantIds = listOf(userId, rentalItem.userId)
-        val existsChatRoomId = chatRoomJooqRepository.findChatRoomByRentalItemIdAndParticipantIds(rentalItemId, participantIds)
-
-        if (existsChatRoomId != null) {
-            return GetOrCreateChatRoomResponse(existsChatRoomId)
-        }
-
         val chatRoom = chatRoomJpaRepository.save(ChatRoom(rentalItemId = rentalItemId))
 
+        val participantIds = listOf(userId, rentalItem.userId)
         val chatParticipants = participantIds.map { participantId ->
             ChatParticipant(chatRoomId = chatRoom.id, userId = participantId)
         }
         chatParticipantJpaRepository.saveAll(chatParticipants)
 
-        return GetOrCreateChatRoomResponse(chatRoom.id)
+        return CreateChatRoomResponse(chatRoom.id)
     }
 }

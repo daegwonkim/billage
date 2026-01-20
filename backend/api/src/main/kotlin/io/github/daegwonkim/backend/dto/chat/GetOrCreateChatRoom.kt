@@ -4,6 +4,6 @@ data class GetChatRoomResponse(
     val chatRoomId: Long?
 )
 
-data class GetOrCreateChatRoomResponse(
+data class CreateChatRoomResponse(
     val chatRoomId: Long
 )

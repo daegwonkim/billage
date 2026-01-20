@@ -14,6 +14,11 @@ class WebSocketController(
     private val chatService: ChatService
 ) {
 
+    /**
+     * 새로운 채팅방 생성 및 채팅 메시지 전송
+     * 클라이언트에서 /app/new-chat/{rentalItemId} 로 메시지를 보내면
+     * 새로운 채팅방을 생성하고 /topic/new-chat/{rentalItemId} 를 구독하는 모든 클라이언트에게 브로드캐스트
+     */
     @MessageMapping("/new-chat/{rentalItemId}")
     fun createChatRoomAndSendMessage(
         @DestinationVariable rentalItemId: Long,
@@ -23,8 +28,7 @@ class WebSocketController(
         val (userId, nickname) = extractUserInfo(headerAccessor)
             ?: throw IllegalStateException("인증되지 않은 사용자입니다.")
 
-        // 채팅방 조회 또는 생성
-        val chatRoom = chatService.getOrCreateChatRoom(userId, rentalItemId)
+        val chatRoom = chatService.createChatRoom(userId, rentalItemId)
 
         val response = ChatMessageResponse(
             chatRoomId = chatRoom.chatRoomId,
@@ -38,7 +42,7 @@ class WebSocketController(
     }
 
     /**
-     * 기존 채팅방 채팅 메시지 전송
+     * 기존 채팅방에 채팅 메시지 전송
      * 클라이언트에서 /app/chat/{chatRoomId} 로 메시지를 보내면
      * /topic/chat/{chatRoomId} 를 구독하는 모든 클라이언트에게 브로드캐스트
      */
