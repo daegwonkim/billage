@@ -14,7 +14,7 @@ class WebSocketController(
     private val chatService: ChatService
 ) {
 
-    @MessageMapping("/chat/rental-item/{rentalItemId}")
+    @MessageMapping("/new-chat/{rentalItemId}")
     fun createChatRoomAndSendMessage(
         @DestinationVariable rentalItemId: Long,
         @Payload request: ChatMessageRequest,
@@ -34,7 +34,7 @@ class WebSocketController(
             type = MessageType.CHAT
         )
 
-        messagingTemplate.convertAndSend("/topic/chat/rental-item/${rentalItemId}", response)
+        messagingTemplate.convertAndSend("/topic/new-chat/${rentalItemId}", response)
     }
 
     /**

@@ -44,7 +44,7 @@ export function useChatWebSocket({
 
         // 채팅방 구독 (새 채팅방이면 rentalItemId 기반으로 구독)
         const topic = isNewChat
-          ? `/topic/chat/rental-item/${rentalItemId}`
+          ? `/topic/new-chat/${rentalItemId}`
           : `/topic/chat/${chatRoomId}`
         client.subscribe(topic, (message: IMessage) => {
           const chatMessage: ChatMessageResponse = JSON.parse(message.body)
@@ -82,7 +82,7 @@ export function useChatWebSocket({
 
       // 새 채팅방이면 rentalItemId와 함께 전송, 기존 채팅방이면 roomId 사용
       const destination = isNewChat
-        ? `/app/chat/rental-item/${rentalItemId}`
+        ? `/app/new-chat/${rentalItemId}`
         : `/app/chat/${chatRoomId}`
       const body = isNewChat
         ? { rentalItemId, content }
