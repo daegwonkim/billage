@@ -18,6 +18,7 @@ export function RentalItemCard({ rentalItem, onClick }: RentalItemCardProps) {
   const queryClient = useQueryClient()
   const [showLoginModal, setShowLoginModal] = useState(false)
   const [liked, setLiked] = useState(rentalItem.liked ?? false)
+  const [isAnimating, setIsAnimating] = useState(false)
 
   useEffect(() => {
     setLiked(rentalItem.liked ?? false)
@@ -45,6 +46,8 @@ export function RentalItemCard({ rentalItem, onClick }: RentalItemCardProps) {
     }
   })
 
+  const isLikePending = likeMutation.isPending || unlikeMutation.isPending
+
   const handleLikeClick = (e: React.MouseEvent) => {
     e.stopPropagation()
     e.preventDefault()
@@ -53,6 +56,11 @@ export function RentalItemCard({ rentalItem, onClick }: RentalItemCardProps) {
       setShowLoginModal(true)
       return
     }
+
+    if (isLikePending) return
+
+    setIsAnimating(true)
+    setTimeout(() => setIsAnimating(false), 300)
 
     if (liked) {
       unlikeMutation.mutate()
@@ -89,12 +97,14 @@ export function RentalItemCard({ rentalItem, onClick }: RentalItemCardProps) {
                 </h3>
                 <button
                   type="button"
-                  onClick={handleLikeClick}>
+                  onClick={handleLikeClick}
+                  className="transition-transform duration-300 active:scale-90">
                   <Heart
                     size={22}
                     strokeWidth={1}
                     fill={liked ? 'red' : 'none'}
                     color={liked ? 'red' : 'gray'}
+                    className={`transition-transform duration-300 ${isAnimating ? 'scale-125' : 'scale-100'}`}
                   />
                 </button>
               </div>

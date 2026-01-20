@@ -11,18 +11,22 @@ import { BottomSheetItem } from '@/components/common/BottomSheetItem'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useGetRentalItem } from '@/hooks/useRentalItem'
 import { useAuth } from '@/contexts/AuthContext'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { LoginPrompt } from '@/components/auth/LoginPrompt'
 import { Pencil, Trash2, Flag } from 'lucide-react'
-import { remove } from '@/api/rentall_item/rentalItem'
+import { like, remove, unlike } from '@/api/rentall_item/rentalItem'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 
 export function RentalItemDetail() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
-  const { userId } = useAuth()
+  const { userId, isAuthenticated } = useAuth()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [showLoginModal, setShowLoginModal] = useState(false)
+  const [liked, setLiked] = useState(false)
+  const [isLikeAnimating, setIsLikeAnimating] = useState(false)
 
   let { id } = useParams<{ id: string }>()
   const numericId = Number(id)
@@ -64,6 +68,54 @@ export function RentalItemDetail() {
       toast.error('게시물 삭제에 실패했어요')
     }
   })
+
+  const likeMutation = useMutation({
+    mutationFn: () => like(numericId),
+    onSuccess: () => {
+      setLiked(true)
+      queryClient.invalidateQueries({ queryKey: ['rentalItem', numericId] })
+    },
+    onError: () => {
+      toast.error('좋아요 등록에 실패했어요')
+    }
+  })
+
+  const unlikeMutation = useMutation({
+    mutationFn: () => unlike(numericId),
+    onSuccess: () => {
+      setLiked(false)
+      queryClient.invalidateQueries({ queryKey: ['rentalItem', numericId] })
+    },
+    onError: () => {
+      toast.error('좋아요 해제에 실패했어요')
+    }
+  })
+
+  useEffect(() => {
+    if (rentalItemData) {
+      setLiked(rentalItemData.liked ?? false)
+    }
+  }, [rentalItemData?.liked])
+
+  const isLikePending = likeMutation.isPending || unlikeMutation.isPending
+
+  const handleLikeClick = () => {
+    if (!isAuthenticated) {
+      setShowLoginModal(true)
+      return
+    }
+
+    if (isLikePending) return
+
+    setIsLikeAnimating(true)
+    setTimeout(() => setIsLikeAnimating(false), 300)
+
+    if (liked) {
+      unlikeMutation.mutate()
+    } else {
+      likeMutation.mutate()
+    }
+  }
 
   if (rentalItemLoading) {
     return <RentalItemDetailSkeleton />
@@ -130,10 +182,19 @@ export function RentalItemDetail() {
         rentalItemId={numericId}
       />
       <RentalItemDetailBottom
-        liked={rentalItemData.likeed}
+        liked={liked}
         pricePerDay={rentalItemData.pricePerDay}
         pricePerWeek={rentalItemData.pricePerWeek}
+        onLikeClick={handleLikeClick}
+        isAnimating={isLikeAnimating}
       />
+
+      {showLoginModal && (
+        <LoginPrompt
+          isModal
+          onClose={() => setShowLoginModal(false)}
+        />
+      )}
 
       <BottomSheet
         isOpen={isMenuOpen}
