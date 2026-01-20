@@ -5,6 +5,7 @@ import { ChatRentalItemInfo } from '@/components/chat/ChatRentalItemInfo'
 import { ChatMessageList } from '@/components/chat/ChatMessageList'
 import { ChatInput } from '@/components/chat/ChatInput'
 import { useChatWebSocket } from '@/hooks/useChatWebSocket'
+import { useAuth } from '@/contexts/AuthContext'
 import type { ChatMessageResponse } from '@/api/chat/dto/ChatMessage'
 
 // 더미 데이터 (나중에 실제 API로 대체)
@@ -31,10 +32,8 @@ interface Message {
 export function ChatRoom() {
   const navigate = useNavigate()
   const { chatRoomId } = useParams<{ chatRoomId: string }>()
+  const { userId } = useAuth()
   const [messages, setMessages] = useState<Message[]>([])
-
-  // 현재 유저 ID (나중에 AuthContext에서 가져옴)
-  const currentUserId = 1
 
   const handleMessage = useCallback((chatMessage: ChatMessageResponse) => {
     // JOIN/LEAVE 메시지는 시스템 메시지로 처리하거나 무시할 수 있음
@@ -102,7 +101,7 @@ export function ChatRoom() {
       {/* 채팅 메시지 영역 */}
       <ChatMessageList
         messages={messages}
-        currentUserId={currentUserId}
+        currentUserId={userId ?? 0}
       />
 
       {/* 메시지 입력 영역 */}
