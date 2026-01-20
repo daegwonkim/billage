@@ -174,7 +174,13 @@ export function RentalItemDetail() {
 
     chatRoomMutation.mutate(numericId, {
       onSuccess: data => {
-        navigate(`/chat/${data.chatRoomId}`)
+        if (data.chatRoomId) {
+          // 기존 채팅방이 있으면 해당 채팅방으로 이동
+          navigate(`/chat/${data.chatRoomId}`)
+        } else {
+          // 기존 채팅방이 없으면 rentalItemId로 새 채팅 화면 진입
+          navigate(`/chat/new?rentalItemId=${numericId}`)
+        }
       },
       onError: () => {
         toast.error('채팅방 연결에 실패했어요')

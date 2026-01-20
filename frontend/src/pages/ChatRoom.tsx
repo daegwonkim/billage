@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { ChatHeader } from '@/components/chat/ChatHeader'
 import { ChatRentalItemInfo } from '@/components/chat/ChatRentalItemInfo'
 import { ChatMessageList } from '@/components/chat/ChatMessageList'
@@ -32,24 +32,43 @@ interface Message {
 export function ChatRoom() {
   const navigate = useNavigate()
   const { chatRoomId } = useParams<{ chatRoomId: string }>()
+  const [searchParams] = useSearchParams()
+  const rentalItemId = searchParams.get('rentalItemId')
   const { userId } = useAuth()
   const [messages, setMessages] = useState<Message[]>([])
+  const [currentChatRoomId, setCurrentChatRoomId] = useState<string | null>(
+    chatRoomId ?? null
+  )
 
-  const handleMessage = useCallback((chatMessage: ChatMessageResponse) => {
-    // JOIN/LEAVE 메시지는 시스템 메시지로 처리하거나 무시할 수 있음
-    if (chatMessage.type === 'CHAT') {
-      const newMessage: Message = {
-        id: chatMessage.id,
-        senderId: chatMessage.senderId,
-        content: chatMessage.content,
-        createdAt: new Date(chatMessage.timestamp)
+  // 새 채팅방인지 여부 (chatRoomId 없이 rentalItemId로 진입한 경우)
+  const isNewChat = !chatRoomId && !!rentalItemId
+
+  const handleMessage = useCallback(
+    (chatMessage: ChatMessageResponse) => {
+      // JOIN/LEAVE 메시지는 시스템 메시지로 처리하거나 무시할 수 있음
+      if (chatMessage.type === 'CHAT') {
+        const newMessage: Message = {
+          id: chatMessage.id,
+          senderId: chatMessage.senderId,
+          content: chatMessage.content,
+          createdAt: new Date(chatMessage.timestamp)
+        }
+        setMessages(prev => [...prev, newMessage])
+
+        // 새 채팅방에서 첫 메시지를 받으면 (백엔드가 채팅방 생성 후 응답)
+        // chatRoomId를 업데이트하고 URL 변경
+        if (isNewChat && chatMessage.chatRoomId && !currentChatRoomId) {
+          setCurrentChatRoomId(String(chatMessage.chatRoomId))
+          navigate(`/chat/${chatMessage.chatRoomId}`, { replace: true })
+        }
       }
-      setMessages(prev => [...prev, newMessage])
-    }
-  }, [])
+    },
+    [isNewChat, currentChatRoomId, navigate]
+  )
 
   const { isConnected, sendMessage } = useChatWebSocket({
-    roomId: chatRoomId ?? '',
+    chatRoomId: currentChatRoomId ?? '',
+    rentalItemId: isNewChat ? rentalItemId : undefined,
     onMessage: handleMessage,
     onConnect: () => {
       console.log('채팅방 연결됨')

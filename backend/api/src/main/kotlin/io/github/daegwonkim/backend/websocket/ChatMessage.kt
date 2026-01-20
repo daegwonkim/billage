@@ -10,8 +10,6 @@ enum class MessageType {
 }
 
 data class ChatMessageRequest(
-    val rentalItemId: Long,
-    val receiverId: Long,
     val content: String
 )
 

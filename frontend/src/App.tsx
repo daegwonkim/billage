@@ -88,6 +88,10 @@ function AppContent() {
               element={<MySettings />}
             />
             <Route
+              path="/chat/new"
+              element={<ChatRoom />}
+            />
+            <Route
               path="/chat/:chatRoomId"
               element={<ChatRoom />}
             />

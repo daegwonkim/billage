@@ -1,5 +1,5 @@
 import { customFetch } from '../customFetch'
-import type { GetChatRoomResponse } from './dto/GetOrCreateChatRoom'
+import type { GetChatRoomResponse } from './dto/GetChatRoom'
 
 export async function getChatRoom(
   rentalItemId: number
@@ -8,6 +8,6 @@ export async function getChatRoom(
     rentalItemId: rentalItemId.toString()
   })
   return await customFetch<GetChatRoomResponse>(
-    `/api/chats/chat-room/${params}`
+    `/api/chats/chat-room?${params}`
   )
 }

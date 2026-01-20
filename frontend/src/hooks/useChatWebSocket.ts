@@ -6,7 +6,8 @@ import type { ChatMessageResponse } from '@/api/chat/dto/ChatMessage'
 const WS_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
 interface UseChatWebSocketOptions {
-  roomId: string
+  chatRoomId: string
+  rentalItemId?: string | null // 새 채팅방 생성 시 사용 (roomId가 없을 때)
   onMessage: (message: ChatMessageResponse) => void
   onConnect?: () => void
   onDisconnect?: () => void
@@ -14,7 +15,8 @@ interface UseChatWebSocketOptions {
 }
 
 export function useChatWebSocket({
-  roomId,
+  chatRoomId,
+  rentalItemId,
   onMessage,
   onConnect,
   onDisconnect,
@@ -23,8 +25,13 @@ export function useChatWebSocket({
   const clientRef = useRef<Client | null>(null)
   const [isConnected, setIsConnected] = useState(false)
 
+  // 새 채팅방인 경우 rentalItemId로 구독, 기존 채팅방이면 roomId로 구독
+  const isNewChat = !chatRoomId && !!rentalItemId
+  const subscriptionId = chatRoomId || `new-${rentalItemId}`
+
   useEffect(() => {
-    if (!roomId) return
+    // roomId나 rentalItemId 둘 중 하나는 있어야 함
+    if (!chatRoomId && !rentalItemId) return
 
     const client = new Client({
       webSocketFactory: () => new SockJS(`${WS_BASE_URL}/ws`),
@@ -35,8 +42,11 @@ export function useChatWebSocket({
         setIsConnected(true)
         onConnect?.()
 
-        // 채팅방 구독
-        client.subscribe(`/topic/chat/${roomId}`, (message: IMessage) => {
+        // 채팅방 구독 (새 채팅방이면 rentalItemId 기반으로 구독)
+        const topic = isNewChat
+          ? `/topic/chat/rental-item/${rentalItemId}`
+          : `/topic/chat/${chatRoomId}`
+        client.subscribe(topic, (message: IMessage) => {
           const chatMessage: ChatMessageResponse = JSON.parse(message.body)
           onMessage(chatMessage)
         })
@@ -61,7 +71,7 @@ export function useChatWebSocket({
     return () => {
       client.deactivate()
     }
-  }, [roomId])
+  }, [subscriptionId])
 
   const sendMessage = useCallback(
     (content: string) => {
@@ -70,14 +80,22 @@ export function useChatWebSocket({
         return false
       }
 
+      // 새 채팅방이면 rentalItemId와 함께 전송, 기존 채팅방이면 roomId 사용
+      const destination = isNewChat
+        ? `/app/chat/rental-item/${rentalItemId}`
+        : `/app/chat/${chatRoomId}`
+      const body = isNewChat
+        ? { rentalItemId, content }
+        : { chatRoomId, content }
+
       clientRef.current.publish({
-        destination: `/app/chat/${roomId}`,
-        body: JSON.stringify({ roomId, content })
+        destination,
+        body: JSON.stringify(body)
       })
 
       return true
     },
-    [roomId]
+    [chatRoomId, rentalItemId, isNewChat]
   )
 
   return {
