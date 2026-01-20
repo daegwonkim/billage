@@ -1,4 +1,4 @@
-import { ChevronRight, Frown, Loader2, PackageOpen } from 'lucide-react'
+import { ChevronRight, Frown, PackageOpen } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { LoginPrompt } from '@/components/auth/LoginPrompt'

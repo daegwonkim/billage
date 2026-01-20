@@ -1,15 +1,19 @@
 import { useState } from 'react'
 import { Send } from 'lucide-react'
 
-export function ChatInput() {
+interface ChatInputProps {
+  onSend: (content: string) => void
+  disabled?: boolean
+}
+
+export function ChatInput({ onSend, disabled = false }: ChatInputProps) {
   const [message, setMessage] = useState('')
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!message.trim()) return
+    if (!message.trim() || disabled) return
 
-    // TODO: 메시지 전송 로직 구현
-    console.log('Send message:', message)
+    onSend(message.trim())
     setMessage('')
   }
 
@@ -25,7 +29,7 @@ export function ChatInput() {
         />
         <button
           type="submit"
-          disabled={!message.trim()}
+          disabled={!message.trim() || disabled}
           className={`flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full border-none transition-colors ${
             message.trim()
               ? 'bg-black text-white'

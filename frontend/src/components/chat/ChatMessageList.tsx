@@ -1,5 +1,5 @@
 interface Message {
-  id: number
+  id: string | number
   senderId: number
   content: string
   createdAt: Date

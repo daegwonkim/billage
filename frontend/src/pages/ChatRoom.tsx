@@ -1,8 +1,11 @@
+import { useState, useCallback } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ChatHeader } from '@/components/chat/ChatHeader'
 import { ChatRentalItemInfo } from '@/components/chat/ChatRentalItemInfo'
 import { ChatMessageList } from '@/components/chat/ChatMessageList'
 import { ChatInput } from '@/components/chat/ChatInput'
+import { useChatWebSocket } from '@/hooks/useChatWebSocket'
+import type { ChatMessageResponse } from '@/api/chat/dto/ChatMessage'
 
 // 더미 데이터 (나중에 실제 API로 대체)
 const dummySeller = {
@@ -18,48 +21,56 @@ const dummyRentalItem = {
   imageUrl: ''
 }
 
-const dummyMessages = [
-  {
-    id: 1,
-    senderId: 1,
-    content: '안녕하세요! 텐트 대여 문의드립니다.',
-    createdAt: new Date('2024-01-15T10:30:00')
-  },
-  {
-    id: 2,
-    senderId: 2,
-    content: '네 안녕하세요! 어떤 부분이 궁금하신가요?',
-    createdAt: new Date('2024-01-15T10:31:00')
-  },
-  {
-    id: 3,
-    senderId: 1,
-    content: '이번 주말에 대여 가능할까요?',
-    createdAt: new Date('2024-01-15T10:32:00')
-  },
-  {
-    id: 4,
-    senderId: 2,
-    content: '네, 가능합니다! 토요일 오전에 픽업하시면 될까요?',
-    createdAt: new Date('2024-01-15T10:33:00')
-  },
-  {
-    id: 5,
-    senderId: 1,
-    content: '좋아요! 그럼 토요일 10시에 뵐게요.',
-    createdAt: new Date('2024-01-15T10:35:00')
-  }
-]
+interface Message {
+  id: string | number
+  senderId: number
+  content: string
+  createdAt: Date
+}
 
 export function ChatRoom() {
   const navigate = useNavigate()
-  const { roomId: _roomId } = useParams<{ roomId: string }>()
+  const { roomId } = useParams<{ roomId: string }>()
+  const [messages, setMessages] = useState<Message[]>([])
 
   // 현재 유저 ID (나중에 AuthContext에서 가져옴)
   const currentUserId = 1
 
-  // TODO: roomId를 사용하여 채팅방 데이터 로드
-  // const { data: chatRoom } = useGetChatRoom(_roomId)
+  const handleMessage = useCallback((chatMessage: ChatMessageResponse) => {
+    // JOIN/LEAVE 메시지는 시스템 메시지로 처리하거나 무시할 수 있음
+    if (chatMessage.type === 'CHAT') {
+      const newMessage: Message = {
+        id: chatMessage.id,
+        senderId: chatMessage.senderId,
+        content: chatMessage.content,
+        createdAt: new Date(chatMessage.timestamp)
+      }
+      setMessages(prev => [...prev, newMessage])
+    }
+  }, [])
+
+  const { isConnected, sendMessage } = useChatWebSocket({
+    roomId: 'bc9fe3f4-dc57-4c11-a700-306b1879fb43',
+    onMessage: handleMessage,
+    onConnect: () => {
+      console.log('채팅방 연결됨')
+    },
+    onDisconnect: () => {
+      console.log('채팅방 연결 해제됨')
+    },
+    onError: error => {
+      console.error('WebSocket 오류:', error)
+    }
+  })
+
+  const handleSendMessage = useCallback(
+    (content: string) => {
+      if (content.trim() && isConnected) {
+        sendMessage(content)
+      }
+    },
+    [isConnected, sendMessage]
+  )
 
   const handleBack = () => {
     navigate(-1)
@@ -81,16 +92,24 @@ export function ChatRoom() {
           rentalItem={dummyRentalItem}
           onClick={handleRentalItemClick}
         />
+        {!isConnected && (
+          <div className="bg-yellow-100 px-4 py-2 text-center text-sm text-yellow-800">
+            연결 중...
+          </div>
+        )}
       </div>
 
       {/* 채팅 메시지 영역 */}
       <ChatMessageList
-        messages={dummyMessages}
+        messages={messages}
         currentUserId={currentUserId}
       />
 
       {/* 메시지 입력 영역 */}
-      <ChatInput />
+      <ChatInput
+        onSend={handleSendMessage}
+        disabled={!isConnected}
+      />
     </div>
   )
 }

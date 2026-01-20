@@ -1,14 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react'
-import {
-  ChevronLeft,
-  Plus,
-  Camera,
-  CircleAlert,
-  Loader2,
-  X,
-  PackageCheck,
-  PackageX
-} from 'lucide-react'
+import { ChevronLeft, Plus, Camera, CircleAlert, Loader2, X } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import type { RegisterRentalItemRequest } from '@/api/rentall_item/dto/RegisterRentalItem'
