@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { ChatHeader } from '@/components/chat/ChatHeader'
 import { ChatRentalItemInfo } from '@/components/chat/ChatRentalItemInfo'
 import { ChatMessageList } from '@/components/chat/ChatMessageList'
@@ -30,7 +30,6 @@ interface Message {
 
 export function ChatRoom() {
   const navigate = useNavigate()
-  const { roomId } = useParams<{ roomId: string }>()
   const [messages, setMessages] = useState<Message[]>([])
 
   // 현재 유저 ID (나중에 AuthContext에서 가져옴)
@@ -50,7 +49,7 @@ export function ChatRoom() {
   }, [])
 
   const { isConnected, sendMessage } = useChatWebSocket({
-    roomId: 'bc9fe3f4-dc57-4c11-a700-306b1879fb43',
+    roomId: crypto.randomUUID(),
     onMessage: handleMessage,
     onConnect: () => {
       console.log('채팅방 연결됨')

@@ -17,6 +17,7 @@ import { Pencil, Trash2, Flag } from 'lucide-react'
 import { like, remove, unlike } from '@/api/rentall_item/rentalItem'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
+import { useGetOrCreateChatRoom } from '@/hooks/useChat'
 
 export function RentalItemDetail() {
   const navigate = useNavigate()
@@ -28,8 +29,9 @@ export function RentalItemDetail() {
   const [liked, setLiked] = useState(false)
   const [isLikeAnimating, setIsLikeAnimating] = useState(false)
 
-  let { id } = useParams<{ id: string }>()
+  const { id } = useParams<{ id: string }>()
   const numericId = Number(id)
+  const chatRoomMutation = useGetOrCreateChatRoom()
 
   if (!id) {
     return (
@@ -165,8 +167,25 @@ export function RentalItemDetail() {
   }
 
   const handleChatClick = () => {
-    // TODO: 실제 채팅방 ID로 대체
-    navigate(`/chat/${numericId}`)
+    if (!isAuthenticated) {
+      setShowLoginModal(true)
+      return
+    }
+
+    chatRoomMutation.mutate(
+      {
+        rentalItemId: numericId,
+        sellerId: rentalItemData.seller.id
+      },
+      {
+        onSuccess: (data) => {
+          navigate(`/chat/${data.chatRoomId}`)
+        },
+        onError: () => {
+          toast.error('채팅방 연결에 실패했어요')
+        }
+      }
+    )
   }
 
   return (
