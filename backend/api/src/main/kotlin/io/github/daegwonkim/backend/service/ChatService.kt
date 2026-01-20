@@ -2,10 +2,13 @@ package io.github.daegwonkim.backend.service
 
 import io.github.daegwonkim.backend.dto.chat.GetChatRoomResponse
 import io.github.daegwonkim.backend.dto.chat.CreateChatRoomResponse
+import io.github.daegwonkim.backend.dto.chat.SaveChatMessageRequest
+import io.github.daegwonkim.backend.entity.ChatMessage
 import io.github.daegwonkim.backend.entity.ChatParticipant
 import io.github.daegwonkim.backend.entity.ChatRoom
 import io.github.daegwonkim.backend.exception.business.ResourceNotFoundException
 import io.github.daegwonkim.backend.exception.errorcode.RentalItemErrorCode
+import io.github.daegwonkim.backend.repository.ChatMessageRepository
 import io.github.daegwonkim.backend.repository.ChatParticipantRepository
 import io.github.daegwonkim.backend.repository.ChatRoomJooqRepository
 import io.github.daegwonkim.backend.repository.ChatRoomRepository
@@ -18,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional
 class ChatService(
     private val chatRoomRepository: ChatRoomRepository,
     private val chatParticipantRepository: ChatParticipantRepository,
+    private val chatMessageRepository: ChatMessageRepository,
     private val chatRoomJooqRepository: ChatRoomJooqRepository,
     private val rentalItemRepository: RentalItemRepository
 ) {
@@ -47,5 +51,16 @@ class ChatService(
         chatParticipantRepository.saveAll(chatParticipants)
 
         return CreateChatRoomResponse(chatRoom.id)
+    }
+
+    @Transactional
+    fun saveChatMessage(userId: Long, chatRoomId: Long, content: String) {
+        chatMessageRepository.save(
+            ChatMessage(
+                chatRoomId = chatRoomId,
+                userId = userId,
+                content = content
+            )
+        )
     }
 }

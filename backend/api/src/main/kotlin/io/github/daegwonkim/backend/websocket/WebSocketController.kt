@@ -29,6 +29,7 @@ class WebSocketController(
             ?: throw IllegalStateException("인증되지 않은 사용자입니다.")
 
         val chatRoom = chatService.createChatRoom(userId, rentalItemId)
+        chatService.saveChatMessage(userId, chatRoom.chatRoomId, request.content)
 
         val response = ChatMessageResponse(
             chatRoomId = chatRoom.chatRoomId,
@@ -54,6 +55,8 @@ class WebSocketController(
     ) {
         val (userId, nickname) = extractUserInfo(headerAccessor)
             ?: throw IllegalStateException("인증되지 않은 사용자입니다.")
+
+        chatService.saveChatMessage(userId, chatRoomId, request.content)
 
         val response = ChatMessageResponse(
             chatRoomId = chatRoomId,
