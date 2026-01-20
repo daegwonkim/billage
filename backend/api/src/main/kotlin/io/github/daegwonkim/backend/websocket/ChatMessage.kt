@@ -10,13 +10,13 @@ enum class MessageType {
 }
 
 data class ChatMessageRequest(
-    val roomId: UUID,
+    val roomId: Long,
     val content: String
 )
 
 data class ChatMessageResponse(
     val id: UUID = UUID.randomUUID(),
-    val roomId: UUID,
+    val roomId: Long,
     val senderId: Long,
     val senderNickname: String,
     val content: String,

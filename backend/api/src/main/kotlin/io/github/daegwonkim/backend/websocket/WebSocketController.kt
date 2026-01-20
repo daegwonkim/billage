@@ -20,7 +20,7 @@ class WebSocketController(
      */
     @MessageMapping("/chat/{roomId}")
     fun sendMessage(
-        @DestinationVariable roomId: UUID,
+        @DestinationVariable roomId: Long,
         @Payload request: ChatMessageRequest,
         headerAccessor: SimpMessageHeaderAccessor
     ) {

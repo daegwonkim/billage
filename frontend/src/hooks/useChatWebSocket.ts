@@ -57,6 +57,10 @@ export function useChatWebSocket({
 
     clientRef.current = client
     client.activate()
+
+    return () => {
+      client.deactivate()
+    }
   }, [roomId])
 
   const sendMessage = useCallback(
