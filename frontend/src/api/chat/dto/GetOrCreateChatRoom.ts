@@ -1,8 +1,3 @@
-export interface GetOrCreateChatRoomRequest {
-  rentalItemId: number
-  sellerId: number
-}
-
-export interface GetOrCreateChatRoomResponse {
+export interface GetChatRoomResponse {
   chatRoomId: number
 }

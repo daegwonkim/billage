@@ -1,41 +1,43 @@
 package io.github.daegwonkim.backend.websocket
 
-import org.springframework.messaging.handler.annotation.DestinationVariable
+import io.github.daegwonkim.backend.service.ChatService
 import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.messaging.handler.annotation.Payload
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor
 import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.stereotype.Controller
-import java.util.UUID
 
 @Controller
 class WebSocketController(
-    private val messagingTemplate: SimpMessagingTemplate
+    private val messagingTemplate: SimpMessagingTemplate,
+    private val chatService: ChatService
 ) {
 
     /**
      * 채팅 메시지 전송
-     * 클라이언트에서 /app/chat/{roomId} 로 메시지를 보내면
-     * /topic/chat/{roomId} 를 구독하는 모든 클라이언트에게 브로드캐스트
+     * 클라이언트에서 /app/chat/send 로 메시지를 보내면
+     * 채팅방이 없으면 생성하고, /topic/chat/{roomId} 를 구독하는 모든 클라이언트에게 브로드캐스트
      */
-    @MessageMapping("/chat/{roomId}")
+    @MessageMapping("/chat/send")
     fun sendMessage(
-        @DestinationVariable roomId: Long,
         @Payload request: ChatMessageRequest,
         headerAccessor: SimpMessageHeaderAccessor
     ) {
         val (userId, nickname) = extractUserInfo(headerAccessor)
             ?: throw IllegalStateException("인증되지 않은 사용자입니다.")
 
+        // 채팅방 조회 또는 생성
+        val chatRoom = chatService.getOrCreateChatRoom(userId, request.rentalItemId)
+
         val response = ChatMessageResponse(
-            roomId = roomId,
+            chatRoomId = chatRoom.chatRoomId,
             senderId = userId,
             senderNickname = nickname,
             content = request.content,
             type = MessageType.CHAT
         )
 
-        messagingTemplate.convertAndSend("/topic/chat/$roomId", response)
+        messagingTemplate.convertAndSend("/topic/chat/${chatRoom.chatRoomId}", response)
     }
 
     private fun extractUserInfo(headerAccessor: SimpMessageHeaderAccessor): Pair<Long, String>? {

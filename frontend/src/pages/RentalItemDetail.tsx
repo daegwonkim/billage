@@ -172,20 +172,14 @@ export function RentalItemDetail() {
       return
     }
 
-    chatRoomMutation.mutate(
-      {
-        rentalItemId: numericId,
-        sellerId: rentalItemData.seller.id
+    chatRoomMutation.mutate(numericId, {
+      onSuccess: data => {
+        navigate(`/chat/${data.chatRoomId}`)
       },
-      {
-        onSuccess: (data) => {
-          navigate(`/chat/${data.chatRoomId}`)
-        },
-        onError: () => {
-          toast.error('채팅방 연결에 실패했어요')
-        }
+      onError: () => {
+        toast.error('채팅방 연결에 실패했어요')
       }
-    )
+    })
   }
 
   return (
