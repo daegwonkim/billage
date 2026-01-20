@@ -40,7 +40,7 @@ export function ChatMessageList({
                       ? 'rounded-br-sm bg-black text-white'
                       : 'rounded-bl-sm bg-gray-100 text-gray-900'
                   }`}>
-                  <p className="whitespace-pre-wrap break-words text-[15px] leading-relaxed">
+                  <p className="wrap-break-words text-[15px] leading-relaxed whitespace-pre-wrap">
                     {message.content}
                   </p>
                 </div>
