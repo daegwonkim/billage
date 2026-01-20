@@ -164,6 +164,11 @@ export function RentalItemDetail() {
     // TODO: 신고 페이지 이동 또는 모달
   }
 
+  const handleChatClick = () => {
+    // TODO: 실제 채팅방 ID로 대체
+    navigate(`/chat/${numericId}`)
+  }
+
   return (
     <div className="min-h-screen w-md bg-white pb-[115px]">
       <RentalItemDetailHeader
@@ -187,6 +192,7 @@ export function RentalItemDetail() {
         pricePerWeek={rentalItemData.pricePerWeek}
         onLikeClick={handleLikeClick}
         isAnimating={isLikeAnimating}
+        onChatClick={handleChatClick}
       />
 
       {showLoginModal && (

@@ -7,6 +7,7 @@ interface RentalItemDetailBottomProps {
   pricePerWeek: number
   onLikeClick: () => void
   isAnimating: boolean
+  onChatClick: () => void
 }
 
 export function RentalItemDetailBottom({
@@ -14,7 +15,8 @@ export function RentalItemDetailBottom({
   pricePerDay,
   pricePerWeek,
   onLikeClick,
-  isAnimating
+  isAnimating,
+  onChatClick
 }: RentalItemDetailBottomProps) {
   return (
     <div className="fixed bottom-0 left-1/2 flex w-full max-w-md -translate-x-1/2 items-center gap-5 border-t border-gray-200 bg-white p-4">
@@ -54,7 +56,9 @@ export function RentalItemDetailBottom({
           )}
         </div>
       </div>
-      <button className="cursor-pointer rounded-lg bg-black px-8 py-4 text-base font-bold text-white">
+      <button
+        onClick={onChatClick}
+        className="cursor-pointer rounded-lg bg-black px-8 py-4 text-base font-bold text-white">
         채팅하기
       </button>
     </div>

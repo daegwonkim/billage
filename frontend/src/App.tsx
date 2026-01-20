@@ -16,6 +16,7 @@ import { MyBillage } from './pages/MyBillage'
 import { MySettings } from './pages/MySettings'
 import { AuthProvider } from './contexts/AuthContext'
 import { Search } from './pages/Search'
+import { ChatRoom } from './pages/ChatRoom'
 import { Toaster } from 'react-hot-toast'
 
 const queryClient = new QueryClient()
@@ -29,7 +30,7 @@ function AppContent() {
     window.scrollTo(0, 0)
   }, [location.pathname])
 
-  const hideBottomNavPaths = ['/rental-items/', '/my']
+  const hideBottomNavPaths = ['/rental-items/', '/my', '/chat']
   const showBottomNav = !hideBottomNavPaths.some(path =>
     location.pathname.includes(path)
   )
@@ -85,6 +86,10 @@ function AppContent() {
             <Route
               path="/my/settings"
               element={<MySettings />}
+            />
+            <Route
+              path="/chat/:roomId"
+              element={<ChatRoom />}
             />
           </Routes>
           {showBottomNav && (
