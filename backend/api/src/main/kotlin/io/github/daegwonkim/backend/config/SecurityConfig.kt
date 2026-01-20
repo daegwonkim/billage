@@ -48,6 +48,9 @@ class SecurityConfig(
                 // Authenticated
                 authorize("/api/users/me", authenticated)
 
+                // WebSocket
+                authorize("/ws", authenticated)
+
                 // Dev Tools
                 authorize("/swagger-ui/**", permitAll)
                 authorize("/v3/api-docs/**", permitAll)
