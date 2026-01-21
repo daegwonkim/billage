@@ -5,7 +5,7 @@ import {
   confirmVerificationCode,
   signIn,
   signUp,
-  confirmRegistered
+  checkRegistration
 } from '@/api/auth/auth'
 import { nearbyNeighborhoods } from '@/api/neighborhood/neighborhood'
 import { ApiError } from '@/api/error'
@@ -26,7 +26,11 @@ interface LoginPromptProps {
   onLoginSuccess?: () => void
 }
 
-export function LoginPrompt({ isModal = false, onClose, onLoginSuccess }: LoginPromptProps) {
+export function LoginPrompt({
+  isModal = false,
+  onClose,
+  onLoginSuccess
+}: LoginPromptProps) {
   const { login } = useAuth()
   const navigate = useNavigate()
 
@@ -98,11 +102,11 @@ export function LoginPrompt({ isModal = false, onClose, onLoginSuccess }: LoginP
         verificationCode
       })
       setVerifiedToken(confirmVerificationCodeRes.verifiedToken)
-      const confirmMemberRes = await confirmRegistered({
+      const checkRegistrationRes = await checkRegistration({
         phoneNo: cleanPhoneNo
       })
 
-      if (!confirmMemberRes.registered) {
+      if (!checkRegistrationRes.registered) {
         // 신규 회원이면 동네 인증 단계로
         setStep('neighborhood')
         // 위치 정보 요청

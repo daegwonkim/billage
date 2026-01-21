@@ -13,3 +13,13 @@ data class SignInRequest(
     @field:ValidVerifiedToken
     val verifiedToken: String
 )
+
+data class SignInResult(
+    val userId: Long,
+    val accessToken: String,
+    val refreshToken: String
+)
+
+data class SignInResponse(
+    val userId: Long
+)

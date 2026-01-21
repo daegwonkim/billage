@@ -10,3 +10,7 @@ data class RegisterRentalItemRequest(
     val pricePerWeek: Int?,
     val imageKeys: List<String>
 )
+
+data class RegisterRentalItemResponse(
+    val id: Long
+)

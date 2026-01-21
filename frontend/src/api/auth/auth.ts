@@ -6,15 +6,15 @@ import type {
 } from './dto/ConfirmVerificationCode'
 import type { SendVerificationCodeRequest } from './dto/SendVerificationCode'
 import type {
-  ConfirmRegisteredRequest,
-  ConfirmRegisteredResponse
-} from './dto/ConfirmMember'
+  CheckRegistrationRequest,
+  CheckRegistrationResponse
+} from './dto/CheckRegistration'
 import { customFetch } from '../customFetch'
 
 export async function sendVerificationCode(
   request: SendVerificationCodeRequest
 ): Promise<void> {
-  await customFetch(`/api/auth/verification-code/send`, {
+  await customFetch(`/api/auth/verification-code`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -40,11 +40,11 @@ export async function confirmVerificationCode(
   return response
 }
 
-export async function confirmRegistered(
-  request: ConfirmRegisteredRequest
-): Promise<ConfirmRegisteredResponse> {
-  const response = await customFetch<ConfirmRegisteredResponse>(
-    `/api/auth/confirm-registered`,
+export async function checkRegistration(
+  request: CheckRegistrationRequest
+): Promise<CheckRegistrationResponse> {
+  const response = await customFetch<CheckRegistrationResponse>(
+    `/api/auth/registration-check`,
     {
       method: 'POST',
       headers: {
@@ -74,15 +74,6 @@ export async function signIn(request: SignInRequest): Promise<SignInResponse> {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify(request)
-  })
-}
-
-export async function reissue(): Promise<void> {
-  await customFetch(`/api/auth/token/reissue`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    }
   })
 }
 

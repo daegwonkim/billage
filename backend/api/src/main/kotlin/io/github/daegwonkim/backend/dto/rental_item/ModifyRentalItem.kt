@@ -11,3 +11,7 @@ data class ModifyRentalItemRequest(
     val newImageKeys: List<String>,
     val deleteImageKeys: List<String>
 )
+
+data class ModifyRentalItemResponse(
+    val id: Long
+)

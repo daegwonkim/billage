@@ -15,7 +15,7 @@ async function tryReissueToken(): Promise<boolean> {
   isRefreshing = true
   refreshPromise = (async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/token/reissue`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/tokens/reissue`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include'
@@ -51,7 +51,7 @@ export async function customFetch<T>(
   let response = await doFetch()
 
   // 401 Unauthorized면 토큰 재발급 시도 후 재요청
-  if (response.status === 401 && !path.includes('/api/auth/token/reissue')) {
+  if (response.status === 401 && !path.includes('/api/auth/tokens/reissue')) {
     const reissued = await tryReissueToken()
     if (reissued) {
       response = await doFetch()

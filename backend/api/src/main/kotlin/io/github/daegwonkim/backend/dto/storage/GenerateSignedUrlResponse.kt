@@ -1,5 +1,0 @@
-package io.github.daegwonkim.backend.dto.storage
-
-data class GenerateSignedUrlResponse(
-    val signedUrl: String
-)

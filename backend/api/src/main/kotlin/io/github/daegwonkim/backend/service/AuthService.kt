@@ -1,8 +1,8 @@
 package io.github.daegwonkim.backend.service
 
 import io.github.daegwonkim.backend.coolsms.CoolsmsService
-import io.github.daegwonkim.backend.dto.auth.ConfirmRegisteredRequest
-import io.github.daegwonkim.backend.dto.auth.ConfirmRegisteredResponse
+import io.github.daegwonkim.backend.dto.auth.CheckRegistrationRequest
+import io.github.daegwonkim.backend.dto.auth.CheckRegistrationResponse
 import io.github.daegwonkim.backend.dto.auth.ReissueTokenResponse
 import io.github.daegwonkim.backend.dto.auth.SignInRequest
 import io.github.daegwonkim.backend.dto.auth.SignInResult
@@ -53,23 +53,23 @@ class AuthService(
         val phoneNo = request.phoneNo
 
         val generatedVerificationCode = generateVerificationCodeAndSave(phoneNo)
-//        buildVerificationCodeMessageAndSendSms(phoneNo, generatedVerificationCode)
+        buildVerificationCodeMessageAndSendSms(phoneNo, generatedVerificationCode)
     }
 
     fun confirmVerificationCode(request: ConfirmVerificationCodeRequest): ConfirmVerificationCodeResponse {
         val phoneNo = request.phoneNo
-        val verificationCode = request.verificationCode
+        val verificationCode = request.code
 
-//        validateVerificationCode(phoneNo, verificationCode)
+        confirmVerificationCode(phoneNo, verificationCode)
         val verifiedToken = generateVerifiedTokenAndSave(phoneNo)
         verificationCodeRedisRepository.delete(phoneNo)
 
         return ConfirmVerificationCodeResponse(verifiedToken)
     }
 
-    fun confirmRegistered(request: ConfirmRegisteredRequest): ConfirmRegisteredResponse {
+    fun checkRegistration(request: CheckRegistrationRequest): CheckRegistrationResponse {
         val registered = userRepository.existsByPhoneNoAndIsWithdrawnFalse(request.phoneNo)
-        return ConfirmRegisteredResponse(registered)
+        return CheckRegistrationResponse(registered)
     }
 
     @Transactional
@@ -148,7 +148,7 @@ class AuthService(
         return verifiedToken
     }
 
-    private fun validateVerificationCode(phoneNo: String, receivedVerificationCode: String) {
+    private fun confirmVerificationCode(phoneNo: String, receivedVerificationCode: String) {
         val expectedVerificationCode = verificationCodeRedisRepository.find(phoneNo)
 
         when {

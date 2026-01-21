@@ -1,8 +1,19 @@
 package io.github.daegwonkim.backend.dto.rental_item
 
+import io.github.daegwonkim.backend.enumerate.RentalItemCategory
+import io.github.daegwonkim.backend.enumerate.RentalItemSortOption
 import io.github.daegwonkim.backend.repository.projection.RentalItemsProjection
 import org.springframework.data.domain.Page
 import java.time.Instant
+
+data class GetRentalItemsRequest(
+    val userId: Long?,
+    val category: RentalItemCategory?,
+    val keyword: String?,
+    val page: Int,
+    val size: Int,
+    val sortBy: RentalItemSortOption,
+)
 
 data class GetRentalItemsResponse(
     val content: List<RentalItem>,

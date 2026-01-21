@@ -4,3 +4,7 @@ data class GenerateSignedUrlRequest(
     val bucket: String,
     val fileKey: String
 )
+
+data class GenerateSignedUrlResponse(
+    val signedUrl: String
+)

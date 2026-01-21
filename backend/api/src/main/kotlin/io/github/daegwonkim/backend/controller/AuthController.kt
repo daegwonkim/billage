@@ -1,7 +1,7 @@
 package io.github.daegwonkim.backend.controller
 
-import io.github.daegwonkim.backend.dto.auth.ConfirmRegisteredRequest
-import io.github.daegwonkim.backend.dto.auth.ConfirmRegisteredResponse
+import io.github.daegwonkim.backend.dto.auth.CheckRegistrationRequest
+import io.github.daegwonkim.backend.dto.auth.CheckRegistrationResponse
 import io.github.daegwonkim.backend.dto.auth.SignInRequest
 import io.github.daegwonkim.backend.dto.auth.SignUpRequest
 import io.github.daegwonkim.backend.dto.auth.ConfirmVerificationCodeRequest
@@ -28,7 +28,7 @@ class AuthController(
     private val cookieUtil: CookieUtil
 ) {
     @Operation(summary = "인증코드 전송", description = "사용자에게 인증코드를 전송합니다")
-    @PostMapping("/verification-code/send")
+    @PostMapping("/verification-code")
     fun sendVerificationCode(@Valid @RequestBody request: SendVerificationCodeRequest) =
         authService.sendVerificationCode(request)
 
@@ -40,10 +40,10 @@ class AuthController(
         authService.confirmVerificationCode(request)
 
     @Operation(summary = "회원 여부 확인", description = "이미 등록된 사용자인지 확인합니다")
-    @PostMapping("/confirm-registered")
-    fun confirmRegistered(
-        @Valid @RequestBody request: ConfirmRegisteredRequest
-    ): ConfirmRegisteredResponse = authService.confirmRegistered(request)
+    @PostMapping("/registration-check")
+    fun checkRegistration(
+        @Valid @RequestBody request: CheckRegistrationRequest
+    ): CheckRegistrationResponse = authService.checkRegistration(request)
 
     @Operation(summary = "회원가입", description = "새로운 계정을 등록합니다")
     @PostMapping("/sign-up")
@@ -61,7 +61,7 @@ class AuthController(
     }
 
     @Operation(summary = "토큰 재발급", description = "AccessToken, RefreshToken을 재발급합니다")
-    @PostMapping("/token/reissue")
+    @PostMapping("/tokens/reissue")
     fun reissueToken(request: HttpServletRequest, response: HttpServletResponse) {
         val refreshToken = cookieUtil.getTokenFromCookie(request, "refreshToken")
             ?: throw AuthenticationException(AuthErrorCode.AUTHENTICATION_FAILED, "세션 만료")
