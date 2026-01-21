@@ -54,7 +54,7 @@ class ChatRoomService(
             ?: throw ResourceNotFoundException(id, ChatRoomErrorCode.CHAT_ROOM_NOT_FOUND)
 
         val thumbnailImageUrl = chatRoom.rentalItemThumbnailImageKey.let {
-            supabaseStorageClient.getPublicUrl(userProfileImagesBucket, it)
+            supabaseStorageClient.getPublicUrl(rentalItemImagesBucket, it)
         }
         val profileImageUrl = chatRoom.sellerProfileImageKey?.let {
             supabaseStorageClient.getPublicUrl(userProfileImagesBucket, it)
