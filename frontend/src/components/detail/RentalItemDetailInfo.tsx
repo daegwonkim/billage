@@ -1,4 +1,5 @@
 import type { GetRentalItemResponse } from '@/api/rentall_item/dto/GetRentalItem'
+import { getCategoryLabel } from '@/utils/category'
 import { getTimeAgo } from '@/utils/utils'
 import { MapPin } from 'lucide-react'
 import { useState } from 'react'
@@ -34,11 +35,9 @@ export function RentalItemDetailInfo({
       <div className="pr-1.5 pl-1.5">
         <div className="mb-5 flex items-center gap-2 text-sm font-semibold text-gray-500">
           <div className="flex gap-2">
-            {rentalItem.category && (
-              <span className="underline underline-offset-[1.5px]">
-                {rentalItem.category}
-              </span>
-            )}
+            <span className="underline underline-offset-[1.5px]">
+              {getCategoryLabel(rentalItem.category)}
+            </span>
             <div className="flex items-center gap-0.5">
               <MapPin
                 size={18}

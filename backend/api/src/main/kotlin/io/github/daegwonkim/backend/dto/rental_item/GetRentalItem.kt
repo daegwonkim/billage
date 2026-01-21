@@ -1,12 +1,13 @@
 package io.github.daegwonkim.backend.dto.rental_item
 
+import io.github.daegwonkim.backend.enumerate.RentalItemCategory
 import io.github.daegwonkim.backend.repository.projection.RentalItemProjection
 import java.time.Instant
 
 data class GetRentalItemResponse(
     val id: Long,
     val seller: Seller,
-    val category: String,
+    val category: RentalItemCategory,
     val title: String,
     val description: String,
     val imageUrls: List<String>,
@@ -38,7 +39,7 @@ data class GetRentalItemResponse(
                 address = item.address,
                 profileImageUrl = sellerProfileImageUrl
             ),
-            category = item.category.label,
+            category = item.category,
             title = item.title,
             description = item.description,
             imageUrls = imageUrls,
