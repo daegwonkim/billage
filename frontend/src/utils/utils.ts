@@ -8,6 +8,32 @@ export function getTimeAgo(date: Date) {
   return `${Math.floor(diff / 86400)}일 전`
 }
 
+export function formatTime(date: Date) {
+  const hours = date.getHours()
+  const minutes = date.getMinutes().toString().padStart(2, '0')
+  const period = hours < 12 ? '오전' : '오후'
+  const displayHours = hours % 12 || 12
+  return `${period} ${displayHours}:${minutes}`
+}
+
+export function formatDateLabel(date: Date): string {
+  const today = new Date()
+  const yesterday = new Date(today)
+  yesterday.setDate(yesterday.getDate() - 1)
+
+  const isToday = date.toDateString() === today.toDateString()
+  const isYesterday = date.toDateString() === yesterday.toDateString()
+
+  if (isToday) return '오늘'
+  if (isYesterday) return '어제'
+
+  return date.toLocaleDateString('ko-KR', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  })
+}
+
 export const formatPhoneNo = (value: string) => {
   // 숫자만 추출
   const digits = value.replace(/\D/g, '')
