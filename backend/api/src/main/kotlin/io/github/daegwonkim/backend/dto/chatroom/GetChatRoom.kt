@@ -9,20 +9,24 @@ data class GetChatRoomResponse(
     val seller: Seller
 ) {
     companion object {
-        fun from(projection: ChatRoomProjection): GetChatRoomResponse {
+        fun from(
+            projection: ChatRoomProjection,
+            rentalItemThumbnailImageUrl: String,
+            sellerProfileImageUrl: String?
+        ): GetChatRoomResponse {
             val rentalItem = RentalItem(
                 projection.rentalItemId,
                 projection.rentalItemCategory,
                 projection.rentalItemTitle,
                 projection.rentalItemPricePerDay,
                 projection.rentalItemPricePerWeek,
-                projection.rentalItemThumbnailImageKey
+                rentalItemThumbnailImageUrl
             )
 
             val seller = Seller(
                 projection.sellerId,
                 projection.sellerNickname,
-                projection.sellerProfileImageKey,
+                sellerProfileImageUrl,
                 projection.sellerAddress
             )
 
