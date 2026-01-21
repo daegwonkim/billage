@@ -1,4 +1,4 @@
-package io.github.daegwonkim.backend.repository
+package io.github.daegwonkim.backend.repository.jooq
 
 import io.github.daegwonkim.backend.jooq.Tables.USERS
 import io.github.daegwonkim.backend.jooq.Tables.NEIGHBORHOODS

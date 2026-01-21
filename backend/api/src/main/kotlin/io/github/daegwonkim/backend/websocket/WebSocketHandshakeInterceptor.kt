@@ -1,8 +1,7 @@
 package io.github.daegwonkim.backend.websocket
 
 import io.github.daegwonkim.backend.jwt.JwtTokenProvider
-import io.github.daegwonkim.backend.log.logger
-import io.github.daegwonkim.backend.repository.UserRepository
+import io.github.daegwonkim.backend.repository.jpa.UserRepository
 import org.springframework.http.server.ServerHttpRequest
 import org.springframework.http.server.ServerHttpResponse
 import org.springframework.http.server.ServletServerHttpRequest

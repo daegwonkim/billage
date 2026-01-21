@@ -4,8 +4,8 @@ import io.github.daegwonkim.backend.dto.user.GetProfileResponse
 import io.github.daegwonkim.backend.dto.user.GetUserRentalItemsResponse
 import io.github.daegwonkim.backend.exception.errorcode.UserErrorCode
 import io.github.daegwonkim.backend.exception.business.ResourceNotFoundException
-import io.github.daegwonkim.backend.repository.RentalItemJooqRepository
-import io.github.daegwonkim.backend.repository.UserJooqRepository
+import io.github.daegwonkim.backend.repository.jooq.RentalItemJooqRepository
+import io.github.daegwonkim.backend.repository.jooq.UserJooqRepository
 import io.github.daegwonkim.backend.supabase.SupabaseStorageClient
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service

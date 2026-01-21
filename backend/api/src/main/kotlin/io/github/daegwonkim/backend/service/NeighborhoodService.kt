@@ -7,9 +7,9 @@ import io.github.daegwonkim.backend.entity.command.CreateUserNeighborhoodCommand
 import io.github.daegwonkim.backend.exception.errorcode.AuthErrorCode
 import io.github.daegwonkim.backend.exception.business.AuthenticationException
 import io.github.daegwonkim.backend.exception.business.UnsupportedRegionException
-import io.github.daegwonkim.backend.repository.NeighborhoodJooqRepository
-import io.github.daegwonkim.backend.repository.NeighborhoodRepository
-import io.github.daegwonkim.backend.repository.UserNeighborhoodRepository
+import io.github.daegwonkim.backend.repository.jooq.NeighborhoodJooqRepository
+import io.github.daegwonkim.backend.repository.jpa.NeighborhoodRepository
+import io.github.daegwonkim.backend.repository.jpa.UserNeighborhoodRepository
 import io.github.daegwonkim.backend.repository.projection.NeighborhoodProjection
 import io.github.daegwonkim.backend.vo.Neighborhood
 import org.springframework.stereotype.Service

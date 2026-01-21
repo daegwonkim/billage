@@ -19,12 +19,12 @@ import io.github.daegwonkim.backend.enumerate.RentalItemSortOption
 import io.github.daegwonkim.backend.event.dto.StorageFileDeleteEvent
 import io.github.daegwonkim.backend.exception.errorcode.RentalItemErrorCode
 import io.github.daegwonkim.backend.exception.business.ResourceNotFoundException
-import io.github.daegwonkim.backend.repository.RentalItemImageRepository
-import io.github.daegwonkim.backend.repository.RentalItemJooqRepository
-import io.github.daegwonkim.backend.repository.RentalItemRepository
+import io.github.daegwonkim.backend.repository.jpa.RentalItemImageRepository
+import io.github.daegwonkim.backend.repository.jooq.RentalItemJooqRepository
+import io.github.daegwonkim.backend.repository.jpa.RentalItemRepository
 import io.github.daegwonkim.backend.repository.projection.RentalItemsProjection
 import io.github.daegwonkim.backend.redis.RentalItemViewRedisRepository
-import io.github.daegwonkim.backend.repository.RentalItemLikeRecordRepository
+import io.github.daegwonkim.backend.repository.jpa.RentalItemLikeRecordRepository
 import io.github.daegwonkim.backend.supabase.SupabaseStorageClient
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationEventPublisher

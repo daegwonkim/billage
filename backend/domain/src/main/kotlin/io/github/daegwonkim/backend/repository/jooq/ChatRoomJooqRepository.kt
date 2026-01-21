@@ -1,4 +1,4 @@
-package io.github.daegwonkim.backend.repository
+package io.github.daegwonkim.backend.repository.jooq
 
 import io.github.daegwonkim.backend.jooq.Tables.CHAT_PARTICIPANTS
 import io.github.daegwonkim.backend.jooq.Tables.CHAT_ROOMS

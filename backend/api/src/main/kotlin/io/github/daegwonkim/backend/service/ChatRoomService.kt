@@ -10,11 +10,11 @@ import io.github.daegwonkim.backend.entity.ChatRoom
 import io.github.daegwonkim.backend.exception.business.ResourceNotFoundException
 import io.github.daegwonkim.backend.exception.errorcode.ChatRoomErrorCode
 import io.github.daegwonkim.backend.exception.errorcode.RentalItemErrorCode
-import io.github.daegwonkim.backend.repository.ChatMessageRepository
-import io.github.daegwonkim.backend.repository.ChatParticipantRepository
-import io.github.daegwonkim.backend.repository.ChatRoomJooqRepository
-import io.github.daegwonkim.backend.repository.ChatRoomRepository
-import io.github.daegwonkim.backend.repository.RentalItemRepository
+import io.github.daegwonkim.backend.repository.jpa.ChatMessageRepository
+import io.github.daegwonkim.backend.repository.jpa.ChatParticipantRepository
+import io.github.daegwonkim.backend.repository.jooq.ChatRoomJooqRepository
+import io.github.daegwonkim.backend.repository.jpa.ChatRoomRepository
+import io.github.daegwonkim.backend.repository.jpa.RentalItemRepository
 import io.github.daegwonkim.backend.supabase.SupabaseStorageClient
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service

@@ -18,11 +18,11 @@ import io.github.daegwonkim.backend.jwt.JwtTokenProvider
 import io.github.daegwonkim.backend.redis.RefreshTokenRedisRepository
 import io.github.daegwonkim.backend.redis.VerificationCodeRedisRepository
 import io.github.daegwonkim.backend.redis.VerifiedTokenRedisRepository
-import io.github.daegwonkim.backend.repository.UserRepository
+import io.github.daegwonkim.backend.repository.jpa.UserRepository
 import io.github.daegwonkim.backend.util.NicknameGenerator
 import io.github.daegwonkim.backend.jwt.vo.GeneratedTokens
 import io.github.daegwonkim.backend.jwt.vo.RefreshTokenClaims
-import io.github.daegwonkim.backend.repository.UserJooqRepository
+import io.github.daegwonkim.backend.repository.jooq.UserJooqRepository
 import io.github.daegwonkim.backend.vo.Neighborhood
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

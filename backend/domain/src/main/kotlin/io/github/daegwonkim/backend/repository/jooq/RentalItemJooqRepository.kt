@@ -1,4 +1,4 @@
-package io.github.daegwonkim.backend.repository
+package io.github.daegwonkim.backend.repository.jooq
 
 import io.github.daegwonkim.backend.enumerate.RentalItemCategory
 import io.github.daegwonkim.backend.enumerate.RentalItemSortOption
@@ -105,7 +105,7 @@ class RentalItemJooqRepository(
         ).from(RENTAL_ITEMS)
             .where(RENTAL_ITEMS.USER_ID.eq(userId))
             .and(RENTAL_ITEMS.IS_DELETED.eq(false))
-            .and(excludeRentalItemId?.let { RENTAL_ITEMS.ID.ne(it) } ?: DSL.noCondition())
+            .and(excludeRentalItemId?.let { RENTAL_ITEMS.ID.ne(it) } ?: noCondition())
             .fetchInto(UserRentalItemsProjection::class.java)
     }
 
