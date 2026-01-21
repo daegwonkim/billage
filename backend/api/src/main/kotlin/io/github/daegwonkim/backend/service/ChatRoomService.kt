@@ -15,6 +15,8 @@ import io.github.daegwonkim.backend.repository.ChatParticipantRepository
 import io.github.daegwonkim.backend.repository.ChatRoomJooqRepository
 import io.github.daegwonkim.backend.repository.ChatRoomRepository
 import io.github.daegwonkim.backend.repository.RentalItemRepository
+import io.github.daegwonkim.backend.supabase.SupabaseStorageClient
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -25,7 +27,14 @@ class ChatRoomService(
     private val chatMessageRepository: ChatMessageRepository,
     private val chatParticipantRepository: ChatParticipantRepository,
     private val chatRoomJooqRepository: ChatRoomJooqRepository,
-    private val rentalItemRepository: RentalItemRepository
+    private val rentalItemRepository: RentalItemRepository,
+
+    private val supabaseStorageClient: SupabaseStorageClient,
+
+    @Value($$"${supabase.storage.bucket.rental-item-images}")
+    private val rentalItemImagesBucket: String,
+    @Value($$"${supabase.storage.bucket.user-profile-images}")
+    private val userProfileImagesBucket: String
 ) {
 
     @Transactional(readOnly = true)
@@ -43,7 +52,19 @@ class ChatRoomService(
     fun getChatRoom(id: Long): GetChatRoomResponse {
         val chatRoom = chatRoomJooqRepository.findChatRoomById(id)
             ?: throw ResourceNotFoundException(id, ChatRoomErrorCode.CHAT_ROOM_NOT_FOUND)
-        return GetChatRoomResponse.from(chatRoom)
+
+        val thumbnailImageUrl = chatRoom.rentalItemThumbnailImageKey.let {
+            supabaseStorageClient.getPublicUrl(userProfileImagesBucket, it)
+        }
+        val profileImageUrl = chatRoom.sellerProfileImageKey?.let {
+            supabaseStorageClient.getPublicUrl(userProfileImagesBucket, it)
+        }
+
+        return GetChatRoomResponse.from(
+            chatRoom,
+            thumbnailImageUrl,
+            profileImageUrl
+        )
     }
 
     @Transactional
