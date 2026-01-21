@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { ChatHeader } from '@/components/chat/ChatHeader'
 import { ChatRentalItemInfo } from '@/components/chat/ChatRentalItemInfo'
@@ -6,21 +6,9 @@ import { ChatMessageList } from '@/components/chat/ChatMessageList'
 import { ChatInput } from '@/components/chat/ChatInput'
 import { useChatWebSocket } from '@/hooks/useChatWebSocket'
 import { useAuth } from '@/contexts/AuthContext'
+import { useGetChatRoom, useGetChatMessages } from '@/hooks/useChat'
+import { useGetRentalItem } from '@/hooks/useRentalItem'
 import type { ChatMessageResponse } from '@/api/chat/dto/ChatMessage'
-
-// 더미 데이터 (나중에 실제 API로 대체)
-const dummySeller = {
-  id: 1,
-  nickname: '빌리지마스터',
-  profileImageUrl: ''
-}
-
-const dummyRentalItem = {
-  id: 1,
-  title: '캠핑 텐트 4인용',
-  pricePerDay: 15000,
-  imageUrl: ''
-}
 
 interface Message {
   id: string | number
@@ -43,9 +31,58 @@ export function ChatRoom() {
   // 새 채팅방인지 여부 (chatRoomId 없이 rentalItemId로 진입한 경우)
   const isNewChat = !chatRoomId && !!rentalItemId
 
+  // 기존 채팅방: 채팅방 정보 + 메시지 내역 조회
+  const { data: chatRoomData, isLoading: isChatRoomLoading } = useGetChatRoom(
+    Number(chatRoomId),
+    { enabled: !!chatRoomId }
+  )
+  const { data: chatMessagesData } = useGetChatMessages(Number(chatRoomId), {
+    enabled: !!chatRoomId
+  })
+
+  // 새 채팅방: 대여물품 정보 조회 (판매자 정보 포함)
+  const { data: rentalItemData, isLoading: isRentalItemLoading } =
+    useGetRentalItem(Number(rentalItemId), { enabled: isNewChat })
+
+  // 기존 채팅 메시지 로드
+  useEffect(() => {
+    if (chatMessagesData?.messages) {
+      const loadedMessages: Message[] = chatMessagesData.messages.map(msg => ({
+        id: msg.id,
+        senderId: msg.senderId,
+        content: msg.content,
+        createdAt: new Date(msg.timestamp)
+      }))
+      setMessages(loadedMessages)
+    }
+  }, [chatMessagesData])
+
+  // 상대방 정보 및 대여물품 정보 결정
+  const seller = isNewChat ? rentalItemData?.seller : chatRoomData?.seller
+  const rentalItem = isNewChat
+    ? rentalItemData
+      ? {
+          id: rentalItemData.id,
+          title: rentalItemData.title,
+          category: rentalItemData.category,
+          pricePerDay: rentalItemData.pricePerDay,
+          pricePerWeek: rentalItemData.pricePerWeek,
+          imageUrl: rentalItemData.imageUrls?.[0] ?? ''
+        }
+      : null
+    : chatRoomData?.rentalItem
+      ? {
+          id: chatRoomData.rentalItem.id,
+          title: chatRoomData.rentalItem.title,
+          category: chatRoomData.rentalItem.category,
+          pricePerDay: chatRoomData.rentalItem.pricePerDay,
+          pricePerWeek: chatRoomData.rentalItem.pricePerWeek,
+          imageUrl: chatRoomData.rentalItem.thumbnailImageUrl
+        }
+      : null
+
   const handleMessage = useCallback(
     (chatMessage: ChatMessageResponse) => {
-      // JOIN/LEAVE 메시지는 시스템 메시지로 처리하거나 무시할 수 있음
       if (chatMessage.type === 'CHAT') {
         const newMessage: Message = {
           id: chatMessage.id,
@@ -55,8 +92,7 @@ export function ChatRoom() {
         }
         setMessages(prev => [...prev, newMessage])
 
-        // 새 채팅방에서 첫 메시지를 받으면 (백엔드가 채팅방 생성 후 응답)
-        // chatRoomId를 업데이트하고 URL 변경
+        // 새 채팅방에서 첫 메시지를 받으면 URL 변경
         if (isNewChat && chatMessage.chatRoomId && !currentChatRoomId) {
           setCurrentChatRoomId(String(chatMessage.chatRoomId))
           navigate(`/chat/${chatMessage.chatRoomId}`, { replace: true })
@@ -95,21 +131,37 @@ export function ChatRoom() {
   }
 
   const handleRentalItemClick = () => {
-    navigate(`/rental-items/${dummyRentalItem.id}`)
+    if (rentalItem) {
+      navigate(`/rental-items/${rentalItem.id}`)
+    }
+  }
+
+  const isLoading = isNewChat ? isRentalItemLoading : isChatRoomLoading
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen w-md items-center justify-center bg-white">
+        <div className="text-neutral-500">로딩 중...</div>
+      </div>
+    )
   }
 
   return (
     <div className="flex min-h-screen w-md flex-col bg-white">
       {/* 상단 고정 영역 */}
       <div className="sticky top-0 z-10 bg-white">
-        <ChatHeader
-          seller={dummySeller}
-          onBack={handleBack}
-        />
-        <ChatRentalItemInfo
-          rentalItem={dummyRentalItem}
-          onClick={handleRentalItemClick}
-        />
+        {seller && (
+          <ChatHeader
+            seller={seller}
+            onBack={handleBack}
+          />
+        )}
+        {rentalItem && (
+          <ChatRentalItemInfo
+            rentalItem={rentalItem}
+            onClick={handleRentalItemClick}
+          />
+        )}
         {!isConnected && (
           <div className="bg-yellow-100 px-4 py-2 text-center text-sm text-yellow-800">
             연결 중...

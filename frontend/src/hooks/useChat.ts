@@ -7,16 +7,24 @@ export function useCheckChatRoom() {
   })
 }
 
-export function useGetChatRoom(id: number) {
+export function useGetChatRoom(
+  id: number,
+  options?: { enabled?: boolean }
+) {
   return useQuery({
     queryKey: ['chatRoom', id],
-    queryFn: () => getChatRoom(id)
+    queryFn: () => getChatRoom(id),
+    enabled: options?.enabled ?? true
   })
 }
 
-export function useGetChatMessages(id: number) {
+export function useGetChatMessages(
+  id: number,
+  options?: { enabled?: boolean }
+) {
   return useQuery({
     queryKey: ['chatMessages', id],
-    queryFn: () => getChatMessages(id)
+    queryFn: () => getChatMessages(id),
+    enabled: options?.enabled ?? true
   })
 }

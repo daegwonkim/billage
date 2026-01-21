@@ -38,11 +38,14 @@ export function useGetRentalItemSortOptions() {
   })
 }
 
-export function useGetRentalItem(id: number) {
+export function useGetRentalItem(
+  id: number,
+  options?: { enabled?: boolean }
+) {
   return useQuery<GetRentalItemResponse>({
     queryKey: ['rentalItem', id],
     queryFn: () => getRentalItem(id),
-    enabled: !!id
+    enabled: options?.enabled ?? !!id
   })
 }
 

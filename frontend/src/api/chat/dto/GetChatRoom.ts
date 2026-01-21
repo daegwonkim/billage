@@ -8,8 +8,8 @@ interface RentalItem {
   id: number
   category: string
   title: string
-  pricePerDay?: string
-  pricePerWeek?: string
+  pricePerDay?: number
+  pricePerWeek?: number
   thumbnailImageUrl: string
 }
 

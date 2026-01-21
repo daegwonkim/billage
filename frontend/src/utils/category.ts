@@ -1,0 +1,12 @@
+const CATEGORY_LABELS: Record<string, string> = {
+  HOUSEHOLD: '가정용품',
+  TRAVEL: '여행용품',
+  SPORTS: '스포츠/운동',
+  ELECTRONIC: '전자기기',
+  FASHION: '패션잡화',
+  CHILDCARE: '육아/교육'
+}
+
+export function getCategoryLabel(value: string): string {
+  return CATEGORY_LABELS[value] ?? value
+}
