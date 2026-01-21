@@ -35,7 +35,7 @@ class ChatRoomController(
     }
 
     @Operation(summary = "채팅 내역 조회", description = "특정 채팅방의 채팅 내역을 조회합니다")
-    @GetMapping("/{id}/chat-messages")
+    @GetMapping("/{id}/messages")
     fun getChatMessages(
         @PathVariable("id") id: Long
     ): GetChatMessagesResponse {
