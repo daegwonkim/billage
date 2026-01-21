@@ -38,6 +38,7 @@ class RentalItemJooqRepository(
     ): Page<RentalItemsProjection> {
         val baseQuery = dslContext.select(
             RENTAL_ITEMS.ID,
+            RENTAL_ITEMS.USER_ID.`as`("seller_id"),
             RENTAL_ITEMS.TITLE,
             RENTAL_ITEMS.PRICE_PER_DAY,
             RENTAL_ITEMS.PRICE_PER_WEEK,

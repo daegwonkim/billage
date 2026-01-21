@@ -14,11 +14,12 @@ interface RentalItemCardProps {
 }
 
 export function RentalItemCard({ rentalItem, onClick }: RentalItemCardProps) {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, userId } = useAuth()
   const queryClient = useQueryClient()
   const [showLoginModal, setShowLoginModal] = useState(false)
   const [liked, setLiked] = useState(rentalItem.liked ?? false)
   const [isAnimating, setIsAnimating] = useState(false)
+  const isOwner = userId === rentalItem.sellerId
 
   useEffect(() => {
     setLiked(rentalItem.liked ?? false)
@@ -97,14 +98,15 @@ export function RentalItemCard({ rentalItem, onClick }: RentalItemCardProps) {
                 </h3>
                 <button
                   type="button"
-                  onClick={handleLikeClick}
-                  className="transition-transform duration-300 active:scale-90">
+                  onClick={isOwner ? undefined : handleLikeClick}
+                  disabled={isOwner}
+                  className={`transition-transform duration-300 ${isOwner ? 'cursor-not-allowed' : 'active:scale-90'}`}>
                   <Heart
                     size={22}
                     strokeWidth={1}
-                    fill={liked ? 'red' : 'none'}
-                    color={liked ? 'red' : 'gray'}
-                    className={`transition-transform duration-300 ${isAnimating ? 'scale-125' : 'scale-100'}`}
+                    fill={isOwner ? 'none' : liked ? 'red' : 'none'}
+                    color={isOwner ? '#d1d5db' : liked ? 'red' : 'gray'}
+                    className={`transition-transform duration-300 ${isOwner ? 'opacity-50' : isAnimating ? 'scale-125' : 'scale-100'}`}
                   />
                 </button>
               </div>

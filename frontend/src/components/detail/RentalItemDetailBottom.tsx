@@ -8,6 +8,7 @@ interface RentalItemDetailBottomProps {
   onLikeClick: () => void
   isAnimating: boolean
   onChatClick: () => void
+  isOwner?: boolean
 }
 
 export function RentalItemDetailBottom({
@@ -16,17 +17,22 @@ export function RentalItemDetailBottom({
   pricePerWeek,
   onLikeClick,
   isAnimating,
-  onChatClick
+  onChatClick,
+  isOwner = false
 }: RentalItemDetailBottomProps) {
   return (
     <div className="fixed bottom-0 left-1/2 flex w-full max-w-md -translate-x-1/2 items-center gap-5 border-t border-gray-200 bg-white p-4">
       <Heart
         size={40}
         strokeWidth={1}
-        color={liked ? 'red' : 'gray'}
-        fill={liked ? 'red' : 'none'}
-        className={`shrink-0 cursor-pointer transition-transform duration-300 active:scale-90 ${isAnimating ? 'scale-125' : 'scale-100'}`}
-        onClick={onLikeClick}
+        color={isOwner ? '#d1d5db' : liked ? 'red' : 'gray'}
+        fill={isOwner ? 'none' : liked ? 'red' : 'none'}
+        className={`shrink-0 transition-transform duration-300 ${
+          isOwner
+            ? 'cursor-not-allowed opacity-50'
+            : `cursor-pointer active:scale-90 ${isAnimating ? 'scale-125' : 'scale-100'}`
+        }`}
+        onClick={isOwner ? undefined : onLikeClick}
       />
       <div className="flex-1 text-lg font-extrabold">
         <div>
@@ -57,8 +63,13 @@ export function RentalItemDetailBottom({
         </div>
       </div>
       <button
-        onClick={onChatClick}
-        className="cursor-pointer rounded-lg bg-black px-8 py-4 text-base font-bold text-white">
+        onClick={isOwner ? undefined : onChatClick}
+        disabled={isOwner}
+        className={`rounded-lg px-8 py-4 text-base font-bold ${
+          isOwner
+            ? 'cursor-not-allowed bg-gray-300 text-gray-500'
+            : 'cursor-pointer bg-black text-white'
+        }`}>
         채팅하기
       </button>
     </div>

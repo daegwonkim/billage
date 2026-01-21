@@ -15,6 +15,7 @@ data class GetRentalItemsResponse(
 ) {
     data class RentalItem(
         val id: Long,
+        val sellerId: Long,
         val title: String,
         val thumbnailImageUrl: String,
         val address: String,

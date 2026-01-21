@@ -27,4 +27,5 @@ export interface RentalItem {
   viewCount: number
   liked: boolean
   createdAt: Date
+  sellerId: number
 }

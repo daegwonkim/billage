@@ -210,6 +210,7 @@ export function RentalItemDetail() {
         onLikeClick={handleLikeClick}
         isAnimating={isLikeAnimating}
         onChatClick={handleChatClick}
+        isOwner={isOwner}
       />
 
       {showLoginModal && (

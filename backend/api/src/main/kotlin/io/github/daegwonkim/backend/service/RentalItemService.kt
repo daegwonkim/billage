@@ -183,6 +183,7 @@ class RentalItemService(
     private fun toGetRentalItemsResponse(rentalItem: RentalItemsProjection): GetRentalItemsResponse.RentalItem =
         GetRentalItemsResponse.RentalItem(
             rentalItem.id,
+            rentalItem.sellerId,
             rentalItem.title,
             supabaseStorageClient.getPublicUrl(rentalItemImagesBucket, rentalItem.thumbnailImageKey),
             rentalItem.address,
