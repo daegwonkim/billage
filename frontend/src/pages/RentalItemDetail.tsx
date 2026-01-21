@@ -31,6 +31,7 @@ export function RentalItemDetail() {
 
   const { id } = useParams<{ id: string }>()
   const numericId = Number(id)
+  const checkChatRoomMutation = useCheckChatRoom()
 
   if (!id) {
     return (
@@ -171,20 +172,18 @@ export function RentalItemDetail() {
       return
     }
 
-    const { data: chatRoomId, isError: chatRoomIdError } =
-      useCheckChatRoom(numericId)
-
-    if (chatRoomIdError) {
-      toast.error('채팅방 연결에 실패했어요')
-    }
-
-    if (chatRoomId) {
-      // 기존 채팅방이 있으면 해당 채팅방으로 이동
-      navigate(`/chat/${chatRoomId}`)
-    } else {
-      // 기존 채팅방이 없으면 rentalItemId로 새 채팅 화면 진입
-      navigate(`/chat/new?rentalItemId=${numericId}`)
-    }
+    checkChatRoomMutation.mutate(numericId, {
+      onSuccess: data => {
+        if (data.chatRoomId) {
+          navigate(`/chat/${data.chatRoomId}`)
+        } else {
+          navigate(`/chat/new?rentalItemId=${numericId}`)
+        }
+      },
+      onError: () => {
+        toast.error('채팅방 연결에 실패했어요')
+      }
+    })
   }
 
   return (

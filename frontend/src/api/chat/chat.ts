@@ -10,7 +10,7 @@ export async function checkChatRoom(
     rentalItemId: rentalItemId.toString()
   })
   return await customFetch<CheckChatRoomResponse>(
-    `/api/chat-rooms/chcek?${params}`
+    `/api/chat-rooms/check?${params}`
   )
 }
 

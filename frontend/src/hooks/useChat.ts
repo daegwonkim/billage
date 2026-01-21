@@ -1,10 +1,9 @@
 import { checkChatRoom, getChatMessages, getChatRoom } from '@/api/chat/chat'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 
-export function useCheckChatRoom(rentalItemId: number) {
-  return useQuery({
-    queryKey: [],
-    queryFn: () => checkChatRoom(rentalItemId)
+export function useCheckChatRoom() {
+  return useMutation({
+    mutationFn: (rentalItemId: number) => checkChatRoom(rentalItemId)
   })
 }
 
