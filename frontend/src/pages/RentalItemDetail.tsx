@@ -17,7 +17,7 @@ import { Pencil, Trash2, Flag } from 'lucide-react'
 import { like, remove, unlike } from '@/api/rentall_item/rentalItem'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
-import { useGetOrCreateChatRoom } from '@/hooks/useChat'
+import { useCheckChatRoom } from '@/hooks/useChat'
 
 export function RentalItemDetail() {
   const navigate = useNavigate()
@@ -31,7 +31,6 @@ export function RentalItemDetail() {
 
   const { id } = useParams<{ id: string }>()
   const numericId = Number(id)
-  const chatRoomMutation = useGetOrCreateChatRoom()
 
   if (!id) {
     return (
@@ -172,20 +171,20 @@ export function RentalItemDetail() {
       return
     }
 
-    chatRoomMutation.mutate(numericId, {
-      onSuccess: data => {
-        if (data.chatRoomId) {
-          // 기존 채팅방이 있으면 해당 채팅방으로 이동
-          navigate(`/chat/${data.chatRoomId}`)
-        } else {
-          // 기존 채팅방이 없으면 rentalItemId로 새 채팅 화면 진입
-          navigate(`/chat/new?rentalItemId=${numericId}`)
-        }
-      },
-      onError: () => {
-        toast.error('채팅방 연결에 실패했어요')
-      }
-    })
+    const { data: chatRoomId, isError: chatRoomIdError } =
+      useCheckChatRoom(numericId)
+
+    if (chatRoomIdError) {
+      toast.error('채팅방 연결에 실패했어요')
+    }
+
+    if (chatRoomId) {
+      // 기존 채팅방이 있으면 해당 채팅방으로 이동
+      navigate(`/chat/${chatRoomId}`)
+    } else {
+      // 기존 채팅방이 없으면 rentalItemId로 새 채팅 화면 진입
+      navigate(`/chat/new?rentalItemId=${numericId}`)
+    }
   }
 
   return (
