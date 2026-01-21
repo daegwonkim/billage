@@ -1,4 +1,4 @@
-package io.github.daegwonkim.backend.dto.chat
+package io.github.daegwonkim.backend.dto.chatroom
 
 data class SaveChatMessageRequest(
     val chatRoomId: Long,

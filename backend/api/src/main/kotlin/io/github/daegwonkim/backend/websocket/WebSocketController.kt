@@ -1,6 +1,6 @@
 package io.github.daegwonkim.backend.websocket
 
-import io.github.daegwonkim.backend.service.ChatService
+import io.github.daegwonkim.backend.service.ChatRoomService
 import org.springframework.messaging.handler.annotation.DestinationVariable
 import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.messaging.handler.annotation.Payload
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Controller
 @Controller
 class WebSocketController(
     private val messagingTemplate: SimpMessagingTemplate,
-    private val chatService: ChatService
+    private val chatRoomService: ChatRoomService
 ) {
 
     /**
@@ -28,8 +28,8 @@ class WebSocketController(
         val (userId, nickname) = extractUserInfo(headerAccessor)
             ?: throw IllegalStateException("인증되지 않은 사용자입니다.")
 
-        val chatRoom = chatService.createChatRoom(userId, rentalItemId)
-        chatService.saveChatMessage(userId, chatRoom.chatRoomId, request.content)
+        val chatRoom = chatRoomService.createChatRoom(userId, rentalItemId)
+        chatRoomService.saveChatMessage(userId, chatRoom.chatRoomId, request.content)
 
         val response = ChatMessageResponse(
             chatRoomId = chatRoom.chatRoomId,
@@ -56,7 +56,7 @@ class WebSocketController(
         val (userId, nickname) = extractUserInfo(headerAccessor)
             ?: throw IllegalStateException("인증되지 않은 사용자입니다.")
 
-        chatService.saveChatMessage(userId, chatRoomId, request.content)
+        chatRoomService.saveChatMessage(userId, chatRoomId, request.content)
 
         val response = ChatMessageResponse(
             chatRoomId = chatRoomId,

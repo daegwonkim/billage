@@ -1,12 +1,14 @@
 package io.github.daegwonkim.backend.service
 
-import io.github.daegwonkim.backend.dto.chat.GetChatRoomResponse
-import io.github.daegwonkim.backend.dto.chat.CreateChatRoomResponse
-import io.github.daegwonkim.backend.dto.chat.SaveChatMessageRequest
+import io.github.daegwonkim.backend.dto.chatroom.CreateChatRoomResponse
+import io.github.daegwonkim.backend.dto.chatroom.CheckChatRoomResponse
+import io.github.daegwonkim.backend.dto.chatroom.GetChatRoomResponse
+import io.github.daegwonkim.backend.dto.chatroom.GetChatMessagesResponse
 import io.github.daegwonkim.backend.entity.ChatMessage
 import io.github.daegwonkim.backend.entity.ChatParticipant
 import io.github.daegwonkim.backend.entity.ChatRoom
 import io.github.daegwonkim.backend.exception.business.ResourceNotFoundException
+import io.github.daegwonkim.backend.exception.errorcode.ChatRoomErrorCode
 import io.github.daegwonkim.backend.exception.errorcode.RentalItemErrorCode
 import io.github.daegwonkim.backend.repository.ChatMessageRepository
 import io.github.daegwonkim.backend.repository.ChatParticipantRepository
@@ -18,23 +20,30 @@ import org.springframework.transaction.annotation.Transactional
 
 
 @Service
-class ChatService(
+class ChatRoomService(
     private val chatRoomRepository: ChatRoomRepository,
-    private val chatParticipantRepository: ChatParticipantRepository,
     private val chatMessageRepository: ChatMessageRepository,
+    private val chatParticipantRepository: ChatParticipantRepository,
     private val chatRoomJooqRepository: ChatRoomJooqRepository,
     private val rentalItemRepository: RentalItemRepository
 ) {
 
     @Transactional(readOnly = true)
-    fun getChatRoom(userId: Long, rentalItemId: Long): GetChatRoomResponse {
+    fun checkChatRoom(userId: Long, rentalItemId: Long): CheckChatRoomResponse {
         val rentalItem = rentalItemRepository.findById(rentalItemId)
             .orElseThrow { ResourceNotFoundException(rentalItemId, RentalItemErrorCode.RENTAL_ITEM_NOT_FOUND) }
-        val chatRoomId = chatRoomJooqRepository.findChatRoomByRentalItemIdAndParticipantIds(
+        val chatRoomId = chatRoomJooqRepository.findChatRoomIdByRentalItemIdAndParticipantIds(
             rentalItemId,
             listOf(userId, rentalItem.userId)
         )
-        return GetChatRoomResponse(chatRoomId)
+        return CheckChatRoomResponse(chatRoomId)
+    }
+
+    @Transactional(readOnly = true)
+    fun getChatRoom(id: Long): GetChatRoomResponse {
+        val chatRoom = chatRoomJooqRepository.findChatRoomById(id)
+            ?: throw ResourceNotFoundException(id, ChatRoomErrorCode.CHAT_ROOM_NOT_FOUND)
+        return GetChatRoomResponse.from(chatRoom)
     }
 
     @Transactional
@@ -62,5 +71,19 @@ class ChatService(
                 content = content
             )
         )
+    }
+
+    @Transactional(readOnly = true)
+    fun getChatMessages(id: Long): GetChatMessagesResponse {
+        val messages = chatMessageRepository.findAllByChatRoomId(id)
+            .map { chatMessage ->
+                GetChatMessagesResponse.Message(
+                    chatMessage.id,
+                    chatMessage.userId,
+                    chatMessage.content,
+                    chatMessage.createdAt
+                )
+            }
+        return GetChatMessagesResponse(messages)
     }
 }
