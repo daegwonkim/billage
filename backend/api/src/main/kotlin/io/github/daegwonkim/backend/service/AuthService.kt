@@ -53,14 +53,14 @@ class AuthService(
         val phoneNo = request.phoneNo
 
         val generatedVerificationCode = generateVerificationCodeAndSave(phoneNo)
-        buildVerificationCodeMessageAndSendSms(phoneNo, generatedVerificationCode)
+//        buildVerificationCodeMessageAndSendSms(phoneNo, generatedVerificationCode)
     }
 
     fun confirmVerificationCode(request: ConfirmVerificationCodeRequest): ConfirmVerificationCodeResponse {
         val phoneNo = request.phoneNo
-        val verificationCode = request.code
+        val verificationCode = request.verificationCode
 
-        confirmVerificationCode(phoneNo, verificationCode)
+//        confirmVerificationCode(phoneNo, verificationCode)
         val verifiedToken = generateVerifiedTokenAndSave(phoneNo)
         verificationCodeRedisRepository.delete(phoneNo)
 
@@ -99,7 +99,7 @@ class AuthService(
 
         validateVerifiedToken(phoneNo, request.verifiedToken)
 
-        val generatedTokens = generateTokensAndSaveRefreshToken(user.id, UUID.randomUUID().toString(), 0)
+        val generatedTokens = generateTokensAndSaveRefreshToken(user.id, user.nickname, UUID.randomUUID().toString(), 0)
         verifiedTokenRedisRepository.delete(phoneNo)
 
         userJooqRepository.updateLastActiveAtById(user.id)
@@ -110,7 +110,7 @@ class AuthService(
     fun reissueToken(refreshToken: String): ReissueTokenResponse {
         val claims = validateRefreshToken(refreshToken)
         val newVersion = claims.version + 1
-        val generatedTokens = generateTokensAndSaveRefreshToken(claims.userId, claims.familyId, newVersion)
+        val generatedTokens = generateTokensAndSaveRefreshToken(claims.userId, claims.userNickname, claims.familyId, newVersion)
 
         return ReissueTokenResponse(generatedTokens.accessToken, generatedTokens.refreshToken)
     }
@@ -176,8 +176,8 @@ class AuthService(
         return user.id
     }
 
-    private fun generateTokensAndSaveRefreshToken(userId: Long, familyId: String, version: Int): GeneratedTokens {
-        val generatedTokens = jwtTokenProvider.generateToken(userId, familyId, version)
+    private fun generateTokensAndSaveRefreshToken(userId: Long, userNickname: String, familyId: String, version: Int): GeneratedTokens {
+        val generatedTokens = jwtTokenProvider.generateToken(userId, userNickname, familyId, version)
         refreshTokenRedisRepository.save(familyId, version)
 
         return generatedTokens

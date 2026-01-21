@@ -1,5 +1,6 @@
 package io.github.daegwonkim.backend.websocket
 
+import io.github.daegwonkim.backend.service.ChatParticipantService
 import io.github.daegwonkim.backend.service.ChatRoomService
 import org.springframework.messaging.handler.annotation.DestinationVariable
 import org.springframework.messaging.handler.annotation.MessageMapping
@@ -11,13 +12,14 @@ import org.springframework.stereotype.Controller
 @Controller
 class WebSocketController(
     private val messagingTemplate: SimpMessagingTemplate,
-    private val chatRoomService: ChatRoomService
+    private val chatRoomService: ChatRoomService,
+    private val chatParticipantService: ChatParticipantService
 ) {
 
     /**
      * 새로운 채팅방 생성 및 채팅 메시지 전송
-     * 클라이언트에서 /app/new-chat/{rentalItemId} 로 메시지를 보내면
-     * 새로운 채팅방을 생성하고 /topic/new-chat/{rentalItemId} 를 구독하는 모든 클라이언트에게 브로드캐스트
+     * 클라이언트에서 /app/user/queue/new-chat/{rentalItemId} 로 메시지를 보내면
+     * 새로운 채팅방을 생성하고 /{userId}/queue/new-chat/{rentalItemId} 를 구독하는 모든 클라이언트에게 브로드캐스트
      */
     @MessageMapping("/new-chat/{rentalItemId}")
     fun createChatRoomAndSendMessage(
@@ -39,7 +41,7 @@ class WebSocketController(
             type = MessageType.CHAT
         )
 
-        messagingTemplate.convertAndSend("/topic/new-chat/${rentalItemId}", response)
+        messagingTemplate.convertAndSendToUser(userId.toString(), "/queue/new-chat/${rentalItemId}", response)
     }
 
     /**
@@ -55,6 +57,10 @@ class WebSocketController(
     ) {
         val (userId, nickname) = extractUserInfo(headerAccessor)
             ?: throw IllegalStateException("인증되지 않은 사용자입니다.")
+
+        if (!chatParticipantService.isParticipant(chatRoomId, userId)) {
+            throw IllegalStateException("채팅방 참여자가 아닙니다.")
+        }
 
         chatRoomService.saveChatMessage(userId, chatRoomId, request.content)
 

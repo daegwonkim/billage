@@ -44,7 +44,7 @@ export function useChatWebSocket({
 
         // 채팅방 구독 (새 채팅방이면 rentalItemId 기반으로 구독)
         const topic = isNewChat
-          ? `/topic/new-chat/${rentalItemId}`
+          ? `/user/queue/new-chat/${rentalItemId}`
           : `/topic/chat/${chatRoomId}`
         client.subscribe(topic, (message: IMessage) => {
           const chatMessage: ChatMessageResponse = JSON.parse(message.body)

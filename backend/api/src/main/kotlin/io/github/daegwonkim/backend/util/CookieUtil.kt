@@ -3,6 +3,7 @@ package io.github.daegwonkim.backend.util
 import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.server.ServletServerHttpRequest
 import org.springframework.stereotype.Component
 
 @Component
@@ -32,6 +33,12 @@ class CookieUtil(
 
     fun getTokenFromCookie(request: HttpServletRequest, cookieName: String): String? {
         return request.cookies?.firstOrNull { it.name == cookieName }?.value
+    }
+
+    fun getTokenFromCookie(request: ServletServerHttpRequest, cookieName: String): String? {
+        return request.servletRequest.cookies
+            ?.find { it.name == cookieName }
+            ?.value
     }
 
     fun deleteCookie(name: String): Cookie {

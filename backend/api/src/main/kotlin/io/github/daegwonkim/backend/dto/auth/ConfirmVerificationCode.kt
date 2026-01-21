@@ -12,7 +12,7 @@ data class ConfirmVerificationCodeRequest(
 
     @field:NotBlank(message = "인증번호는 필수입니다")
     @field:ValidVerificationCode
-    val code: String
+    val verificationCode: String
 )
 
 data class ConfirmVerificationCodeResponse(

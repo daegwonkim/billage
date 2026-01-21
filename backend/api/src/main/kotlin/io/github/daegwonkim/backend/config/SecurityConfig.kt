@@ -32,11 +32,11 @@ class SecurityConfig(
             authorizeHttpRequests {
                 // Public
                 authorize("/api/auth/verification-code/**", permitAll)
-                authorize("/api/auth/confirm-registered", permitAll)
+                authorize("/api/auth/registration-check", permitAll)
                 authorize("/api/auth/sign-up", permitAll)
                 authorize("/api/auth/sign-in", permitAll)
                 authorize("/api/auth/sign-out", permitAll)
-                authorize("/api/auth/token/reissue", permitAll)
+                authorize("/api/auth/tokens/reissue", permitAll)
                 authorize("/api/neighborhoods/**", permitAll)
                 authorize("/api/users/*/profile", permitAll)
                 authorize("/api/users/*/rental-items", permitAll)

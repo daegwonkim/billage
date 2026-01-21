@@ -2,6 +2,7 @@ package io.github.daegwonkim.backend.websocket
 
 import io.github.daegwonkim.backend.jwt.JwtTokenProvider
 import io.github.daegwonkim.backend.repository.jpa.UserRepository
+import io.github.daegwonkim.backend.util.CookieUtil
 import org.springframework.http.server.ServerHttpRequest
 import org.springframework.http.server.ServerHttpResponse
 import org.springframework.http.server.ServletServerHttpRequest
@@ -12,7 +13,7 @@ import org.springframework.web.socket.server.HandshakeInterceptor
 @Component
 class WebSocketHandshakeInterceptor(
     private val jwtTokenProvider: JwtTokenProvider,
-    private val userRepository: UserRepository
+    private val cookieUtil: CookieUtil
 ) : HandshakeInterceptor {
 
     companion object {
@@ -26,21 +27,19 @@ class WebSocketHandshakeInterceptor(
         wsHandler: WebSocketHandler,
         attributes: MutableMap<String, Any>
     ): Boolean {
-        if (request is ServletServerHttpRequest) {
-            val token = getTokenFromCookie(request)
-            if (token != null) {
-                val userId = jwtTokenProvider.getSubject(token)
-                if (userId != null) {
-                    val user = userRepository.findById(userId).orElse(null)
-                    if (user != null) {
-                        attributes[USER_ID_KEY] = user.id
-                        attributes[USER_NICKNAME_KEY] = user.nickname
-                        return true
-                    }
-                }
-            }
+        if (request !is ServletServerHttpRequest) {
+            return false
         }
-        // 인증 실패해도 연결은 허용 (메시지 전송 시 검증)
+
+        val token = cookieUtil.getTokenFromCookie(request, "accessToken")
+            ?: return false
+
+        val claims = jwtTokenProvider.getAccessTokenClaims(token)
+            ?: return false
+
+        attributes[USER_ID_KEY] = claims.userId
+        attributes[USER_NICKNAME_KEY] = claims.userNickname
+
         return true
     }
 
@@ -51,11 +50,5 @@ class WebSocketHandshakeInterceptor(
         exception: Exception?
     ) {
         // Nothing to do
-    }
-
-    private fun getTokenFromCookie(request: ServletServerHttpRequest): String? {
-        return request.servletRequest.cookies
-            ?.find { it.name == "accessToken" }
-            ?.value
     }
 }
