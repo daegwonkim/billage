@@ -163,8 +163,8 @@ export function ChatRoom() {
           />
         )}
         {!isConnected && (
-          <div className="bg-yellow-100 px-4 py-2 text-center text-sm text-yellow-800">
-            연결 중...
+          <div className="h-1 w-full overflow-hidden bg-gray-100">
+            <div className="h-full w-1/3 animate-[slide_1s_ease-in-out_infinite] bg-gray-400" />
           </div>
         )}
       </div>

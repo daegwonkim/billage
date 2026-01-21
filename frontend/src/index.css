@@ -186,3 +186,13 @@ button {
 .sparkle-delay-3 { animation-delay: 0.15s; }
 .sparkle-delay-4 { animation-delay: 0.2s; }
 .sparkle-delay-5 { animation-delay: 0.25s; }
+
+/* 연결 중 슬라이드 애니메이션 */
+@keyframes slide {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(400%);
+  }
+}
