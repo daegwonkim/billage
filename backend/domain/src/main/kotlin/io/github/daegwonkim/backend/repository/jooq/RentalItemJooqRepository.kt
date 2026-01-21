@@ -38,7 +38,7 @@ class RentalItemJooqRepository(
     ): Page<RentalItemsProjection> {
         val baseQuery = dslContext.select(
             RENTAL_ITEMS.ID,
-            RENTAL_ITEMS.USER_ID.`as`("seller_id"),
+            RENTAL_ITEMS.SELLER_ID,
             RENTAL_ITEMS.TITLE,
             RENTAL_ITEMS.PRICE_PER_DAY,
             RENTAL_ITEMS.PRICE_PER_WEEK,
@@ -49,16 +49,16 @@ class RentalItemJooqRepository(
             addressField(),
             likedSubquery(userId))
             .from(RENTAL_ITEMS)
-            .join(USER_NEIGHBORHOODS).on(USER_NEIGHBORHOODS.USER_ID.eq(RENTAL_ITEMS.USER_ID))
-            .join(NEIGHBORHOODS).on(NEIGHBORHOODS.ID.eq(USER_NEIGHBORHOODS.NEIGHBORHOOD_ID))
+            .innerJoin(USER_NEIGHBORHOODS).on(USER_NEIGHBORHOODS.USER_ID.eq(RENTAL_ITEMS.SELLER_ID))
+            .innerJoin(NEIGHBORHOODS).on(NEIGHBORHOODS.ID.eq(USER_NEIGHBORHOODS.NEIGHBORHOOD_ID))
             .where(buildGetRentalItemsCondition(category = category, keyword = keyword))
             .and(RENTAL_ITEMS.IS_DELETED.eq(false))
             .orderBy(buildSortOrder(sortBy))
 
         val totalCount = dslContext.selectCount()
             .from(RENTAL_ITEMS)
-            .join(USER_NEIGHBORHOODS).on(USER_NEIGHBORHOODS.USER_ID.eq(RENTAL_ITEMS.USER_ID))
-            .join(NEIGHBORHOODS).on(NEIGHBORHOODS.ID.eq(USER_NEIGHBORHOODS.NEIGHBORHOOD_ID))
+            .innerJoin(USER_NEIGHBORHOODS).on(USER_NEIGHBORHOODS.USER_ID.eq(RENTAL_ITEMS.SELLER_ID))
+            .innerJoin(NEIGHBORHOODS).on(NEIGHBORHOODS.ID.eq(USER_NEIGHBORHOODS.NEIGHBORHOOD_ID))
             .where(buildGetRentalItemsCondition(category = category, keyword = keyword))
             .fetchOne(0, Long::class.java) ?: 0L
 
@@ -72,10 +72,10 @@ class RentalItemJooqRepository(
 
     fun findRentalItem(rentalItemId: Long, userId: Long?): RentalItemProjection? {
         return dslContext.select(
-            USERS.ID.`as`("seller_id"),
             USERS.NICKNAME.`as`("seller_nickname"),
             USERS.PROFILE_IMAGE_KEY.`as`("seller_profile_image_key"),
             RENTAL_ITEMS.ID,
+            RENTAL_ITEMS.SELLER_ID,
             RENTAL_ITEMS.CATEGORY,
             RENTAL_ITEMS.TITLE,
             RENTAL_ITEMS.DESCRIPTION,
@@ -87,9 +87,9 @@ class RentalItemJooqRepository(
             addressField(),
             likedSubquery(userId = userId))
             .from(RENTAL_ITEMS)
-            .join(USERS).on(USERS.ID.eq(RENTAL_ITEMS.USER_ID))
-            .join(USER_NEIGHBORHOODS).on(USER_NEIGHBORHOODS.USER_ID.eq(RENTAL_ITEMS.USER_ID))
-            .join(NEIGHBORHOODS).on(NEIGHBORHOODS.ID.eq(USER_NEIGHBORHOODS.NEIGHBORHOOD_ID))
+            .innerJoin(USERS).on(USERS.ID.eq(RENTAL_ITEMS.SELLER_ID))
+            .innerJoin(USER_NEIGHBORHOODS).on(USER_NEIGHBORHOODS.USER_ID.eq(RENTAL_ITEMS.SELLER_ID))
+            .innerJoin(NEIGHBORHOODS).on(NEIGHBORHOODS.ID.eq(USER_NEIGHBORHOODS.NEIGHBORHOOD_ID))
             .where(RENTAL_ITEMS.ID.eq(rentalItemId))
             .and(RENTAL_ITEMS.IS_DELETED.eq(false))
             .fetchOneInto(RentalItemProjection::class.java)
@@ -103,7 +103,7 @@ class RentalItemJooqRepository(
             RENTAL_ITEMS.PRICE_PER_DAY,
             RENTAL_ITEMS.PRICE_PER_WEEK
         ).from(RENTAL_ITEMS)
-            .where(RENTAL_ITEMS.USER_ID.eq(userId))
+            .where(RENTAL_ITEMS.SELLER_ID.eq(userId))
             .and(RENTAL_ITEMS.IS_DELETED.eq(false))
             .and(excludeRentalItemId?.let { RENTAL_ITEMS.ID.ne(it) } ?: noCondition())
             .fetchInto(UserRentalItemsProjection::class.java)

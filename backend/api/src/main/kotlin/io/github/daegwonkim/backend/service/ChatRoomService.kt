@@ -43,7 +43,7 @@ class ChatRoomService(
             .orElseThrow { ResourceNotFoundException(rentalItemId, RentalItemErrorCode.RENTAL_ITEM_NOT_FOUND) }
         val chatRoomId = chatRoomJooqRepository.findChatRoomIdByRentalItemIdAndParticipantIds(
             rentalItemId,
-            listOf(userId, rentalItem.userId)
+            listOf(userId, rentalItem.sellerId)
         )
         return CheckChatRoomResponse(chatRoomId)
     }
@@ -74,7 +74,7 @@ class ChatRoomService(
 
         val chatRoom = chatRoomRepository.save(ChatRoom(rentalItemId = rentalItemId))
 
-        val participantIds = listOf(userId, rentalItem.userId)
+        val participantIds = listOf(userId, rentalItem.sellerId)
         val chatParticipants = participantIds.map { participantId ->
             ChatParticipant(chatRoomId = chatRoom.id, userId = participantId)
         }
@@ -88,7 +88,7 @@ class ChatRoomService(
         chatMessageRepository.save(
             ChatMessage(
                 chatRoomId = chatRoomId,
-                userId = userId,
+                senderId = userId,
                 content = content
             )
         )
@@ -100,7 +100,7 @@ class ChatRoomService(
             .map { chatMessage ->
                 GetChatMessagesResponse.Message(
                     chatMessage.id,
-                    chatMessage.userId,
+                    chatMessage.senderId,
                     chatMessage.content,
                     chatMessage.createdAt
                 )

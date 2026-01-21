@@ -22,8 +22,8 @@ class ChatMessage(
     @Column(name = "chat_room_id", nullable = false, updatable = false)
     val chatRoomId: Long,
 
-    @Column(name = "user_id", nullable = false, updatable = false)
-    val userId: Long,
+    @Column(name = "sender_id", nullable = false, updatable = false)
+    val senderId: Long,
 
     @Column(nullable = false, updatable = false)
     val content: String

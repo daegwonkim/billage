@@ -38,7 +38,7 @@ class ChatRoomJooqRepository(
             RENTAL_ITEMS.TITLE.`as`("rental_item_title"),
             RENTAL_ITEMS.PRICE_PER_DAY.`as`("rental_item_price_per_day"),
             RENTAL_ITEMS.PRICE_PER_WEEK.`as`("rental_item_price_per_week"),
-            USERS.ID.`as`("seller_id"),
+            RENTAL_ITEMS.SELLER_ID,
             USERS.NICKNAME.`as`("seller_nickname"),
             USERS.PROFILE_IMAGE_KEY.`as`("seller_profile_image_key"),
             addressField(),
@@ -46,7 +46,7 @@ class ChatRoomJooqRepository(
             )
             .from(CHAT_ROOMS)
             .innerJoin(RENTAL_ITEMS).on(CHAT_ROOMS.RENTAL_ITEM_ID.eq(RENTAL_ITEMS.ID))
-            .innerJoin(USERS).on(RENTAL_ITEMS.USER_ID.eq(USERS.ID))
+            .innerJoin(USERS).on(RENTAL_ITEMS.SELLER_ID.eq(USERS.ID))
             .innerJoin(USER_NEIGHBORHOODS).on(USERS.ID.eq(USER_NEIGHBORHOODS.USER_ID))
             .innerJoin(NEIGHBORHOODS).on(USER_NEIGHBORHOODS.NEIGHBORHOOD_ID.eq(NEIGHBORHOODS.ID))
             .where(CHAT_ROOMS.ID.eq(id))

@@ -108,7 +108,7 @@ class RentalItemService(
     ): RegisterRentalItemResponse {
         val newRentalItem = rentalItemRepository.save(
             RentalItem(
-                userId = userId,
+                sellerId = userId,
                 title = request.title,
                 description = request.description,
                 category = request.category,

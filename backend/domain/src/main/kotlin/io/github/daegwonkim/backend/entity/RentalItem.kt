@@ -17,8 +17,8 @@ class RentalItem(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0L,
 
-    @Column(name = "user_id", nullable = false)
-    var userId: Long,
+    @Column(name = "seller_id", nullable = false)
+    var sellerId: Long,
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
