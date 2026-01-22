@@ -9,8 +9,8 @@ import io.github.daegwonkim.backend.entity.ChatMessage
 import io.github.daegwonkim.backend.entity.ChatParticipant
 import io.github.daegwonkim.backend.entity.ChatRoom
 import io.github.daegwonkim.backend.exception.business.ResourceNotFoundException
-import io.github.daegwonkim.backend.exception.errorcode.ChatRoomErrorCode
-import io.github.daegwonkim.backend.exception.errorcode.RentalItemErrorCode
+import io.github.daegwonkim.backend.exception.errorcode.CommonErrorCode
+import io.github.daegwonkim.backend.repository.jooq.ChatParticipantJooqRepository
 import io.github.daegwonkim.backend.repository.jpa.ChatMessageRepository
 import io.github.daegwonkim.backend.repository.jpa.ChatParticipantRepository
 import io.github.daegwonkim.backend.repository.jooq.ChatRoomJooqRepository
@@ -41,7 +41,7 @@ class ChatRoomService(
     @Transactional(readOnly = true)
     fun checkChatRoom(userId: Long, rentalItemId: Long): CheckChatRoomResponse {
         val rentalItem = rentalItemRepository.findById(rentalItemId)
-            .orElseThrow { ResourceNotFoundException(rentalItemId, RentalItemErrorCode.RENTAL_ITEM_NOT_FOUND) }
+            .orElseThrow { ResourceNotFoundException(rentalItemId, CommonErrorCode.RENTAL_ITEM_NOT_FOUND) }
         val chatRoomId = chatRoomJooqRepository.findChatRoomIdByRentalItemIdAndParticipantIds(
             rentalItemId,
             listOf(userId, rentalItem.sellerId)
@@ -52,7 +52,7 @@ class ChatRoomService(
     @Transactional(readOnly = true)
     fun getChatRoom(id: Long): GetChatRoomResponse {
         val chatRoom = chatRoomJooqRepository.findChatRoomById(id)
-            ?: throw ResourceNotFoundException(id, ChatRoomErrorCode.CHAT_ROOM_NOT_FOUND)
+            ?: throw ResourceNotFoundException(id, CommonErrorCode.CHAT_ROOM_NOT_FOUND)
 
         val thumbnailImageUrl = chatRoom.rentalItemThumbnailImageKey.let {
             supabaseStorageClient.getPublicUrl(rentalItemImagesBucket, it)
@@ -89,7 +89,7 @@ class ChatRoomService(
     @Transactional
     fun createChatRoom(userId: Long, rentalItemId: Long): CreateChatRoomResponse {
         val rentalItem = rentalItemRepository.findById(rentalItemId)
-            .orElseThrow { ResourceNotFoundException(rentalItemId, RentalItemErrorCode.RENTAL_ITEM_NOT_FOUND) }
+            .orElseThrow { ResourceNotFoundException(rentalItemId, CommonErrorCode.RENTAL_ITEM_NOT_FOUND) }
 
         val chatRoom = chatRoomRepository.save(ChatRoom(rentalItemId = rentalItemId))
 

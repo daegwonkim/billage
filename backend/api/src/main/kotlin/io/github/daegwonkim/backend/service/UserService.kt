@@ -2,8 +2,8 @@ package io.github.daegwonkim.backend.service
 
 import io.github.daegwonkim.backend.dto.user.GetProfileResponse
 import io.github.daegwonkim.backend.dto.user.GetUserRentalItemsResponse
-import io.github.daegwonkim.backend.exception.errorcode.UserErrorCode
 import io.github.daegwonkim.backend.exception.business.ResourceNotFoundException
+import io.github.daegwonkim.backend.exception.errorcode.CommonErrorCode
 import io.github.daegwonkim.backend.repository.jooq.RentalItemJooqRepository
 import io.github.daegwonkim.backend.repository.jooq.UserJooqRepository
 import io.github.daegwonkim.backend.supabase.SupabaseStorageClient
@@ -25,7 +25,7 @@ class UserService(
     @Transactional(readOnly = true)
     fun getProfile(id: Long): GetProfileResponse {
         val userProfile = userJooqRepository.findUserProfileById(id)
-            ?: throw ResourceNotFoundException(id, UserErrorCode.USER_NOT_FOUND)
+            ?: throw ResourceNotFoundException(id, CommonErrorCode.USER_NOT_FOUND)
 
         return GetProfileResponse.from(
             userProfile,

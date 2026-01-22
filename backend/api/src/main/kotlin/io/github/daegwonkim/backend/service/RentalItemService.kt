@@ -17,8 +17,8 @@ import io.github.daegwonkim.backend.entity.RentalItemLikeRecord
 import io.github.daegwonkim.backend.enumerate.RentalItemCategory
 import io.github.daegwonkim.backend.enumerate.RentalItemSortOption
 import io.github.daegwonkim.backend.event.dto.StorageFileDeleteEvent
-import io.github.daegwonkim.backend.exception.errorcode.RentalItemErrorCode
 import io.github.daegwonkim.backend.exception.business.ResourceNotFoundException
+import io.github.daegwonkim.backend.exception.errorcode.CommonErrorCode
 import io.github.daegwonkim.backend.repository.jpa.RentalItemImageRepository
 import io.github.daegwonkim.backend.repository.jooq.RentalItemJooqRepository
 import io.github.daegwonkim.backend.repository.jpa.RentalItemRepository
@@ -81,7 +81,7 @@ class RentalItemService(
     @Transactional
     fun getRentalItem(userId: Long?, rentalItemId: Long): GetRentalItemResponse {
         val rentalItemProjection = rentalItemJooqRepository.findRentalItem(rentalItemId, userId)
-            ?: throw ResourceNotFoundException(rentalItemId, RentalItemErrorCode.RENTAL_ITEM_NOT_FOUND)
+            ?: throw ResourceNotFoundException(rentalItemId, CommonErrorCode.RENTAL_ITEM_NOT_FOUND)
 
         if (userId != null && rentalItemViewRedisRepository.markViewed(rentalItemId, userId)) {
             rentalItemJooqRepository.incrementViewCountById(rentalItemId)
@@ -124,7 +124,7 @@ class RentalItemService(
     @Transactional(readOnly = true)
     fun getForModify(id: Long): GetRentalItemForModifyResponse {
         val rentalItem = rentalItemRepository.findById(id)
-            .orElseThrow { throw ResourceNotFoundException(id, RentalItemErrorCode.RENTAL_ITEM_NOT_FOUND) }
+            .orElseThrow { throw ResourceNotFoundException(id, CommonErrorCode.RENTAL_ITEM_NOT_FOUND) }
         val images = getRentalItemImages(rentalItem.id)
 
         return GetRentalItemForModifyResponse.from(rentalItem, images)
@@ -136,7 +136,7 @@ class RentalItemService(
         modifiedInfo: ModifyRentalItemRequest
     ): ModifyRentalItemResponse {
         val rentalItem = rentalItemRepository.findById(id)
-            .orElseThrow { throw ResourceNotFoundException(id, RentalItemErrorCode.RENTAL_ITEM_NOT_FOUND) }
+            .orElseThrow { throw ResourceNotFoundException(id, CommonErrorCode.RENTAL_ITEM_NOT_FOUND) }
         rentalItem.modify(modifiedInfo.category, modifiedInfo.title, modifiedInfo.description,
             modifiedInfo.pricePerDay, modifiedInfo.pricePerWeek)
 
