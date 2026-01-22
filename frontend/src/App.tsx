@@ -17,6 +17,7 @@ import { MySettings } from './pages/MySettings'
 import { AuthProvider } from './contexts/AuthContext'
 import { Search } from './pages/Search'
 import { ChatRoom } from './pages/ChatRoom'
+import { ChatRoomList } from './pages/ChatRoomList'
 import { Toaster } from 'react-hot-toast'
 
 const queryClient = new QueryClient()
@@ -43,6 +44,8 @@ function AppContent() {
       navigate('/')
     } else if (tab === 'my') {
       navigate('/my')
+    } else if (tab === 'chat') {
+      navigate('/chat')
     }
   }
 
@@ -86,6 +89,10 @@ function AppContent() {
             <Route
               path="/my/settings"
               element={<MySettings />}
+            />
+            <Route
+              path="/chat"
+              element={<ChatRoomList />}
             />
             <Route
               path="/chat/new"

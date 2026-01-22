@@ -1,4 +1,9 @@
-import { checkChatRoom, getChatMessages, getChatRoom } from '@/api/chat/chat'
+import {
+  checkChatRoom,
+  getChatMessages,
+  getChatRoom,
+  getChatRooms
+} from '@/api/chat/chat'
 import { useMutation, useQuery } from '@tanstack/react-query'
 
 export function useCheckChatRoom() {
@@ -7,14 +12,18 @@ export function useCheckChatRoom() {
   })
 }
 
-export function useGetChatRoom(
-  id: number,
-  options?: { enabled?: boolean }
-) {
+export function useGetChatRoom(id: number, options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: ['chatRoom', id],
     queryFn: () => getChatRoom(id),
     enabled: options?.enabled ?? true
+  })
+}
+
+export function useGetChatRooms() {
+  return useQuery({
+    queryKey: ['chatRooms'],
+    queryFn: () => getChatRooms()
   })
 }
 

@@ -1,5 +1,6 @@
 package io.github.daegwonkim.backend.repository.jooq
 
+import io.github.daegwonkim.backend.jooq.Tables.CHAT_MESSAGES
 import io.github.daegwonkim.backend.jooq.Tables.CHAT_PARTICIPANTS
 import io.github.daegwonkim.backend.jooq.Tables.CHAT_ROOMS
 import io.github.daegwonkim.backend.jooq.Tables.NEIGHBORHOODS
@@ -8,11 +9,13 @@ import io.github.daegwonkim.backend.jooq.Tables.RENTAL_ITEM_IMAGES
 import io.github.daegwonkim.backend.jooq.Tables.USERS
 import io.github.daegwonkim.backend.jooq.Tables.USER_NEIGHBORHOODS
 import io.github.daegwonkim.backend.repository.projection.ChatRoomProjection
+import io.github.daegwonkim.backend.repository.projection.ChatRoomsProjection
 import org.jooq.DSLContext
 import org.jooq.impl.DSL
 import org.jooq.impl.DSL.concat
 import org.jooq.impl.DSL.value
 import org.springframework.stereotype.Repository
+import java.time.Instant
 
 @Repository
 class ChatRoomJooqRepository(
@@ -45,12 +48,52 @@ class ChatRoomJooqRepository(
             thumbnailImageUrlSubquery()
             )
             .from(CHAT_ROOMS)
-            .innerJoin(RENTAL_ITEMS).on(CHAT_ROOMS.RENTAL_ITEM_ID.eq(RENTAL_ITEMS.ID))
-            .innerJoin(USERS).on(RENTAL_ITEMS.SELLER_ID.eq(USERS.ID))
-            .innerJoin(USER_NEIGHBORHOODS).on(USERS.ID.eq(USER_NEIGHBORHOODS.USER_ID))
-            .innerJoin(NEIGHBORHOODS).on(USER_NEIGHBORHOODS.NEIGHBORHOOD_ID.eq(NEIGHBORHOODS.ID))
+            .join(RENTAL_ITEMS).on(CHAT_ROOMS.RENTAL_ITEM_ID.eq(RENTAL_ITEMS.ID))
+            .join(USERS).on(RENTAL_ITEMS.SELLER_ID.eq(USERS.ID))
+            .join(USER_NEIGHBORHOODS).on(USERS.ID.eq(USER_NEIGHBORHOODS.USER_ID))
+            .join(NEIGHBORHOODS).on(USER_NEIGHBORHOODS.NEIGHBORHOOD_ID.eq(NEIGHBORHOODS.ID))
             .where(CHAT_ROOMS.ID.eq(id))
             .fetchOneInto(ChatRoomProjection::class.java)
+    }
+
+    fun findChatRoomsByUserId(userId: Long): List<ChatRoomsProjection> {
+        val latestMessage = DSL.lateral(
+            dslContext.select(
+                CHAT_MESSAGES.CONTENT.`as`("latest_message"),
+                CHAT_MESSAGES.CREATED_AT.`as`("latest_message_time")
+                )
+                .from(CHAT_MESSAGES)
+                .where(CHAT_MESSAGES.CHAT_ROOM_ID.eq(CHAT_ROOMS.ID))
+                .orderBy(CHAT_MESSAGES.CREATED_AT.desc())
+                .limit(1)
+        )
+
+        val thumbnailImageKey = DSL.lateral(
+            dslContext.select(RENTAL_ITEM_IMAGES.KEY.`as`("rental_item_thumbnail_image_key"))
+                .from(RENTAL_ITEM_IMAGES)
+                .where(RENTAL_ITEM_IMAGES.RENTAL_ITEM_ID.eq(RENTAL_ITEMS.ID))
+                .orderBy(RENTAL_ITEM_IMAGES.SEQUENCE.desc())
+                .limit(1)
+        )
+
+        return dslContext.select(
+                CHAT_ROOMS.ID.`as`("chat_room_id"),
+                USERS.NICKNAME.`as`("participant_nickname"),
+                RENTAL_ITEMS.TITLE.`as`("rental_item_title"),
+                thumbnailImageKey.field("rental_item_thumbnail_image_key", String::class.java),
+                latestMessage.field("latest_message", String::class.java),
+                latestMessage.field("latest_message_time", Instant::class.java)
+            )
+            .from(CHAT_ROOMS)
+            .join(CHAT_PARTICIPANTS).on(CHAT_ROOMS.ID.eq(CHAT_PARTICIPANTS.CHAT_ROOM_ID))
+            .join(USERS).on(CHAT_PARTICIPANTS.USER_ID.eq(USERS.ID))
+            .join(RENTAL_ITEMS).on(CHAT_ROOMS.RENTAL_ITEM_ID.eq(RENTAL_ITEMS.ID))
+            .join(latestMessage).on(DSL.trueCondition())
+            .join(thumbnailImageKey).on(DSL.trueCondition())
+            .where(CHAT_PARTICIPANTS.USER_ID.eq(userId))
+            .and(CHAT_PARTICIPANTS.LEFT_AT.isNull)
+            .orderBy(latestMessage.field("latest_message_time")?.desc())
+            .fetchInto(ChatRoomsProjection::class.java)
     }
 
     private fun thumbnailImageUrlSubquery() =

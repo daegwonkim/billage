@@ -9,6 +9,6 @@ data class GetChatMessagesResponse(
         val id: Long,
         val senderId: Long,
         val content: String,
-        val timestamp: Instant
+        val createdAt: Instant
     )
 }

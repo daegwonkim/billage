@@ -2,6 +2,7 @@ import { customFetch } from '../customFetch'
 import type { CheckChatRoomResponse } from './dto/CheckChatRoom'
 import type { GetChatMessagesResponse } from './dto/GetChatMessages'
 import type { GetChatRoomResponse } from './dto/GetChatRoom'
+import type { GetChatRoomsResponse } from './dto/GetChatRooms'
 
 export async function checkChatRoom(
   rentalItemId: number
@@ -16,6 +17,10 @@ export async function checkChatRoom(
 
 export async function getChatRoom(id: number): Promise<GetChatRoomResponse> {
   return await customFetch<GetChatRoomResponse>(`/api/chat-rooms/${id}`)
+}
+
+export async function getChatRooms(): Promise<GetChatRoomsResponse> {
+  return await customFetch<GetChatRoomsResponse>(`/api/chat-rooms`)
 }
 
 export async function getChatMessages(

@@ -4,6 +4,7 @@ import io.github.daegwonkim.backend.dto.chatroom.CreateChatRoomResponse
 import io.github.daegwonkim.backend.dto.chatroom.CheckChatRoomResponse
 import io.github.daegwonkim.backend.dto.chatroom.GetChatRoomResponse
 import io.github.daegwonkim.backend.dto.chatroom.GetChatMessagesResponse
+import io.github.daegwonkim.backend.dto.chatroom.GetChatRoomsResponse
 import io.github.daegwonkim.backend.entity.ChatMessage
 import io.github.daegwonkim.backend.entity.ChatParticipant
 import io.github.daegwonkim.backend.entity.ChatRoom
@@ -65,6 +66,24 @@ class ChatRoomService(
             thumbnailImageUrl,
             profileImageUrl
         )
+    }
+
+    @Transactional(readOnly = true)
+    fun getChatRooms(userId: Long): GetChatRoomsResponse {
+        val chatRooms = chatRoomJooqRepository.findChatRoomsByUserId(userId)
+            .map { chatRoom ->
+                GetChatRoomsResponse.ChatRoom(
+                    chatRoom.chatRoomId,
+                    chatRoom.participantNickname,
+                    chatRoom.rentalItemTitle,
+                    supabaseStorageClient.getPublicUrl(rentalItemImagesBucket, chatRoom.rentalItemThumbnailImageKey),
+                    chatRoom.latestMessage,
+                    chatRoom.latestMessageTime,
+                    0
+                )
+            }
+
+        return GetChatRoomsResponse(chatRooms)
     }
 
     @Transactional

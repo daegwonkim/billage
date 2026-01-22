@@ -1,0 +1,110 @@
+import { ChevronLeft } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '@/contexts/AuthContext'
+import { LoginPrompt } from '@/components/auth/LoginPrompt'
+import { useGetChatRooms } from '@/hooks/useChat'
+import { formatDateLabel } from '@/utils/utils'
+
+export function ChatRoomList() {
+  const navigate = useNavigate()
+  const { isAuthenticated } = useAuth()
+
+  if (!isAuthenticated) {
+    return <LoginPrompt />
+  }
+
+  const {
+    data: chatRoomsData,
+    isLoading: chatRoomsLoading,
+    isError: chatRoomsError
+  } = useGetChatRooms()
+
+  if (chatRoomsLoading) {
+    return <div>로딩중</div>
+  }
+
+  if (chatRoomsError) {
+    return <div>에러 발생</div>
+  }
+
+  const handleChatRoomClick = (chatRoomId: number) => {
+    navigate(`/chat/${chatRoomId}`)
+  }
+
+  return (
+    <div className="min-h-screen w-md bg-white pb-20">
+      {/* 상단 바 */}
+      <div className="relative flex h-14 items-center border-b border-gray-100 px-4">
+        <button
+          onClick={() => navigate(-1)}
+          className="absolute left-2 rounded-lg p-2 transition-colors hover:bg-gray-50">
+          <ChevronLeft
+            size={24}
+            className="text-neutral-700"
+          />
+        </button>
+        <div className="flex-1 text-center text-base font-extrabold text-neutral-900">
+          채팅
+        </div>
+      </div>
+
+      {/* 채팅방 목록 */}
+      {chatRoomsData?.chatRooms.length === 0 ? (
+        <div className="flex flex-col items-center justify-center px-4 py-20">
+          <div className="text-center">
+            <p className="mb-2 text-lg font-semibold text-neutral-800">
+              채팅 내역이 없습니다
+            </p>
+            <p className="text-sm text-neutral-500">
+              관심있는 물품의 판매자에게 채팅을 보내보세요
+            </p>
+          </div>
+        </div>
+      ) : (
+        <div className="divide-y divide-gray-100">
+          {chatRoomsData?.chatRooms.map(chatRoom => (
+            <button
+              key={chatRoom.chatRoomId}
+              onClick={() => handleChatRoomClick(chatRoom.chatRoomId)}
+              className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-gray-50">
+              {/* 물품 썸네일 */}
+              <div className="relative h-18 w-18 shrink-0 overflow-hidden rounded-lg bg-gray-100">
+                <img
+                  src={chatRoom.rentalItemThumbnailImageUrl}
+                  alt={chatRoom.rentalItemTitle}
+                  className="h-full w-full object-cover"
+                />
+              </div>
+
+              {/* 채팅 정보 */}
+              <div className="min-w-0 flex-1">
+                <div className="mb-0.5 flex items-end gap-1">
+                  <span className="font-semibold text-neutral-900">
+                    {chatRoom.participantNickname}
+                  </span>
+                </div>
+                <p className="mb-0.5 truncate text-sm text-neutral-600">
+                  {chatRoom.rentalItemTitle}
+                </p>
+                <p className="truncate text-sm text-neutral-400">
+                  {chatRoom.latestMessage}
+                </p>
+              </div>
+              <div className="flex h-18 min-w-0 flex-col items-end justify-start gap-1">
+                <div className="text-xs text-neutral-400">
+                  {formatDateLabel(chatRoom.latestMessageTime)}
+                </div>
+                {/* 읽지 않은 메시지 카운트 */}
+                {chatRoom.unreadCount > 0 && (
+                  <div className="flex h-5 w-5 items-center rounded-full bg-red-500 px-1.5 text-xs font-bold text-white">
+                    {chatRoom.unreadCount > 99 ? '99+' : chatRoom.unreadCount}
+                  </div>
+                )}
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}

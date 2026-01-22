@@ -51,7 +51,7 @@ export function ChatRoom() {
         id: msg.id,
         senderId: msg.senderId,
         content: msg.content,
-        createdAt: new Date(msg.timestamp)
+        createdAt: new Date(msg.createdAt)
       }))
       setMessages(loadedMessages)
     }

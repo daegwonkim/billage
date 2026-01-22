@@ -16,7 +16,9 @@ export function formatTime(date: Date) {
   return `${period} ${displayHours}:${minutes}`
 }
 
-export function formatDateLabel(date: Date): string {
+export function formatDateLabel(input: Date | string): string {
+  const date = input instanceof Date ? input : new Date(input)
+
   const today = new Date()
   const yesterday = new Date(today)
   yesterday.setDate(yesterday.getDate() - 1)
