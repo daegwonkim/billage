@@ -34,6 +34,8 @@ class ChatRoomJooqRepository(
     }
 
     fun findChatRoomById(id: Long): ChatRoomProjection? {
+        val thumbnailImageKey = thumbnailImageKeyLateral()
+
         return dslContext.select(
             CHAT_ROOMS.ID.`as`("chat_room_id"),
             RENTAL_ITEMS.ID.`as`("rental_item_id"),
@@ -44,19 +46,21 @@ class ChatRoomJooqRepository(
             RENTAL_ITEMS.SELLER_ID,
             USERS.NICKNAME.`as`("seller_nickname"),
             USERS.PROFILE_IMAGE_KEY.`as`("seller_profile_image_key"),
-            addressField(),
-            thumbnailImageUrlSubquery()
+            thumbnailImageKey.field("rental_item_thumbnail_image_key", String::class.java),
+            addressField()
             )
             .from(CHAT_ROOMS)
             .innerJoin(RENTAL_ITEMS).on(CHAT_ROOMS.RENTAL_ITEM_ID.eq(RENTAL_ITEMS.ID))
             .innerJoin(USERS).on(RENTAL_ITEMS.SELLER_ID.eq(USERS.ID))
             .innerJoin(USER_NEIGHBORHOODS).on(USERS.ID.eq(USER_NEIGHBORHOODS.USER_ID))
             .innerJoin(NEIGHBORHOODS).on(USER_NEIGHBORHOODS.NEIGHBORHOOD_ID.eq(NEIGHBORHOODS.ID))
+            .innerJoin(thumbnailImageKey).on(DSL.trueCondition())
             .where(CHAT_ROOMS.ID.eq(id))
             .fetchOneInto(ChatRoomProjection::class.java)
     }
 
     fun findChatRoomsByUserId(userId: Long): List<ChatRoomsProjection> {
+        val thumbnailImageKey = thumbnailImageKeyLateral()
         val latestMessage = DSL.lateral(
             dslContext.select(
                 CHAT_MESSAGES.CONTENT.`as`("latest_message"),
@@ -65,14 +69,6 @@ class ChatRoomJooqRepository(
                 .from(CHAT_MESSAGES)
                 .where(CHAT_MESSAGES.CHAT_ROOM_ID.eq(CHAT_ROOMS.ID))
                 .orderBy(CHAT_MESSAGES.CREATED_AT.desc())
-                .limit(1)
-        )
-
-        val thumbnailImageKey = DSL.lateral(
-            dslContext.select(RENTAL_ITEM_IMAGES.KEY.`as`("rental_item_thumbnail_image_key"))
-                .from(RENTAL_ITEM_IMAGES)
-                .where(RENTAL_ITEM_IMAGES.RENTAL_ITEM_ID.eq(RENTAL_ITEMS.ID))
-                .orderBy(RENTAL_ITEM_IMAGES.SEQUENCE.desc())
                 .limit(1)
         )
 
@@ -96,13 +92,14 @@ class ChatRoomJooqRepository(
             .fetchInto(ChatRoomsProjection::class.java)
     }
 
-    private fun thumbnailImageUrlSubquery() =
-        dslContext.select(RENTAL_ITEM_IMAGES.KEY)
-            .from(RENTAL_ITEM_IMAGES)
-            .where(RENTAL_ITEM_IMAGES.RENTAL_ITEM_ID.eq(RENTAL_ITEMS.ID))
-            .orderBy(RENTAL_ITEM_IMAGES.SEQUENCE.asc())
-            .limit(1)
-            .asField<String>("rental_item_thumbnail_image_key")
+    private fun thumbnailImageKeyLateral() =
+        DSL.lateral(
+            dslContext.select(RENTAL_ITEM_IMAGES.KEY.`as`("rental_item_thumbnail_image_key"))
+                .from(RENTAL_ITEM_IMAGES)
+                .where(RENTAL_ITEM_IMAGES.RENTAL_ITEM_ID.eq(RENTAL_ITEMS.ID))
+                .orderBy(RENTAL_ITEM_IMAGES.SEQUENCE.desc())
+                .limit(1)
+        )
 
     private fun addressField() =
         concat(

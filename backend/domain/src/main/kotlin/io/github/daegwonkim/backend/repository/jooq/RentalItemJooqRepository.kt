@@ -36,6 +36,9 @@ class RentalItemJooqRepository(
         sortBy: RentalItemSortOption,
         pageable: Pageable
     ): Page<RentalItemsProjection> {
+        val thumbnailImageKey = thumbnailImageKeyLateral()
+        val likeCounts = likeCountsTable()
+
         val baseQuery = dslContext.select(
             RENTAL_ITEMS.ID,
             RENTAL_ITEMS.SELLER_ID,
@@ -44,13 +47,15 @@ class RentalItemJooqRepository(
             RENTAL_ITEMS.PRICE_PER_WEEK,
             RENTAL_ITEMS.VIEW_COUNT,
             RENTAL_ITEMS.CREATED_AT,
-            thumbnailImageUrlSubquery(),
-            likeCountSubquery(),
+            thumbnailImageKey.field("thumbnail_image_key", String::class.java),
             addressField(),
+            DSL.coalesce(likeCounts.field("like_count", Int::class.java), 0).`as`("like_count"),
             likedSubquery(userId))
             .from(RENTAL_ITEMS)
             .innerJoin(USER_NEIGHBORHOODS).on(USER_NEIGHBORHOODS.USER_ID.eq(RENTAL_ITEMS.SELLER_ID))
             .innerJoin(NEIGHBORHOODS).on(NEIGHBORHOODS.ID.eq(USER_NEIGHBORHOODS.NEIGHBORHOOD_ID))
+            .innerJoin(thumbnailImageKey).on(DSL.trueCondition())
+            .leftJoin(likeCounts).on(RENTAL_ITEMS.ID.eq(likeCounts.field(RENTAL_ITEM_LIKE_RECORDS.RENTAL_ITEM_ID)))
             .where(buildGetRentalItemsCondition(category = category, keyword = keyword))
             .and(RENTAL_ITEMS.IS_DELETED.eq(false))
             .orderBy(buildSortOrder(sortBy))
@@ -71,6 +76,8 @@ class RentalItemJooqRepository(
     }
 
     fun findRentalItem(rentalItemId: Long, userId: Long?): RentalItemProjection? {
+        val likeCounts = likeCountsTable()
+
         return dslContext.select(
             USERS.NICKNAME.`as`("seller_nickname"),
             USERS.PROFILE_IMAGE_KEY.`as`("seller_profile_image_key"),
@@ -83,26 +90,30 @@ class RentalItemJooqRepository(
             RENTAL_ITEMS.PRICE_PER_WEEK,
             RENTAL_ITEMS.VIEW_COUNT,
             RENTAL_ITEMS.CREATED_AT,
-            likeCountSubquery(),
             addressField(),
+            DSL.coalesce(likeCounts.field("like_count", Int::class.java), 0).`as`("like_count"),
             likedSubquery(userId = userId))
             .from(RENTAL_ITEMS)
             .innerJoin(USERS).on(USERS.ID.eq(RENTAL_ITEMS.SELLER_ID))
             .innerJoin(USER_NEIGHBORHOODS).on(USER_NEIGHBORHOODS.USER_ID.eq(RENTAL_ITEMS.SELLER_ID))
             .innerJoin(NEIGHBORHOODS).on(NEIGHBORHOODS.ID.eq(USER_NEIGHBORHOODS.NEIGHBORHOOD_ID))
+            .leftJoin(likeCounts).on(RENTAL_ITEMS.ID.eq(likeCounts.field(RENTAL_ITEM_LIKE_RECORDS.RENTAL_ITEM_ID)))
             .where(RENTAL_ITEMS.ID.eq(rentalItemId))
             .and(RENTAL_ITEMS.IS_DELETED.eq(false))
             .fetchOneInto(RentalItemProjection::class.java)
     }
 
     fun findRentalItemsByUserId(userId: Long, excludeRentalItemId: Long?): List<UserRentalItemsProjection> {
+        val thumbnailImageKey = thumbnailImageKeyLateral()
+
         return dslContext.select(
             RENTAL_ITEMS.ID,
             RENTAL_ITEMS.TITLE,
-            thumbnailImageUrlSubquery(),
+            thumbnailImageKey.field("thumbnail_image_key", String::class.java),
             RENTAL_ITEMS.PRICE_PER_DAY,
             RENTAL_ITEMS.PRICE_PER_WEEK
         ).from(RENTAL_ITEMS)
+            .innerJoin(thumbnailImageKey).on(DSL.trueCondition())
             .where(RENTAL_ITEMS.SELLER_ID.eq(userId))
             .and(RENTAL_ITEMS.IS_DELETED.eq(false))
             .and(excludeRentalItemId?.let { RENTAL_ITEMS.ID.ne(it) } ?: noCondition())
@@ -125,19 +136,23 @@ class RentalItemJooqRepository(
         return deleted > 0
     }
 
-    private fun thumbnailImageUrlSubquery() =
-        dslContext.select(RENTAL_ITEM_IMAGES.KEY)
-            .from(RENTAL_ITEM_IMAGES)
-            .where(RENTAL_ITEM_IMAGES.RENTAL_ITEM_ID.eq(RENTAL_ITEMS.ID))
-            .orderBy(RENTAL_ITEM_IMAGES.SEQUENCE.asc())
-            .limit(1)
-            .asField<String>("thumbnail_image_key")
+    private fun thumbnailImageKeyLateral() =
+        DSL.lateral(
+            dslContext.select(RENTAL_ITEM_IMAGES.KEY.`as`("thumbnail_image_key"))
+                .from(RENTAL_ITEM_IMAGES)
+                .where(RENTAL_ITEM_IMAGES.RENTAL_ITEM_ID.eq(RENTAL_ITEMS.ID))
+                .orderBy(RENTAL_ITEM_IMAGES.SEQUENCE.desc())
+                .limit(1)
+        )
 
-    private fun likeCountSubquery() =
-        dslContext.selectCount()
+    private fun likeCountsTable() =
+        dslContext.select(
+            RENTAL_ITEM_LIKE_RECORDS.RENTAL_ITEM_ID,
+            DSL.count().`as`("like_count")
+            )
             .from(RENTAL_ITEM_LIKE_RECORDS)
-            .where(RENTAL_ITEM_LIKE_RECORDS.RENTAL_ITEM_ID.eq(RENTAL_ITEMS.ID))
-            .asField<Int>("like_count")
+            .groupBy(RENTAL_ITEM_LIKE_RECORDS.RENTAL_ITEM_ID)
+            .asTable("like_counts")
 
     private fun likedSubquery(userId: Long?) =
         if (userId != null) {
@@ -170,7 +185,7 @@ class RentalItemJooqRepository(
 
     private fun buildSortOrder(sortBy: RentalItemSortOption) = when (sortBy) {
         RentalItemSortOption.LATEST -> RENTAL_ITEMS.CREATED_AT.desc()
-        RentalItemSortOption.POPULAR -> likeCountSubquery().desc()
+        RentalItemSortOption.POPULAR -> likeCountsTable().field("like_count")?.desc()
         RentalItemSortOption.PRICE_LOW -> RENTAL_ITEMS.PRICE_PER_DAY.asc().nullsLast()
         RentalItemSortOption.PRICE_HIGH -> RENTAL_ITEMS.PRICE_PER_DAY.desc().nullsLast()
         RentalItemSortOption.NEAREST -> RENTAL_ITEMS.CREATED_AT.desc() // TODO: 위치 기반 정렬 구현 필요
