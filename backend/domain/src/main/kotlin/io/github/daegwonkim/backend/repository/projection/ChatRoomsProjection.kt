@@ -8,5 +8,6 @@ data class ChatRoomsProjection(
     val rentalItemTitle: String,
     val rentalItemThumbnailImageKey: String,
     val latestMessage: String,
-    val latestMessageTime: Instant
+    val latestMessageTime: Instant,
+    val unreadCount: Int
 )

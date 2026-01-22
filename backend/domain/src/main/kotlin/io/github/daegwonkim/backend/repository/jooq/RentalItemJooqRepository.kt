@@ -141,7 +141,7 @@ class RentalItemJooqRepository(
             dslContext.select(RENTAL_ITEM_IMAGES.KEY.`as`("thumbnail_image_key"))
                 .from(RENTAL_ITEM_IMAGES)
                 .where(RENTAL_ITEM_IMAGES.RENTAL_ITEM_ID.eq(RENTAL_ITEMS.ID))
-                .orderBy(RENTAL_ITEM_IMAGES.SEQUENCE.desc())
+                .orderBy(RENTAL_ITEM_IMAGES.SEQUENCE.asc())
                 .limit(1)
         )
 

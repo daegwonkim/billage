@@ -79,7 +79,7 @@ class ChatRoomService(
                     supabaseStorageClient.getPublicUrl(rentalItemImagesBucket, chatRoom.rentalItemThumbnailImageKey),
                     chatRoom.latestMessage,
                     chatRoom.latestMessageTime,
-                    0
+                    chatRoom.unreadCount
                 )
             }
 

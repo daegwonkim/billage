@@ -61,16 +61,8 @@ class ChatRoomJooqRepository(
 
     fun findChatRoomsByUserId(userId: Long): List<ChatRoomsProjection> {
         val thumbnailImageKey = thumbnailImageKeyLateral()
-        val latestMessage = DSL.lateral(
-            dslContext.select(
-                CHAT_MESSAGES.CONTENT.`as`("latest_message"),
-                CHAT_MESSAGES.CREATED_AT.`as`("latest_message_time")
-                )
-                .from(CHAT_MESSAGES)
-                .where(CHAT_MESSAGES.CHAT_ROOM_ID.eq(CHAT_ROOMS.ID))
-                .orderBy(CHAT_MESSAGES.CREATED_AT.desc())
-                .limit(1)
-        )
+        val latestMessage = latestMessageLateral()
+        val unreadCount = unreadCountLateral()
 
         return dslContext.select(
                 CHAT_ROOMS.ID.`as`("chat_room_id"),
@@ -78,7 +70,8 @@ class ChatRoomJooqRepository(
                 RENTAL_ITEMS.TITLE.`as`("rental_item_title"),
                 thumbnailImageKey.field("rental_item_thumbnail_image_key", String::class.java),
                 latestMessage.field("latest_message", String::class.java),
-                latestMessage.field("latest_message_time", Instant::class.java)
+                latestMessage.field("latest_message_time", Instant::class.java),
+                unreadCount.field("unread_count", Int::class.java)
             )
             .from(CHAT_ROOMS)
             .innerJoin(CHAT_PARTICIPANTS).on(CHAT_ROOMS.ID.eq(CHAT_PARTICIPANTS.CHAT_ROOM_ID))
@@ -86,6 +79,7 @@ class ChatRoomJooqRepository(
             .innerJoin(USERS).on(RENTAL_ITEMS.SELLER_ID.eq(USERS.ID))
             .innerJoin(latestMessage).on(DSL.trueCondition())
             .innerJoin(thumbnailImageKey).on(DSL.trueCondition())
+            .innerJoin(unreadCount).on(DSL.trueCondition())
             .where(CHAT_PARTICIPANTS.USER_ID.eq(userId))
             .and(CHAT_PARTICIPANTS.LEFT_AT.isNull)
             .orderBy(latestMessage.field("latest_message_time")?.desc())
@@ -97,8 +91,29 @@ class ChatRoomJooqRepository(
             dslContext.select(RENTAL_ITEM_IMAGES.KEY.`as`("rental_item_thumbnail_image_key"))
                 .from(RENTAL_ITEM_IMAGES)
                 .where(RENTAL_ITEM_IMAGES.RENTAL_ITEM_ID.eq(RENTAL_ITEMS.ID))
-                .orderBy(RENTAL_ITEM_IMAGES.SEQUENCE.desc())
+                .orderBy(RENTAL_ITEM_IMAGES.SEQUENCE.asc())
                 .limit(1)
+        )
+
+    private fun latestMessageLateral() =
+        DSL.lateral(
+            dslContext.select(
+                CHAT_MESSAGES.CONTENT.`as`("latest_message"),
+                CHAT_MESSAGES.CREATED_AT.`as`("latest_message_time")
+                )
+                .from(CHAT_MESSAGES)
+                .where(CHAT_MESSAGES.CHAT_ROOM_ID.eq(CHAT_ROOMS.ID))
+                .orderBy(CHAT_MESSAGES.CREATED_AT.desc())
+                .limit(1)
+        )
+
+    private fun unreadCountLateral() =
+        DSL.lateral(
+            dslContext.select(DSL.count().`as`("unread_count"))
+                .from(CHAT_MESSAGES)
+                .where(CHAT_MESSAGES.CHAT_ROOM_ID.eq(CHAT_ROOMS.ID))
+                .and(CHAT_MESSAGES.ID.gt(DSL.coalesce(CHAT_PARTICIPANTS.LAST_READ_MESSAGE_ID, 0)))
+                .and(CHAT_MESSAGES.SENDER_ID.ne(CHAT_PARTICIPANTS.USER_ID))
         )
 
     private fun addressField() =

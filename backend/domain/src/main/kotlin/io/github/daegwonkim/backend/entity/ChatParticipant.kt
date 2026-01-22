@@ -25,6 +25,9 @@ class ChatParticipant(
     @Column(name = "user_id", nullable = false, updatable = false)
     val userId: Long,
 
+    @Column(name = "last_read_message_id")
+    val lastReadMessageId: Long? = null,
+
     @Column(name = "left_at")
     var leftAt: Instant? = null
 ) {
