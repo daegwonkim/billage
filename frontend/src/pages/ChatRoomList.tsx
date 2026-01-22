@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import { LoginPrompt } from '@/components/auth/LoginPrompt'
 import { useGetChatRooms } from '@/hooks/useChat'
-import { formatDateLabel } from '@/utils/utils'
+import { formatDate } from '@/utils/utils'
 
 export function ChatRoomList() {
   const navigate = useNavigate()
@@ -92,7 +92,7 @@ export function ChatRoomList() {
               </div>
               <div className="flex h-18 min-w-0 flex-col items-end justify-start gap-1">
                 <div className="text-xs text-neutral-400">
-                  {formatDateLabel(chatRoom.latestMessageTime)}
+                  {formatDate(chatRoom.latestMessageTime)}
                 </div>
                 {/* 읽지 않은 메시지 카운트 */}
                 {chatRoom.unreadCount > 0 && (

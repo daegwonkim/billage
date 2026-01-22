@@ -36,6 +36,36 @@ export function formatDateLabel(input: Date | string): string {
   })
 }
 
+export function formatDate(input: Date | string): string {
+  const date = input instanceof Date ? input : new Date(input)
+  const now = new Date()
+
+  const diffMs = now.getTime() - date.getTime()
+  const diffMinutes = Math.floor(diffMs / (1000 * 60))
+  const diffHours = Math.floor(diffMinutes / 60)
+
+  const today = new Date()
+  const yesterday = new Date(today)
+  yesterday.setDate(yesterday.getDate() - 1)
+
+  const isToday = date.toDateString() === today.toDateString()
+  const isYesterday = date.toDateString() === yesterday.toDateString()
+
+  if (isToday) {
+    if (diffMinutes < 1) return '방금 전'
+    if (diffMinutes < 60) return `${diffMinutes}분 전`
+    return `${diffHours}시간 전`
+  }
+
+  if (isYesterday) return '어제'
+
+  return date.toLocaleDateString('ko-KR', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  })
+}
+
 export const formatPhoneNo = (value: string) => {
   // 숫자만 추출
   const digits = value.replace(/\D/g, '')
