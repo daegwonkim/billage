@@ -27,8 +27,8 @@ class UserJooqRepository(
             NEIGHBORHOODS.SIGUNGU,
             NEIGHBORHOODS.EUPMYEONDONG
         ).from(USERS)
-            .join(USER_NEIGHBORHOODS).on(USERS.ID.eq(USER_NEIGHBORHOODS.USER_ID))
-            .join(NEIGHBORHOODS).on(USER_NEIGHBORHOODS.NEIGHBORHOOD_ID.eq(NEIGHBORHOODS.ID))
+            .innerJoin(USER_NEIGHBORHOODS).on(USERS.ID.eq(USER_NEIGHBORHOODS.USER_ID))
+            .innerJoin(NEIGHBORHOODS).on(USER_NEIGHBORHOODS.NEIGHBORHOOD_ID.eq(NEIGHBORHOODS.ID))
             .where(USERS.ID.eq(userId))
             .fetchOneInto(UserProfileProjection::class.java)
     }
