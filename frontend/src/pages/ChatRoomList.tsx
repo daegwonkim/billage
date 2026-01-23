@@ -3,21 +3,25 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import { LoginPrompt } from '@/components/auth/LoginPrompt'
 import { useGetChatRooms } from '@/hooks/useChat'
+import { useChatListWebSocket } from '@/hooks/useChatListWebSocket'
 import { formatDate } from '@/utils/utils'
 
 export function ChatRoomList() {
   const navigate = useNavigate()
   const { isAuthenticated } = useAuth()
 
-  if (!isAuthenticated) {
-    return <LoginPrompt />
-  }
+  // 채팅방 목록 실시간 업데이트 구독
+  useChatListWebSocket()
 
   const {
     data: chatRoomsData,
     isLoading: chatRoomsLoading,
     isError: chatRoomsError
   } = useGetChatRooms()
+
+  if (!isAuthenticated) {
+    return <LoginPrompt />
+  }
 
   if (chatRoomsLoading) {
     return <div>로딩중</div>
@@ -64,14 +68,14 @@ export function ChatRoomList() {
         <div className="divide-y divide-gray-100">
           {chatRoomsData?.chatRooms.map(chatRoom => (
             <button
-              key={chatRoom.chatRoomId}
-              onClick={() => handleChatRoomClick(chatRoom.chatRoomId)}
+              key={chatRoom.id}
+              onClick={() => handleChatRoomClick(chatRoom.id)}
               className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-gray-50">
               {/* 물품 썸네일 */}
               <div className="relative h-18 w-18 shrink-0 overflow-hidden rounded-lg bg-gray-100">
                 <img
-                  src={chatRoom.rentalItemThumbnailImageUrl}
-                  alt={chatRoom.rentalItemTitle}
+                  src={chatRoom.rentalItem.thumbnailImageUrl}
+                  alt={chatRoom.rentalItem.title}
                   className="h-full w-full object-cover"
                 />
               </div>
@@ -80,24 +84,24 @@ export function ChatRoomList() {
               <div className="min-w-0 flex-1">
                 <div className="mb-0.5 flex items-end gap-1">
                   <span className="font-semibold text-neutral-900">
-                    {chatRoom.participantNickname}
+                    {chatRoom.chatParticipantNickname}
                   </span>
                 </div>
                 <p className="mb-0.5 truncate text-sm text-neutral-600">
-                  {chatRoom.rentalItemTitle}
+                  {chatRoom.rentalItem.title}
                 </p>
                 <p className="truncate text-sm text-neutral-400">
-                  {chatRoom.latestMessage}
+                  {chatRoom.messageStatus.latestMessage}
                 </p>
               </div>
               <div className="flex h-18 min-w-0 flex-col items-end justify-start gap-1">
                 <div className="text-xs text-neutral-400">
-                  {formatDate(chatRoom.latestMessageTime)}
+                  {formatDate(chatRoom.messageStatus.latestMessageTime)}
                 </div>
                 {/* 읽지 않은 메시지 카운트 */}
-                {chatRoom.unreadCount > 0 && (
+                {chatRoom.messageStatus.unreadCount > 0 && (
                   <div className="flex h-5 w-5 items-center rounded-full bg-red-500 px-1.5 text-xs font-bold text-white">
-                    {chatRoom.unreadCount > 99 ? '99+' : chatRoom.unreadCount}
+                    {chatRoom.messageStatus.unreadCount > 99 ? '99+' : chatRoom.messageStatus.unreadCount}
                   </div>
                 )}
               </div>

@@ -6,12 +6,20 @@ data class GetChatRoomsResponse(
     val chatRooms: List<ChatRoom>
 ) {
     data class ChatRoom(
-        val chatRoomId: Long,
-        val participantNickname: String,
-        val rentalItemTitle: String,
-        val rentalItemThumbnailImageUrl: String,
-        val latestMessage: String,
-        val latestMessageTime: Instant,
-        val unreadCount: Int
-    )
+        val id: Long,
+        val chatParticipantNickname: String,
+        val rentalItem: RentalItem,
+        val messageStatus: MessageStatus
+    ) {
+        data class RentalItem(
+            val title: String,
+            val thumbnailImageUrl: String,
+        )
+
+        data class MessageStatus(
+            val latestMessage: String,
+            val latestMessageTime: Instant,
+            val unreadCount: Int
+        )
+    }
 }

@@ -22,3 +22,10 @@ data class ChatMessageResponse(
     val type: MessageType,
     val timestamp: Instant = Instant.now()
 )
+
+data class ChatRoomUpdateResponse(
+    val chatRoomId: Long,
+    val latestMessage: String,
+    val latestMessageTime: Instant,
+    val unreadCount: Int
+)

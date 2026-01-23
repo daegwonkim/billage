@@ -9,6 +9,7 @@ import io.github.daegwonkim.backend.jooq.Tables.RENTAL_ITEM_IMAGES
 import io.github.daegwonkim.backend.jooq.Tables.RENTAL_ITEM_LIKE_RECORDS
 import io.github.daegwonkim.backend.jooq.Tables.USER_NEIGHBORHOODS
 import io.github.daegwonkim.backend.repository.projection.RentalItemProjection
+import io.github.daegwonkim.backend.repository.projection.RentalItemSummaryProjection
 import io.github.daegwonkim.backend.repository.projection.RentalItemsProjection
 import io.github.daegwonkim.backend.repository.projection.UserRentalItemsProjection
 import org.jooq.DSLContext
@@ -101,6 +102,22 @@ class RentalItemJooqRepository(
             .where(RENTAL_ITEMS.ID.eq(rentalItemId))
             .and(RENTAL_ITEMS.IS_DELETED.eq(false))
             .fetchOneInto(RentalItemProjection::class.java)
+    }
+
+    fun findRentalItemSummary(rentalItemId: Long): RentalItemSummaryProjection? {
+        val thumbnailImageKey = thumbnailImageKeyLateral()
+
+        return dslContext.select(
+            RENTAL_ITEMS.ID,
+            RENTAL_ITEMS.TITLE,
+            thumbnailImageKey.field("thumbnail_image_key", String::class.java),
+            USERS.NICKNAME.`as`("seller_nickname")
+            )
+            .from(RENTAL_ITEMS)
+            .innerJoin(USERS).on(RENTAL_ITEMS.SELLER_ID.eq(USERS.ID))
+            .innerJoin(thumbnailImageKey).on(DSL.trueCondition())
+            .where(RENTAL_ITEMS.ID.eq(rentalItemId))
+            .fetchOneInto(RentalItemSummaryProjection::class.java)
     }
 
     fun findRentalItemsByUserId(userId: Long, excludeRentalItemId: Long?): List<UserRentalItemsProjection> {

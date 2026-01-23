@@ -61,7 +61,7 @@ class RentalItemController(
         @AuthenticationPrincipal userId: Long?,
         @PathVariable("id") id: Long
     ): GetRentalItemResponse {
-        return rentalItemService.getRentalItem(userId, id)
+        return rentalItemService.getRentalItem(id, userId)
     }
 
     @Operation(summary = "비슷한 상품 목록 조회", description = "현재 보고있는 상품과 비슷한 상품 목록을 조회합니다")

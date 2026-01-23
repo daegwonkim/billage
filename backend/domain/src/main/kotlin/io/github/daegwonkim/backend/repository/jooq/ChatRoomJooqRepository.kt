@@ -9,6 +9,7 @@ import io.github.daegwonkim.backend.jooq.Tables.RENTAL_ITEM_IMAGES
 import io.github.daegwonkim.backend.jooq.Tables.USERS
 import io.github.daegwonkim.backend.jooq.Tables.USER_NEIGHBORHOODS
 import io.github.daegwonkim.backend.repository.projection.ChatRoomProjection
+import io.github.daegwonkim.backend.repository.projection.ChatRoomUpdateStatusProjection
 import io.github.daegwonkim.backend.repository.projection.ChatRoomsProjection
 import org.jooq.DSLContext
 import org.jooq.impl.DSL
@@ -65,8 +66,8 @@ class ChatRoomJooqRepository(
         val unreadCount = unreadCountLateral()
 
         return dslContext.select(
-                CHAT_ROOMS.ID.`as`("chat_room_id"),
-                USERS.NICKNAME.`as`("participant_nickname"),
+                CHAT_ROOMS.ID,
+                USERS.NICKNAME.`as`("chat_participant_nickname"),
                 RENTAL_ITEMS.TITLE.`as`("rental_item_title"),
                 thumbnailImageKey.field("rental_item_thumbnail_image_key", String::class.java),
                 latestMessage.field("latest_message", String::class.java),
@@ -84,6 +85,26 @@ class ChatRoomJooqRepository(
             .and(CHAT_PARTICIPANTS.LEFT_AT.isNull)
             .orderBy(latestMessage.field("latest_message_time")?.desc())
             .fetchInto(ChatRoomsProjection::class.java)
+    }
+
+    fun findChatRoomUpdateStatus(chatRoomId: Long, chatParticipantUserId: Long): ChatRoomUpdateStatusProjection? {
+        val latestMessage = latestMessageLateral()
+
+        return dslContext.select(
+            latestMessage.field("latest_message", String::class.java),
+            latestMessage.field("latest_message_time", Instant::class.java),
+            DSL.count(CHAT_MESSAGES.ID).`as`("unread_count")
+            )
+            .from(CHAT_ROOMS)
+            .innerJoin(CHAT_PARTICIPANTS).on(CHAT_ROOMS.ID.eq(CHAT_PARTICIPANTS.CHAT_ROOM_ID))
+            .innerJoin(latestMessage).on(DSL.trueCondition())
+            .leftJoin(CHAT_MESSAGES).on(CHAT_ROOMS.ID.eq(CHAT_MESSAGES.CHAT_ROOM_ID)
+                .and(CHAT_MESSAGES.ID.gt(DSL.coalesce(CHAT_PARTICIPANTS.LAST_READ_MESSAGE_ID, 0)))
+                .and(CHAT_MESSAGES.SENDER_ID.ne(CHAT_PARTICIPANTS.USER_ID)))
+            .where(CHAT_ROOMS.ID.eq(chatRoomId)
+                .and(CHAT_PARTICIPANTS.USER_ID.eq(chatParticipantUserId)))
+            .groupBy(latestMessage.field("latest_message"), latestMessage.field("latest_message_time"))
+            .fetchOneInto(ChatRoomUpdateStatusProjection::class.java)
     }
 
     private fun thumbnailImageKeyLateral() =

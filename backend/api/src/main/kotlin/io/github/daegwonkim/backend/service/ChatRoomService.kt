@@ -4,12 +4,14 @@ import io.github.daegwonkim.backend.dto.chatroom.CreateChatRoomResponse
 import io.github.daegwonkim.backend.dto.chatroom.CheckChatRoomResponse
 import io.github.daegwonkim.backend.dto.chatroom.GetChatRoomResponse
 import io.github.daegwonkim.backend.dto.chatroom.GetChatMessagesResponse
+import io.github.daegwonkim.backend.dto.chatroom.GetChatRoomUpdateStatusResponse
 import io.github.daegwonkim.backend.dto.chatroom.GetChatRoomsResponse
 import io.github.daegwonkim.backend.entity.ChatMessage
 import io.github.daegwonkim.backend.entity.ChatParticipant
 import io.github.daegwonkim.backend.entity.ChatRoom
 import io.github.daegwonkim.backend.exception.business.ResourceNotFoundException
 import io.github.daegwonkim.backend.exception.errorcode.CommonErrorCode
+import io.github.daegwonkim.backend.log.logger
 import io.github.daegwonkim.backend.repository.jooq.ChatParticipantJooqRepository
 import io.github.daegwonkim.backend.repository.jpa.ChatMessageRepository
 import io.github.daegwonkim.backend.repository.jpa.ChatParticipantRepository
@@ -28,6 +30,7 @@ class ChatRoomService(
     private val chatMessageRepository: ChatMessageRepository,
     private val chatParticipantRepository: ChatParticipantRepository,
     private val chatRoomJooqRepository: ChatRoomJooqRepository,
+    private val chatParticipantJooqRepository: ChatParticipantJooqRepository,
     private val rentalItemRepository: RentalItemRepository,
 
     private val supabaseStorageClient: SupabaseStorageClient,
@@ -73,13 +76,17 @@ class ChatRoomService(
         val chatRooms = chatRoomJooqRepository.findChatRoomsByUserId(userId)
             .map { chatRoom ->
                 GetChatRoomsResponse.ChatRoom(
-                    chatRoom.chatRoomId,
-                    chatRoom.participantNickname,
-                    chatRoom.rentalItemTitle,
-                    supabaseStorageClient.getPublicUrl(rentalItemImagesBucket, chatRoom.rentalItemThumbnailImageKey),
-                    chatRoom.latestMessage,
-                    chatRoom.latestMessageTime,
-                    chatRoom.unreadCount
+                    chatRoom.id,
+                    chatRoom.chatParticipantNickname,
+                    GetChatRoomsResponse.ChatRoom.RentalItem(
+                        chatRoom.rentalItemTitle,
+                        supabaseStorageClient.getPublicUrl(rentalItemImagesBucket, chatRoom.rentalItemThumbnailImageKey),
+                    ),
+                    GetChatRoomsResponse.ChatRoom.MessageStatus(
+                        chatRoom.latestMessage,
+                        chatRoom.latestMessageTime,
+                        chatRoom.unreadCount
+                    )
                 )
             }
 
@@ -113,9 +120,9 @@ class ChatRoomService(
         )
     }
 
-    @Transactional(readOnly = true)
-    fun getChatMessages(id: Long): GetChatMessagesResponse {
-        val messages = chatMessageRepository.findAllByChatRoomId(id)
+    @Transactional
+    fun getChatMessages(userId: Long, chatRoomId: Long): GetChatMessagesResponse {
+        val messages = chatMessageRepository.findAllByChatRoomId(chatRoomId)
             .map { chatMessage ->
                 GetChatMessagesResponse.Message(
                     chatMessage.id,
@@ -124,6 +131,20 @@ class ChatRoomService(
                     chatMessage.createdAt
                 )
             }
+        chatParticipantJooqRepository.updateLastReadMessageId(chatRoomId, userId)
+
         return GetChatMessagesResponse(messages)
+    }
+
+    @Transactional(readOnly = true)
+    fun getChatRoomUpdateStatus(chatRoomId: Long, chatParticipantUserId: Long): GetChatRoomUpdateStatusResponse {
+        val updateStatus = chatRoomJooqRepository.findChatRoomUpdateStatus(chatRoomId, chatParticipantUserId)
+            ?: throw IllegalStateException()
+
+        return GetChatRoomUpdateStatusResponse(
+            updateStatus.latestMessage,
+            updateStatus.latestMessageTime,
+            updateStatus.unreadCount
+        )
     }
 }

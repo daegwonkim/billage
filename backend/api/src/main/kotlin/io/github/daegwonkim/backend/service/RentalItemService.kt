@@ -4,6 +4,7 @@ import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemCategoriesRespo
 import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemResponse
 import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemForModifyResponse
 import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemSortOptionsResponse
+import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemSummaryResponse
 import io.github.daegwonkim.backend.dto.rental_item.GetRentalItemsRequest
 import io.github.daegwonkim.backend.dto.rental_item.ModifyRentalItemRequest
 import io.github.daegwonkim.backend.dto.rental_item.ModifyRentalItemResponse
@@ -79,7 +80,7 @@ class RentalItemService(
     }
 
     @Transactional
-    fun getRentalItem(userId: Long?, rentalItemId: Long): GetRentalItemResponse {
+    fun getRentalItem(rentalItemId: Long, userId: Long?): GetRentalItemResponse {
         val rentalItemProjection = rentalItemJooqRepository.findRentalItem(rentalItemId, userId)
             ?: throw ResourceNotFoundException(rentalItemId, CommonErrorCode.RENTAL_ITEM_NOT_FOUND)
 
@@ -93,6 +94,19 @@ class RentalItemService(
             sellerProfileImageUrl = rentalItemProjection.sellerProfileImageKey?.let {
                 supabaseStorageClient.getPublicUrl(userProfileImagesBucket, it)
             }
+        )
+    }
+
+    @Transactional(readOnly = true)
+    fun getRentalItemSummary(rentalItemId: Long): GetRentalItemSummaryResponse {
+        val rentalItem = rentalItemJooqRepository.findRentalItemSummary(rentalItemId)
+            ?: throw ResourceNotFoundException(rentalItemId, CommonErrorCode.RENTAL_ITEM_NOT_FOUND)
+
+        return GetRentalItemSummaryResponse(
+            rentalItem.id,
+            rentalItem.title,
+            supabaseStorageClient.getPublicUrl(rentalItemImagesBucket, rentalItem.thumbnailImageKey),
+            rentalItem.sellerNickname
         )
     }
 
