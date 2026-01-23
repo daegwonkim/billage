@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { ChevronLeft, RotateCw } from 'lucide-react'
 import { ChatHeader } from '@/components/chat/ChatHeader'
 import { ChatRentalItemInfo } from '@/components/chat/ChatRentalItemInfo'
 import { ChatMessageList } from '@/components/chat/ChatMessageList'
@@ -35,17 +36,23 @@ export function ChatRoom() {
   )
 
   // 기존 채팅방: 채팅방 정보 + 메시지 내역 조회
-  const { data: chatRoomData, isLoading: isChatRoomLoading } = useGetChatRoom(
-    Number(chatRoomId),
-    { enabled: !!chatRoomId }
-  )
+  const {
+    data: chatRoomData,
+    isLoading: isChatRoomLoading,
+    isError: isChatRoomError,
+    refetch: refetchChatRoom
+  } = useGetChatRoom(Number(chatRoomId), { enabled: !!chatRoomId })
   const { data: chatMessagesData } = useGetChatMessages(Number(chatRoomId), {
     enabled: !!chatRoomId
   })
 
   // 새 채팅방: 대여물품 정보 조회 (판매자 정보 포함)
-  const { data: rentalItemData, isLoading: isRentalItemLoading } =
-    useGetRentalItem(Number(rentalItemId), { enabled: isNewChat })
+  const {
+    data: rentalItemData,
+    isLoading: isRentalItemLoading,
+    isError: isRentalItemError,
+    refetch: refetchRentalItem
+  } = useGetRentalItem(Number(rentalItemId), { enabled: isNewChat })
 
   // 기존 채팅 메시지 로드
   useEffect(() => {
@@ -60,10 +67,18 @@ export function ChatRoom() {
     }
   }, [chatMessagesData])
 
-  // 상대방 정보 및 대여물품 정보 결정
-  const seller = isNewChat
+  // 상대방 참가자 정보 결정
+  const otherParticipants = isNewChat
     ? rentalItemData?.seller
-    : chatRoomData?.rentalItem.seller
+      ? [
+          {
+            id: rentalItemData.seller.id,
+            nickname: rentalItemData.seller.nickname,
+            profileImageUrl: rentalItemData.seller.profileImageUrl
+          }
+        ]
+      : []
+    : (chatRoomData?.participants.filter(p => p.id !== userId) ?? [])
   const rentalItem = isNewChat
     ? rentalItemData
       ? {
@@ -152,11 +167,85 @@ export function ChatRoom() {
   }
 
   const isLoading = isNewChat ? isRentalItemLoading : isChatRoomLoading
+  const isError = isNewChat ? isRentalItemError : isChatRoomError
+  const refetch = isNewChat ? refetchRentalItem : refetchChatRoom
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen w-md items-center justify-center bg-white">
-        <div className="text-neutral-500">로딩 중...</div>
+      <div className="flex min-h-screen w-md flex-col bg-white">
+        {/* 헤더 스켈레톤 */}
+        <div className="flex items-center gap-3 border-b border-gray-100 px-4 py-3">
+          <div className="h-7 w-7 animate-pulse rounded bg-gray-200" />
+          <div className="h-10 w-10 animate-pulse rounded-full bg-gray-200" />
+          <div className="h-4 w-24 animate-pulse rounded bg-gray-200" />
+        </div>
+        {/* 물품 정보 스켈레톤 */}
+        <div className="flex items-center gap-3 border-b border-gray-100 px-4 py-3">
+          <div className="h-14 w-14 animate-pulse rounded-lg bg-gray-200" />
+          <div className="flex-1">
+            <div className="mb-1.5 h-3.5 w-20 animate-pulse rounded bg-gray-200" />
+            <div className="h-4 w-32 animate-pulse rounded bg-gray-200" />
+          </div>
+        </div>
+        {/* 메시지 영역 스켈레톤 */}
+        <div className="flex-1 px-4 py-4">
+          <div className="flex flex-col gap-4">
+            <div className="flex justify-start">
+              <div className="mr-2 h-8 w-8 animate-pulse rounded-full bg-gray-200" />
+              <div className="h-10 w-40 animate-pulse rounded-2xl bg-gray-100" />
+            </div>
+            <div className="flex justify-end">
+              <div className="h-10 w-48 animate-pulse rounded-2xl bg-gray-200" />
+            </div>
+            <div className="flex justify-start">
+              <div className="mr-2 h-8 w-8 animate-pulse rounded-full bg-gray-200" />
+              <div className="h-10 w-56 animate-pulse rounded-2xl bg-gray-100" />
+            </div>
+            <div className="flex justify-end">
+              <div className="h-10 w-36 animate-pulse rounded-2xl bg-gray-200" />
+            </div>
+          </div>
+        </div>
+        {/* 입력 영역 스켈레톤 */}
+        <div className="border-t border-gray-100 px-4 py-3">
+          <div className="h-10 w-full animate-pulse rounded-full bg-gray-100" />
+        </div>
+      </div>
+    )
+  }
+
+  if (isError) {
+    return (
+      <div className="flex min-h-screen w-md flex-col bg-white">
+        <div className="flex items-center gap-3 border-b border-gray-100 px-4 py-3">
+          <button
+            onClick={() => navigate(-1)}
+            className="cursor-pointer border-none bg-transparent p-0 text-gray-600 transition-colors hover:text-black">
+            <ChevronLeft
+              size={28}
+              strokeWidth={1.5}
+            />
+          </button>
+        </div>
+        <div className="flex flex-1 flex-col items-center justify-center px-4">
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
+            <RotateCw
+              size={24}
+              className="text-gray-400"
+            />
+          </div>
+          <p className="mb-1 text-base font-semibold text-neutral-800">
+            채팅방을 불러올 수 없습니다
+          </p>
+          <p className="mb-5 text-sm text-neutral-400">
+            네트워크 연결을 확인하고 다시 시도해주세요
+          </p>
+          <button
+            onClick={() => refetch()}
+            className="rounded-lg bg-black px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-neutral-800">
+            다시 시도
+          </button>
+        </div>
       </div>
     )
   }
@@ -165,9 +254,9 @@ export function ChatRoom() {
     <div className="flex min-h-screen w-md flex-col bg-white">
       {/* 상단 고정 영역 */}
       <div className="sticky top-0 z-10 bg-white">
-        {seller && (
+        {otherParticipants.length > 0 && (
           <ChatHeader
-            seller={seller}
+            participants={otherParticipants}
             onBack={handleBack}
           />
         )}

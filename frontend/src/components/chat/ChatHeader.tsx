@@ -1,17 +1,13 @@
 import { ChevronLeft } from 'lucide-react'
 import defaultProfileImage from '@/assets/default-profile.png'
+import type { Participant } from '@/api/chat/dto/GetChatRoom'
 
 interface ChatHeaderProps {
-  seller: {
-    id: number
-    nickname: string
-    profileImageUrl?: string
-    address: string
-  }
+  participants: Participant[]
   onBack: () => void
 }
 
-export function ChatHeader({ seller, onBack }: ChatHeaderProps) {
+export function ChatHeader({ participants, onBack }: ChatHeaderProps) {
   return (
     <header className="flex items-center gap-3 border-b border-gray-100 px-4 py-3">
       <button
@@ -24,17 +20,29 @@ export function ChatHeader({ seller, onBack }: ChatHeaderProps) {
       </button>
 
       <div className="flex flex-1 items-center gap-3">
-        <img
-          src={seller.profileImageUrl || defaultProfileImage}
-          alt={seller.nickname}
-          className="h-10 w-10 rounded-full object-cover"
-        />
-        <div>
-          <div className="flex items-end gap-1 text-base font-bold text-gray-900">
-            {seller.nickname}
+        {participants.length === 1 ? (
+          <img
+            src={participants[0].profileImageUrl || defaultProfileImage}
+            alt={participants[0].nickname}
+            className="h-10 w-10 rounded-full object-cover"
+          />
+        ) : (
+          <div className="relative h-10 w-10 shrink-0">
+            <img
+              src={participants[0]?.profileImageUrl || defaultProfileImage}
+              alt={participants[0]?.nickname}
+              className="absolute top-0 left-0 h-7 w-7 rounded-full border-2 border-white object-cover"
+            />
+            <img
+              src={participants[1]?.profileImageUrl || defaultProfileImage}
+              alt={participants[1]?.nickname}
+              className="absolute right-0 bottom-0 h-7 w-7 rounded-full border-2 border-white object-cover"
+            />
           </div>
-          <div className="flex gap-1 text-xs text-gray-400">
-            <div>{seller.address}</div>·<div>평균 10분 이내 응답</div>
+        )}
+        <div>
+          <div className="text-base font-bold text-gray-900">
+            {participants.map(p => p.nickname).join(', ')}
           </div>
         </div>
       </div>

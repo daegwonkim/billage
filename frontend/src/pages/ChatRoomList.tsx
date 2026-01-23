@@ -1,6 +1,5 @@
-import { useState } from 'react'
-import { ChevronLeft } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { ChevronLeft, RotateCw } from 'lucide-react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import { LoginPrompt } from '@/components/auth/LoginPrompt'
 import { useGetChatRooms } from '@/hooks/useChat'
@@ -11,8 +10,13 @@ type ChatTab = 'BORROWER' | 'LENDER'
 
 export function ChatRoomList() {
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
   const { isAuthenticated } = useAuth()
-  const [activeTab, setActiveTab] = useState<ChatTab>('BORROWER')
+  const activeTab = (searchParams.get('type') as ChatTab) || 'BORROWER'
+
+  const setActiveTab = (tab: ChatTab) => {
+    setSearchParams({ type: tab }, { replace: true })
+  }
 
   // 채팅방 목록 실시간 업데이트 구독
   useChatListWebSocket()
@@ -20,19 +24,12 @@ export function ChatRoomList() {
   const {
     data: chatRoomsData,
     isLoading: chatRoomsLoading,
-    isError: chatRoomsError
+    isError: chatRoomsError,
+    refetch: refetchChatRooms
   } = useGetChatRooms(activeTab)
 
   if (!isAuthenticated) {
     return <LoginPrompt />
-  }
-
-  if (chatRoomsLoading) {
-    return <div>로딩중</div>
-  }
-
-  if (chatRoomsError) {
-    return <div>에러 발생</div>
   }
 
   const handleChatRoomClick = (chatRoomId: number) => {
@@ -78,8 +75,46 @@ export function ChatRoomList() {
         </button>
       </div>
 
-      {/* 채팅방 목록 */}
-      {chatRoomsData?.chatRooms.length === 0 ? (
+      {/* 로딩 스켈레톤 */}
+      {chatRoomsLoading ? (
+        <div className="divide-y divide-gray-100">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div
+              key={i}
+              className="flex w-full items-center gap-3 px-4 py-3">
+              <div className="h-18 w-18 shrink-0 animate-pulse rounded-lg bg-gray-200" />
+              <div className="min-w-0 flex-1">
+                <div className="mb-1.5 h-4 w-20 animate-pulse rounded bg-gray-200" />
+                <div className="mb-1 h-3.5 w-32 animate-pulse rounded bg-gray-100" />
+                <div className="h-3.5 w-40 animate-pulse rounded bg-gray-100" />
+              </div>
+              <div className="flex h-18 flex-col items-end justify-start">
+                <div className="h-3 w-10 animate-pulse rounded bg-gray-100" />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : chatRoomsError ? (
+        <div className="flex flex-col items-center justify-center px-4 py-20">
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
+            <RotateCw
+              size={24}
+              className="text-gray-400"
+            />
+          </div>
+          <p className="mb-1 text-base font-semibold text-neutral-800">
+            채팅 목록을 불러올 수 없습니다
+          </p>
+          <p className="mb-5 text-sm text-neutral-400">
+            네트워크 연결을 확인하고 다시 시도해주세요
+          </p>
+          <button
+            onClick={() => refetchChatRooms()}
+            className="rounded-lg bg-black px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-neutral-800">
+            다시 시도
+          </button>
+        </div>
+      ) : chatRoomsData?.chatRooms.length === 0 ? (
         <div className="flex flex-col items-center justify-center px-4 py-20">
           <div className="text-center">
             <p className="mb-2 text-lg font-semibold text-neutral-800">
@@ -127,7 +162,9 @@ export function ChatRoomList() {
                 {/* 읽지 않은 메시지 카운트 */}
                 {chatRoom.messageStatus.unreadCount > 0 && (
                   <div className="flex h-5 w-5 items-center rounded-full bg-red-500 px-1.5 text-xs font-bold text-white">
-                    {chatRoom.messageStatus.unreadCount > 99 ? '99+' : chatRoom.messageStatus.unreadCount}
+                    {chatRoom.messageStatus.unreadCount > 99
+                      ? '99+'
+                      : chatRoom.messageStatus.unreadCount}
                   </div>
                 )}
               </div>
