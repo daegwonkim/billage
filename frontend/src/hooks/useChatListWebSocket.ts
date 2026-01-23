@@ -44,32 +44,38 @@ export function useChatListWebSocket() {
           (message: IMessage) => {
             const update: ChatRoomUpdateResponse = JSON.parse(message.body)
 
-            queryClient.setQueryData<GetChatRoomsResponse>(
-              ['chatRooms'],
-              old => {
-                if (!old) return old
+            const updateCache = (old: GetChatRoomsResponse | undefined) => {
+              if (!old) return old
 
-                const updatedRooms = old.chatRooms.map(room =>
-                  room.id === update.chatRoomId
-                    ? {
-                        ...room,
-                        messageStatus: {
-                          latestMessage: update.latestMessage,
-                          latestMessageTime: new Date(update.latestMessageTime),
-                          unreadCount: update.unreadCount
-                        }
+              const updatedRooms = old.chatRooms.map(room =>
+                room.id === update.chatRoomId
+                  ? {
+                      ...room,
+                      messageStatus: {
+                        latestMessage: update.latestMessage,
+                        latestMessageTime: new Date(update.latestMessageTime),
+                        unreadCount: update.unreadCount
                       }
-                    : room
-                )
+                    }
+                  : room
+              )
 
-                updatedRooms.sort(
-                  (a, b) =>
-                    new Date(b.messageStatus.latestMessageTime).getTime() -
-                    new Date(a.messageStatus.latestMessageTime).getTime()
-                )
+              updatedRooms.sort(
+                (a, b) =>
+                  new Date(b.messageStatus.latestMessageTime).getTime() -
+                  new Date(a.messageStatus.latestMessageTime).getTime()
+              )
 
-                return { ...old, chatRooms: updatedRooms }
-              }
+              return { ...old, chatRooms: updatedRooms }
+            }
+
+            queryClient.setQueryData<GetChatRoomsResponse>(
+              ['chatRooms', 'BORROWER'],
+              updateCache
+            )
+            queryClient.setQueryData<GetChatRoomsResponse>(
+              ['chatRooms', 'LENDER'],
+              updateCache
             )
           }
         )
@@ -80,31 +86,36 @@ export function useChatListWebSocket() {
           (message: IMessage) => {
             const newRoom: NewChatRoomUpdateResponse = JSON.parse(message.body)
 
-            queryClient.setQueryData<GetChatRoomsResponse>(
-              ['chatRooms'],
-              old => {
-                const chatRoom = {
-                  id: newRoom.id,
-                  chatParticipantNickname: newRoom.chatParticipantNickname,
-                  rentalItem: newRoom.rentalItem,
-                  messageStatus: {
-                    ...newRoom.messageStatus,
-                    latestMessageTime: new Date(newRoom.messageStatus.latestMessageTime)
-                  }
-                }
-
-                if (!old) return { chatRooms: [chatRoom] }
-
-                // 이미 존재하는 채팅방이면 무시
-                if (old.chatRooms.some(room => room.id === newRoom.id)) {
-                  return old
-                }
-
-                return {
-                  ...old,
-                  chatRooms: [chatRoom, ...old.chatRooms]
-                }
+            const chatRoom = {
+              id: newRoom.id,
+              chatParticipantNickname: newRoom.chatParticipantNickname,
+              rentalItem: newRoom.rentalItem,
+              messageStatus: {
+                ...newRoom.messageStatus,
+                latestMessageTime: new Date(newRoom.messageStatus.latestMessageTime)
               }
+            }
+
+            const addNewRoom = (old: GetChatRoomsResponse | undefined) => {
+              if (!old) return { chatRooms: [chatRoom] }
+
+              if (old.chatRooms.some(room => room.id === newRoom.id)) {
+                return old
+              }
+
+              return {
+                ...old,
+                chatRooms: [chatRoom, ...old.chatRooms]
+              }
+            }
+
+            queryClient.setQueryData<GetChatRoomsResponse>(
+              ['chatRooms', 'BORROWER'],
+              addNewRoom
+            )
+            queryClient.setQueryData<GetChatRoomsResponse>(
+              ['chatRooms', 'LENDER'],
+              addNewRoom
             )
           }
         )

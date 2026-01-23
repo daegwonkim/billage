@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { ChevronLeft } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
@@ -6,9 +7,12 @@ import { useGetChatRooms } from '@/hooks/useChat'
 import { useChatListWebSocket } from '@/hooks/useChatListWebSocket'
 import { formatDate } from '@/utils/utils'
 
+type ChatTab = 'BORROWER' | 'LENDER'
+
 export function ChatRoomList() {
   const navigate = useNavigate()
   const { isAuthenticated } = useAuth()
+  const [activeTab, setActiveTab] = useState<ChatTab>('BORROWER')
 
   // 채팅방 목록 실시간 업데이트 구독
   useChatListWebSocket()
@@ -17,7 +21,7 @@ export function ChatRoomList() {
     data: chatRoomsData,
     isLoading: chatRoomsLoading,
     isError: chatRoomsError
-  } = useGetChatRooms()
+  } = useGetChatRooms(activeTab)
 
   if (!isAuthenticated) {
     return <LoginPrompt />
@@ -50,6 +54,28 @@ export function ChatRoomList() {
         <div className="flex-1 text-center text-base font-extrabold text-neutral-900">
           채팅
         </div>
+      </div>
+
+      {/* 탭 */}
+      <div className="flex border-b border-gray-100">
+        <button
+          onClick={() => setActiveTab('BORROWER')}
+          className={`flex-1 py-3 text-center text-sm font-semibold transition-colors ${
+            activeTab === 'BORROWER'
+              ? 'border-b-2 border-black text-black'
+              : 'text-gray-400'
+          }`}>
+          빌리는 채팅
+        </button>
+        <button
+          onClick={() => setActiveTab('LENDER')}
+          className={`flex-1 py-3 text-center text-sm font-semibold transition-colors ${
+            activeTab === 'LENDER'
+              ? 'border-b-2 border-black text-black'
+              : 'text-gray-400'
+          }`}>
+          빌려주는 채팅
+        </button>
       </div>
 
       {/* 채팅방 목록 */}

@@ -4,6 +4,7 @@ import io.github.daegwonkim.backend.dto.chatroom.CheckChatRoomResponse
 import io.github.daegwonkim.backend.dto.chatroom.GetChatRoomResponse
 import io.github.daegwonkim.backend.dto.chatroom.GetChatMessagesResponse
 import io.github.daegwonkim.backend.dto.chatroom.GetChatRoomsResponse
+import io.github.daegwonkim.backend.enumerate.RentalRole
 import io.github.daegwonkim.backend.service.ChatRoomService
 import io.swagger.v3.oas.annotations.Operation
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -37,8 +38,11 @@ class ChatRoomController(
 
     @Operation(summary = "채팅방 목록 조회", description = "채팅방 목록을 조회합니다")
     @GetMapping
-    fun getChatRooms(@AuthenticationPrincipal userId: Long): GetChatRoomsResponse {
-        return chatRoomService.getChatRooms(userId)
+    fun getChatRooms(
+        @AuthenticationPrincipal userId: Long,
+        @RequestParam type: RentalRole
+    ): GetChatRoomsResponse {
+        return chatRoomService.getChatRooms(userId, type)
     }
 
     @Operation(summary = "채팅 내역 조회", description = "특정 채팅방의 채팅 내역을 조회합니다")

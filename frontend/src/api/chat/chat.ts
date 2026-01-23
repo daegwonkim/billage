@@ -19,8 +19,11 @@ export async function getChatRoom(id: number): Promise<GetChatRoomResponse> {
   return await customFetch<GetChatRoomResponse>(`/api/chat-rooms/${id}`)
 }
 
-export async function getChatRooms(): Promise<GetChatRoomsResponse> {
-  return await customFetch<GetChatRoomsResponse>(`/api/chat-rooms`)
+export async function getChatRooms(
+  type: 'BORROWER' | 'LENDER'
+): Promise<GetChatRoomsResponse> {
+  const params = new URLSearchParams({ type })
+  return await customFetch<GetChatRoomsResponse>(`/api/chat-rooms?${params}`)
 }
 
 export async function getChatMessages(

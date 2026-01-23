@@ -1,5 +1,6 @@
 package io.github.daegwonkim.backend.repository.jooq
 
+import io.github.daegwonkim.backend.enumerate.RentalRole
 import io.github.daegwonkim.backend.jooq.Tables.CHAT_MESSAGES
 import io.github.daegwonkim.backend.jooq.Tables.CHAT_PARTICIPANTS
 import io.github.daegwonkim.backend.jooq.Tables.CHAT_ROOMS
@@ -60,10 +61,13 @@ class ChatRoomJooqRepository(
             .fetchOneInto(ChatRoomProjection::class.java)
     }
 
-    fun findChatRoomsByUserId(userId: Long): List<ChatRoomsProjection> {
+    fun findChatRoomsByUserId(userId: Long, type: RentalRole): List<ChatRoomsProjection> {
         val thumbnailImageKey = thumbnailImageKeyLateral()
         val latestMessage = latestMessageLateral()
         val unreadCount = unreadCountLateral()
+        val typeCondition =
+            if (type == RentalRole.LENDER) RENTAL_ITEMS.SELLER_ID.eq(userId)
+            else RENTAL_ITEMS.SELLER_ID.ne(userId)
 
         return dslContext.select(
                 CHAT_ROOMS.ID,
@@ -83,6 +87,7 @@ class ChatRoomJooqRepository(
             .innerJoin(unreadCount).on(DSL.trueCondition())
             .where(CHAT_PARTICIPANTS.USER_ID.eq(userId))
             .and(CHAT_PARTICIPANTS.LEFT_AT.isNull)
+            .and(typeCondition)
             .orderBy(latestMessage.field("latest_message_time")?.desc())
             .fetchInto(ChatRoomsProjection::class.java)
     }

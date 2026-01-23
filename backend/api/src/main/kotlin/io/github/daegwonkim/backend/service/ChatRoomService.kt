@@ -10,6 +10,7 @@ import io.github.daegwonkim.backend.dto.chatroom.SaveChatMessageResponse
 import io.github.daegwonkim.backend.entity.ChatMessage
 import io.github.daegwonkim.backend.entity.ChatParticipant
 import io.github.daegwonkim.backend.entity.ChatRoom
+import io.github.daegwonkim.backend.enumerate.RentalRole
 import io.github.daegwonkim.backend.exception.business.ResourceNotFoundException
 import io.github.daegwonkim.backend.exception.errorcode.CommonErrorCode
 import io.github.daegwonkim.backend.repository.jooq.ChatParticipantJooqRepository
@@ -80,8 +81,8 @@ class ChatRoomService(
     }
 
     @Transactional(readOnly = true)
-    fun getChatRooms(userId: Long): GetChatRoomsResponse {
-        val chatRooms = chatRoomJooqRepository.findChatRoomsByUserId(userId)
+    fun getChatRooms(userId: Long, type: RentalRole): GetChatRoomsResponse {
+        val chatRooms = chatRoomJooqRepository.findChatRoomsByUserId(userId, type)
             .map { chatRoom ->
                 GetChatRoomsResponse.ChatRoom(
                     chatRoom.id,

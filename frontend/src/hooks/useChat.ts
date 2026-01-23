@@ -20,10 +20,10 @@ export function useGetChatRoom(id: number, options?: { enabled?: boolean }) {
   })
 }
 
-export function useGetChatRooms() {
+export function useGetChatRooms(type: 'BORROWER' | 'LENDER') {
   return useQuery({
-    queryKey: ['chatRooms'],
-    queryFn: () => getChatRooms()
+    queryKey: ['chatRooms', type],
+    queryFn: () => getChatRooms(type)
   })
 }
 
