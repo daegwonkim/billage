@@ -6,6 +6,7 @@ import io.github.daegwonkim.backend.dto.chatroom.GetChatRoomResponse
 import io.github.daegwonkim.backend.dto.chatroom.GetChatMessagesResponse
 import io.github.daegwonkim.backend.dto.chatroom.GetChatRoomUpdateStatusResponse
 import io.github.daegwonkim.backend.dto.chatroom.GetChatRoomsResponse
+import io.github.daegwonkim.backend.dto.chatroom.SaveChatMessageResponse
 import io.github.daegwonkim.backend.entity.ChatMessage
 import io.github.daegwonkim.backend.entity.ChatParticipant
 import io.github.daegwonkim.backend.entity.ChatRoom
@@ -110,14 +111,16 @@ class ChatRoomService(
     }
 
     @Transactional
-    fun saveChatMessage(userId: Long, chatRoomId: Long, content: String) {
-        chatMessageRepository.save(
+    fun saveChatMessage(userId: Long, chatRoomId: Long, content: String): SaveChatMessageResponse {
+        val chatMessage = chatMessageRepository.save(
             ChatMessage(
                 chatRoomId = chatRoomId,
                 senderId = userId,
                 content = content
             )
         )
+
+        return SaveChatMessageResponse(chatMessage.id, chatMessage.createdAt)
     }
 
     @Transactional

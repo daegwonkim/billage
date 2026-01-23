@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { formatDateLabel, formatTime } from '@/utils/utils'
 
 interface Message {
@@ -16,6 +17,20 @@ export function ChatMessageList({
   messages,
   currentUserId
 }: ChatMessageListProps) {
+  const bottomRef = useRef<HTMLDivElement>(null)
+  const isInitialLoad = useRef(true)
+
+  useEffect(() => {
+    if (messages.length === 0) return
+
+    if (isInitialLoad.current) {
+      bottomRef.current?.scrollIntoView({ behavior: 'instant' })
+      isInitialLoad.current = false
+    } else {
+      bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+    }
+  }, [messages])
+
   return (
     <div className="flex-1 overflow-y-auto px-4 py-4">
       <div className="flex flex-col gap-3">
@@ -60,6 +75,7 @@ export function ChatMessageList({
             </div>
           )
         })}
+        <div ref={bottomRef} />
       </div>
     </div>
   )

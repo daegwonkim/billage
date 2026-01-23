@@ -1,0 +1,104 @@
+package io.github.daegwonkim.backend.websocket
+
+import io.github.daegwonkim.backend.dto.chatroom.GetChatRoomUpdateStatusResponse
+import io.github.daegwonkim.backend.dto.chatroom.GetChatRoomsResponse
+import io.github.daegwonkim.backend.service.ChatParticipantService
+import io.github.daegwonkim.backend.service.ChatRoomService
+import io.github.daegwonkim.backend.service.RentalItemService
+import org.springframework.messaging.simp.SimpMessagingTemplate
+import org.springframework.stereotype.Service
+
+@Service
+class WebSocketChatService(
+    private val messagingTemplate: SimpMessagingTemplate,
+    private val chatRoomService: ChatRoomService,
+    private val rentalItemService: RentalItemService,
+    private val chatParticipantService: ChatParticipantService
+) {
+
+    fun createChatRoomAndSendMessage(userId: Long, nickname: String, rentalItemId: Long, content: String) {
+        val chatRoom = chatRoomService.createChatRoom(userId, rentalItemId)
+        val chatMessage = chatRoomService.saveChatMessage(userId, chatRoom.chatRoomId, content)
+
+        val response = ChatMessageResponse(
+            id = chatMessage.id,
+            chatRoomId = chatRoom.chatRoomId,
+            senderId = userId,
+            senderNickname = nickname,
+            content = content,
+            type = MessageType.CHAT,
+            timestamp = chatMessage.createdAt
+        )
+
+        messagingTemplate.convertAndSendToUser(userId.toString(), "/queue/new-chat/${rentalItemId}", response)
+
+        val rentalItemSummary = rentalItemService.getRentalItemSummary(rentalItemId)
+        notifyParticipants(chatRoom.chatRoomId, userId) { participantUserId, updateStatus ->
+            messagingTemplate.convertAndSendToUser(
+                participantUserId.toString(),
+                "/queue/new-chat-room-updates",
+                GetChatRoomsResponse.ChatRoom(
+                    chatRoom.chatRoomId,
+                    rentalItemSummary.sellerNickname,
+                    GetChatRoomsResponse.ChatRoom.RentalItem(
+                        rentalItemSummary.title,
+                        rentalItemSummary.thumbnailImageUrl
+                    ),
+                    GetChatRoomsResponse.ChatRoom.MessageStatus(
+                        updateStatus.latestMessage,
+                        updateStatus.latestMessageTime,
+                        updateStatus.unreadCount
+                    )
+                )
+            )
+        }
+    }
+
+    fun sendMessage(userId: Long, nickname: String, chatRoomId: Long, content: String) {
+        val chatParticipantUserIds = chatParticipantService.getChatParticipantUserIds(chatRoomId)
+
+        if (!chatParticipantUserIds.contains(userId)) {
+            throw IllegalStateException("채팅방 참여자가 아닙니다.")
+        }
+
+        val chatMessage = chatRoomService.saveChatMessage(userId, chatRoomId, content)
+
+        val response = ChatMessageResponse(
+            id = chatMessage.id,
+            chatRoomId = chatRoomId,
+            senderId = userId,
+            senderNickname = nickname,
+            content = content,
+            type = MessageType.CHAT,
+            timestamp = chatMessage.createdAt
+        )
+
+        messagingTemplate.convertAndSend("/topic/chat/${chatRoomId}", response)
+
+        notifyParticipants(chatRoomId, userId) { participantUserId, updateStatus ->
+            messagingTemplate.convertAndSendToUser(
+                participantUserId.toString(),
+                "/queue/chat-room-updates",
+                ChatRoomUpdateResponse(
+                    chatRoomId,
+                    updateStatus.latestMessage,
+                    updateStatus.latestMessageTime,
+                    updateStatus.unreadCount
+                )
+            )
+        }
+    }
+
+    private fun notifyParticipants(
+        chatRoomId: Long,
+        senderId: Long,
+        notify: (participantUserId: Long, updateStatus: GetChatRoomUpdateStatusResponse) -> Unit
+    ) {
+        chatParticipantService.getChatParticipantUserIds(chatRoomId)
+            .filter { it != senderId }
+            .forEach { participantUserId ->
+                val updateStatus = chatRoomService.getChatRoomUpdateStatus(chatRoomId, participantUserId)
+                notify(participantUserId, updateStatus)
+            }
+    }
+}
