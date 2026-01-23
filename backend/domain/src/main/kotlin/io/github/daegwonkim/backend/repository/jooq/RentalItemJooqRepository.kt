@@ -200,7 +200,7 @@ class RentalItemJooqRepository(
 
     private fun buildSortOrder(sortBy: RentalItemSortOption) = when (sortBy) {
         RentalItemSortOption.LATEST -> RENTAL_ITEMS.CREATED_AT.desc()
-        RentalItemSortOption.POPULAR -> likeCountsTable().field("like_count")?.desc()
+        RentalItemSortOption.POPULAR -> DSL.field("like_count", Int::class.java).desc()
         RentalItemSortOption.PRICE_LOW -> RENTAL_ITEMS.PRICE_PER_DAY.asc().nullsLast()
         RentalItemSortOption.PRICE_HIGH -> RENTAL_ITEMS.PRICE_PER_DAY.desc().nullsLast()
         RentalItemSortOption.NEAREST -> RENTAL_ITEMS.CREATED_AT.desc() // TODO: 위치 기반 정렬 구현 필요
