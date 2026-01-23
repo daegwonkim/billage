@@ -15,7 +15,7 @@ interface ChatRoomUpdateResponse {
 
 interface NewChatRoomUpdateResponse {
   id: number
-  chatParticipantNickname: string
+  participants: string[]
   rentalItem: {
     title: string
     thumbnailImageUrl: string
@@ -88,11 +88,13 @@ export function useChatListWebSocket() {
 
             const chatRoom = {
               id: newRoom.id,
-              chatParticipantNickname: newRoom.chatParticipantNickname,
+              participants: newRoom.participants,
               rentalItem: newRoom.rentalItem,
               messageStatus: {
                 ...newRoom.messageStatus,
-                latestMessageTime: new Date(newRoom.messageStatus.latestMessageTime)
+                latestMessageTime: new Date(
+                  newRoom.messageStatus.latestMessageTime
+                )
               }
             }
 

@@ -105,8 +105,7 @@ class RentalItemService(
         return GetRentalItemSummaryResponse(
             rentalItem.id,
             rentalItem.title,
-            supabaseStorageClient.getPublicUrl(rentalItemImagesBucket, rentalItem.thumbnailImageKey),
-            rentalItem.sellerNickname
+            supabaseStorageClient.getPublicUrl(rentalItemImagesBucket, rentalItem.thumbnailImageKey)
         )
     }
 

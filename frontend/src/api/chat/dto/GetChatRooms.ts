@@ -4,7 +4,7 @@ export interface GetChatRoomsResponse {
 
 interface ChatRoom {
   id: number
-  chatParticipantNickname: string
+  participants: string[]
   rentalItem: RentalItem
   messageStatus: MessageStatus
 }

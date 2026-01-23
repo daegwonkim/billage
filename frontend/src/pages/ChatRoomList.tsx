@@ -110,7 +110,7 @@ export function ChatRoomList() {
               <div className="min-w-0 flex-1">
                 <div className="mb-0.5 flex items-end gap-1">
                   <span className="font-semibold text-neutral-900">
-                    {chatRoom.chatParticipantNickname}
+                    {chatRoom.participants.join(', ')}
                   </span>
                 </div>
                 <p className="mb-0.5 truncate text-sm text-neutral-600">

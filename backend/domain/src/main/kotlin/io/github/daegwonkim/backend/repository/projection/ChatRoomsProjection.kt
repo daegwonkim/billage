@@ -4,7 +4,6 @@ import java.time.Instant
 
 data class ChatRoomsProjection(
     val id: Long,
-    val chatParticipantNickname: String,
     val rentalItemTitle: String,
     val rentalItemThumbnailImageKey: String,
     val latestMessage: String,

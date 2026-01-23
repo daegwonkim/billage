@@ -7,7 +7,7 @@ data class GetChatRoomsResponse(
 ) {
     data class ChatRoom(
         val id: Long,
-        val chatParticipantNickname: String,
+        val participants: List<String>,
         val rentalItem: RentalItem,
         val messageStatus: MessageStatus
     ) {

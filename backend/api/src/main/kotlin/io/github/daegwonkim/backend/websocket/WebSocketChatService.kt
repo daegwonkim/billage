@@ -18,11 +18,11 @@ class WebSocketChatService(
 
     fun createChatRoomAndSendMessage(userId: Long, rentalItemId: Long, content: String) {
         val chatRoom = chatRoomService.createChatRoom(userId, rentalItemId)
-        val chatMessage = chatRoomService.saveChatMessage(userId, chatRoom.chatRoomId, content)
+        val chatMessage = chatRoomService.saveChatMessage(userId, chatRoom.id, content)
 
         val response = ChatMessageResponse(
             id = chatMessage.id,
-            chatRoomId = chatRoom.chatRoomId,
+            chatRoomId = chatRoom.id,
             senderId = userId,
             content = content,
             type = MessageType.CHAT,
@@ -31,14 +31,17 @@ class WebSocketChatService(
 
         messagingTemplate.convertAndSendToUser(userId.toString(), "/queue/new-chat/${rentalItemId}", response)
 
+        val chatParticipants = chatParticipantService.getChatParticipants(chatRoom.id).participants
+            .filter { it.userId != userId }
+            .map { it.nickname }
         val rentalItemSummary = rentalItemService.getRentalItemSummary(rentalItemId)
-        notifyParticipants(chatRoom.chatRoomId, userId) { participantUserId, updateStatus ->
+        notifyParticipants(chatRoom.id, userId) { participantUserId, updateStatus ->
             messagingTemplate.convertAndSendToUser(
                 participantUserId.toString(),
                 "/queue/new-chat-room-updates",
                 GetChatRoomsResponse.ChatRoom(
-                    chatRoom.chatRoomId,
-                    rentalItemSummary.sellerNickname,
+                    chatRoom.id,
+                    chatParticipants,
                     GetChatRoomsResponse.ChatRoom.RentalItem(
                         rentalItemSummary.title,
                         rentalItemSummary.thumbnailImageUrl
@@ -54,7 +57,8 @@ class WebSocketChatService(
     }
 
     fun sendMessage(userId: Long, chatRoomId: Long, content: String) {
-        val chatParticipantUserIds = chatParticipantService.getChatParticipantUserIds(chatRoomId)
+        val chatParticipantUserIds = chatParticipantService.getChatParticipants(chatRoomId)
+            .participants.map { it.userId }
 
         if (!chatParticipantUserIds.contains(userId)) {
             throw IllegalStateException("채팅방 참여자가 아닙니다.")
@@ -97,7 +101,8 @@ class WebSocketChatService(
         senderId: Long,
         notify: (participantUserId: Long, updateStatus: GetChatRoomUpdateStatusResponse) -> Unit
     ) {
-        chatParticipantService.getChatParticipantUserIds(chatRoomId)
+        chatParticipantService.getChatParticipants(chatRoomId)
+            .participants.map { it.userId }
             .filter { it != senderId }
             .forEach { participantUserId ->
                 val updateStatus = chatRoomService.getChatRoomUpdateStatus(chatRoomId, participantUserId)

@@ -59,7 +59,7 @@ class ChatRoomService(
         val chatRoom = chatRoomJooqRepository.findChatRoomById(id)
             ?: throw ResourceNotFoundException(id, CommonErrorCode.CHAT_ROOM_NOT_FOUND)
 
-        val chatParticipants = chatParticipantJooqRepository.findChatParticipantsByChatRoomId(chatRoom.id)
+        val chatParticipants = chatParticipantJooqRepository.findAllByChatRoomId(chatRoom.id)
             .map { it.toParticipant() }
 
         val rentalItem = GetChatRoomResponse.RentalItem(
@@ -82,22 +82,29 @@ class ChatRoomService(
 
     @Transactional(readOnly = true)
     fun getChatRooms(userId: Long, type: RentalRole): GetChatRoomsResponse {
-        val chatRooms = chatRoomJooqRepository.findChatRoomsByUserId(userId, type)
-            .map { chatRoom ->
-                GetChatRoomsResponse.ChatRoom(
-                    chatRoom.id,
-                    chatRoom.chatParticipantNickname,
-                    GetChatRoomsResponse.ChatRoom.RentalItem(
-                        chatRoom.rentalItemTitle,
-                        supabaseStorageClient.getPublicUrl(rentalItemImagesBucket, chatRoom.rentalItemThumbnailImageKey),
-                    ),
-                    GetChatRoomsResponse.ChatRoom.MessageStatus(
-                        chatRoom.latestMessage,
-                        chatRoom.latestMessageTime,
-                        chatRoom.unreadCount
+        val chatRoomProjections = chatRoomJooqRepository.findChatRoomsByUserIdAndType(userId, type)
+        val chatRoomIds = chatRoomProjections.map { it.id }
+        val participantsByRoom = chatParticipantJooqRepository.findAllByChatRoomIds(chatRoomIds)
+            .filter { it.userId != userId }
+            .groupBy({ it.chatRoomId }, { it.nickname })
+
+        val chatRooms = chatRoomProjections.map { chatRoom ->
+            GetChatRoomsResponse.ChatRoom(
+                id = chatRoom.id,
+                participants = participantsByRoom[chatRoom.id] ?: emptyList(),
+                rentalItem = GetChatRoomsResponse.ChatRoom.RentalItem(
+                    title = chatRoom.rentalItemTitle,
+                    thumbnailImageUrl = supabaseStorageClient.getPublicUrl(
+                        rentalItemImagesBucket, chatRoom.rentalItemThumbnailImageKey
                     )
+                ),
+                messageStatus = GetChatRoomsResponse.ChatRoom.MessageStatus(
+                    latestMessage = chatRoom.latestMessage,
+                    latestMessageTime = chatRoom.latestMessageTime,
+                    unreadCount = chatRoom.unreadCount
                 )
-            }
+            )
+        }
 
         return GetChatRoomsResponse(chatRooms)
     }

@@ -108,13 +108,11 @@ class RentalItemJooqRepository(
         val thumbnailImageKey = thumbnailImageKeyLateral()
 
         return dslContext.select(
-            RENTAL_ITEMS.ID,
-            RENTAL_ITEMS.TITLE,
-            thumbnailImageKey.field("thumbnail_image_key", String::class.java),
-            USERS.NICKNAME.`as`("seller_nickname")
+                RENTAL_ITEMS.ID,
+                RENTAL_ITEMS.TITLE,
+                thumbnailImageKey.field("thumbnail_image_key", String::class.java),
             )
             .from(RENTAL_ITEMS)
-            .innerJoin(USERS).on(RENTAL_ITEMS.SELLER_ID.eq(USERS.ID))
             .innerJoin(thumbnailImageKey).on(DSL.trueCondition())
             .where(RENTAL_ITEMS.ID.eq(rentalItemId))
             .fetchOneInto(RentalItemSummaryProjection::class.java)

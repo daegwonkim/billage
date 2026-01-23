@@ -61,7 +61,7 @@ class ChatRoomJooqRepository(
             .fetchOneInto(ChatRoomProjection::class.java)
     }
 
-    fun findChatRoomsByUserId(userId: Long, type: RentalRole): List<ChatRoomsProjection> {
+    fun findChatRoomsByUserIdAndType(userId: Long, type: RentalRole): List<ChatRoomsProjection> {
         val thumbnailImageKey = thumbnailImageKeyLateral()
         val latestMessage = latestMessageLateral()
         val unreadCount = unreadCountLateral()
@@ -71,7 +71,6 @@ class ChatRoomJooqRepository(
 
         return dslContext.select(
                 CHAT_ROOMS.ID,
-                USERS.NICKNAME.`as`("chat_participant_nickname"),
                 RENTAL_ITEMS.TITLE.`as`("rental_item_title"),
                 thumbnailImageKey.field("rental_item_thumbnail_image_key", String::class.java),
                 latestMessage.field("latest_message", String::class.java),
@@ -81,7 +80,6 @@ class ChatRoomJooqRepository(
             .from(CHAT_ROOMS)
             .innerJoin(CHAT_PARTICIPANTS).on(CHAT_ROOMS.ID.eq(CHAT_PARTICIPANTS.CHAT_ROOM_ID))
             .innerJoin(RENTAL_ITEMS).on(CHAT_ROOMS.RENTAL_ITEM_ID.eq(RENTAL_ITEMS.ID))
-            .innerJoin(USERS).on(RENTAL_ITEMS.SELLER_ID.eq(USERS.ID))
             .innerJoin(latestMessage).on(DSL.trueCondition())
             .innerJoin(thumbnailImageKey).on(DSL.trueCondition())
             .innerJoin(unreadCount).on(DSL.trueCondition())
