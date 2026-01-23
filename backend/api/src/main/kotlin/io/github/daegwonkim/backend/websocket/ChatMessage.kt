@@ -12,11 +12,14 @@ data class ChatMessageRequest(
     val content: String
 )
 
+data class ChatMessageReadRequest(
+    val chatMessageId: Long
+)
+
 data class ChatMessageResponse(
     val id: Long,
     val chatRoomId: Long,
     val senderId: Long,
-    val senderNickname: String,
     val content: String,
     val type: MessageType,
     val timestamp: Instant

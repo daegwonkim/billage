@@ -12,13 +12,13 @@ import io.github.daegwonkim.backend.entity.ChatParticipant
 import io.github.daegwonkim.backend.entity.ChatRoom
 import io.github.daegwonkim.backend.exception.business.ResourceNotFoundException
 import io.github.daegwonkim.backend.exception.errorcode.CommonErrorCode
-import io.github.daegwonkim.backend.log.logger
 import io.github.daegwonkim.backend.repository.jooq.ChatParticipantJooqRepository
 import io.github.daegwonkim.backend.repository.jpa.ChatMessageRepository
 import io.github.daegwonkim.backend.repository.jpa.ChatParticipantRepository
 import io.github.daegwonkim.backend.repository.jooq.ChatRoomJooqRepository
 import io.github.daegwonkim.backend.repository.jpa.ChatRoomRepository
 import io.github.daegwonkim.backend.repository.jpa.RentalItemRepository
+import io.github.daegwonkim.backend.repository.projection.ChatParticipantsProjection
 import io.github.daegwonkim.backend.supabase.SupabaseStorageClient
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
@@ -58,18 +58,25 @@ class ChatRoomService(
         val chatRoom = chatRoomJooqRepository.findChatRoomById(id)
             ?: throw ResourceNotFoundException(id, CommonErrorCode.CHAT_ROOM_NOT_FOUND)
 
-        val thumbnailImageUrl = chatRoom.rentalItemThumbnailImageKey.let {
-            supabaseStorageClient.getPublicUrl(rentalItemImagesBucket, it)
-        }
-        val profileImageUrl = chatRoom.sellerProfileImageKey?.let {
-            supabaseStorageClient.getPublicUrl(userProfileImagesBucket, it)
-        }
+        val chatParticipants = chatParticipantJooqRepository.findChatParticipantsByChatRoomId(chatRoom.id)
+            .map { it.toParticipant() }
 
-        return GetChatRoomResponse.from(
-            chatRoom,
-            thumbnailImageUrl,
-            profileImageUrl
+        val rentalItem = GetChatRoomResponse.RentalItem(
+            id = chatRoom.rentalItemId,
+            seller = GetChatRoomResponse.RentalItem.Seller(
+                id = chatRoom.sellerId,
+                nickname = chatRoom.sellerNickname,
+                profileImageUrl = imageUrl(userProfileImagesBucket, chatRoom.sellerProfileImageKey),
+                address = chatRoom.sellerAddress
+            ),
+            category = chatRoom.rentalItemCategory,
+            title = chatRoom.rentalItemTitle,
+            pricePerDay = chatRoom.rentalItemPricePerDay,
+            pricePerWeek = chatRoom.rentalItemPricePerWeek,
+            thumbnailImageUrl = supabaseStorageClient.getPublicUrl(rentalItemImagesBucket, chatRoom.rentalItemThumbnailImageKey)
         )
+
+        return GetChatRoomResponse(chatRoom.id, rentalItem, chatParticipants)
     }
 
     @Transactional(readOnly = true)
@@ -134,9 +141,14 @@ class ChatRoomService(
                     chatMessage.createdAt
                 )
             }
-        chatParticipantJooqRepository.updateLastReadMessageId(chatRoomId, userId)
+        chatParticipantJooqRepository.updateLastReadMessageId(userId, chatRoomId)
 
         return GetChatMessagesResponse(messages)
+    }
+
+    @Transactional
+    fun markAsRead(userId: Long, chatRoomId: Long, chatMessageId: Long) {
+        chatParticipantJooqRepository.updateLastReadMessageId(userId, chatRoomId, chatMessageId)
     }
 
     @Transactional(readOnly = true)
@@ -150,4 +162,13 @@ class ChatRoomService(
             updateStatus.unreadCount
         )
     }
+
+    private fun ChatParticipantsProjection.toParticipant() = GetChatRoomResponse.Participant(
+        id = userId,
+        nickname = nickname,
+        profileImageUrl = imageUrl(userProfileImagesBucket, profileImageKey)
+    )
+
+    private fun imageUrl(bucket: String, key: String?): String? =
+        key?.let { supabaseStorageClient.getPublicUrl(bucket, it) }
 }

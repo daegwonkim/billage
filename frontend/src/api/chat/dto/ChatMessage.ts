@@ -10,7 +10,6 @@ export interface ChatMessageResponse {
   id: string
   chatRoomId: number
   senderId: number
-  senderNickname: string
   content: string
   type: MessageType
   timestamp: string

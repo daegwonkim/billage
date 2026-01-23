@@ -16,7 +16,7 @@ class WebSocketChatService(
     private val chatParticipantService: ChatParticipantService
 ) {
 
-    fun createChatRoomAndSendMessage(userId: Long, nickname: String, rentalItemId: Long, content: String) {
+    fun createChatRoomAndSendMessage(userId: Long, rentalItemId: Long, content: String) {
         val chatRoom = chatRoomService.createChatRoom(userId, rentalItemId)
         val chatMessage = chatRoomService.saveChatMessage(userId, chatRoom.chatRoomId, content)
 
@@ -24,7 +24,6 @@ class WebSocketChatService(
             id = chatMessage.id,
             chatRoomId = chatRoom.chatRoomId,
             senderId = userId,
-            senderNickname = nickname,
             content = content,
             type = MessageType.CHAT,
             timestamp = chatMessage.createdAt
@@ -54,7 +53,7 @@ class WebSocketChatService(
         }
     }
 
-    fun sendMessage(userId: Long, nickname: String, chatRoomId: Long, content: String) {
+    fun sendMessage(userId: Long, chatRoomId: Long, content: String) {
         val chatParticipantUserIds = chatParticipantService.getChatParticipantUserIds(chatRoomId)
 
         if (!chatParticipantUserIds.contains(userId)) {
@@ -67,7 +66,6 @@ class WebSocketChatService(
             id = chatMessage.id,
             chatRoomId = chatRoomId,
             senderId = userId,
-            senderNickname = nickname,
             content = content,
             type = MessageType.CHAT,
             timestamp = chatMessage.createdAt
@@ -87,6 +85,11 @@ class WebSocketChatService(
                 )
             )
         }
+    }
+
+    fun markAsRead(userId: Long, chatRoomId: Long, chatMessageId: Long) {
+        chatRoomService.markAsRead(userId, chatRoomId, chatMessageId)
+//        messagingTemplate.convertAndSend("/topic/chat/${chatRoomId}/read")
     }
 
     private fun notifyParticipants(

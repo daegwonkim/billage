@@ -38,7 +38,7 @@ class ChatRoomJooqRepository(
         val thumbnailImageKey = thumbnailImageKeyLateral()
 
         return dslContext.select(
-            CHAT_ROOMS.ID.`as`("chat_room_id"),
+            CHAT_ROOMS.ID,
             RENTAL_ITEMS.ID.`as`("rental_item_id"),
             RENTAL_ITEMS.CATEGORY.`as`("rental_item_category"),
             RENTAL_ITEMS.TITLE.`as`("rental_item_title"),

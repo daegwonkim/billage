@@ -98,8 +98,21 @@ export function useChatWebSocket({
     [chatRoomId, rentalItemId, isNewChat]
   )
 
+  const markAsRead = useCallback(
+    (lastReadMessageId: number | string) => {
+      if (!clientRef.current?.connected || !chatRoomId) return
+
+      clientRef.current.publish({
+        destination: `/app/chat/${chatRoomId}/read`,
+        body: JSON.stringify({ chatMessageId: lastReadMessageId })
+      })
+    },
+    [chatRoomId]
+  )
+
   return {
     isConnected,
-    sendMessage
+    sendMessage,
+    markAsRead
   }
 }

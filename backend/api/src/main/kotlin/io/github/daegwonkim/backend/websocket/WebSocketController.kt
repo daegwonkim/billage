@@ -17,10 +17,8 @@ class WebSocketController(
         @Payload request: ChatMessageRequest,
         headerAccessor: SimpMessageHeaderAccessor
     ) {
-        val (userId, nickname) = extractUserInfo(headerAccessor)
-            ?: throw IllegalStateException("인증되지 않은 사용자입니다.")
-
-        webSocketChatService.createChatRoomAndSendMessage(userId, nickname, rentalItemId, request.content)
+        val userId = extractUserId(headerAccessor)
+        webSocketChatService.createChatRoomAndSendMessage(userId, rentalItemId, request.content)
     }
 
     @MessageMapping("/chat/{chatRoomId}")
@@ -29,16 +27,22 @@ class WebSocketController(
         @Payload request: ChatMessageRequest,
         headerAccessor: SimpMessageHeaderAccessor
     ) {
-        val (userId, nickname) = extractUserInfo(headerAccessor)
+        val userId = extractUserId(headerAccessor)
+        webSocketChatService.sendMessage(userId, chatRoomId, request.content)
+    }
+
+    @MessageMapping("/chat/{chatRoomId}/read")
+    fun markAsRead(
+        @DestinationVariable chatRoomId: Long,
+        @Payload request: ChatMessageReadRequest,
+        headerAccessor: SimpMessageHeaderAccessor
+    ) {
+        val userId = extractUserId(headerAccessor)
+        webSocketChatService.markAsRead(userId, chatRoomId, request.chatMessageId)
+    }
+
+    private fun extractUserId(headerAccessor: SimpMessageHeaderAccessor): Long =
+        headerAccessor.sessionAttributes
+            ?.get(WebSocketHandshakeInterceptor.USER_ID_KEY) as? Long
             ?: throw IllegalStateException("인증되지 않은 사용자입니다.")
-
-        webSocketChatService.sendMessage(userId, nickname, chatRoomId, request.content)
-    }
-
-    private fun extractUserInfo(headerAccessor: SimpMessageHeaderAccessor): Pair<Long, String>? {
-        val sessionAttributes = headerAccessor.sessionAttributes ?: return null
-        val userId = sessionAttributes[WebSocketHandshakeInterceptor.USER_ID_KEY] as? Long ?: return null
-        val nickname = sessionAttributes[WebSocketHandshakeInterceptor.USER_NICKNAME_KEY] as? String ?: return null
-        return Pair(userId, nickname)
-    }
 }

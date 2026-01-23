@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { ChatHeader } from '@/components/chat/ChatHeader'
 import { ChatRentalItemInfo } from '@/components/chat/ChatRentalItemInfo'
@@ -30,6 +30,9 @@ export function ChatRoom() {
 
   // 새 채팅방인지 여부 (chatRoomId 없이 rentalItemId로 진입한 경우)
   const isNewChat = !chatRoomId && !!rentalItemId
+  const markAsReadRef = useRef<((messageId: number | string) => void) | null>(
+    null
+  )
 
   // 기존 채팅방: 채팅방 정보 + 메시지 내역 조회
   const { data: chatRoomData, isLoading: isChatRoomLoading } = useGetChatRoom(
@@ -58,7 +61,9 @@ export function ChatRoom() {
   }, [chatMessagesData])
 
   // 상대방 정보 및 대여물품 정보 결정
-  const seller = isNewChat ? rentalItemData?.seller : chatRoomData?.seller
+  const seller = isNewChat
+    ? rentalItemData?.seller
+    : chatRoomData?.rentalItem.seller
   const rentalItem = isNewChat
     ? rentalItemData
       ? {
@@ -92,6 +97,11 @@ export function ChatRoom() {
         }
         setMessages(prev => [...prev, newMessage])
 
+        // 상대방 메시지를 받으면 읽음 처리
+        if (chatMessage.senderId !== userId) {
+          markAsReadRef.current?.(chatMessage.id)
+        }
+
         // 새 채팅방에서 첫 메시지를 받으면 URL 변경
         if (isNewChat && chatMessage.chatRoomId && !currentChatRoomId) {
           setCurrentChatRoomId(String(chatMessage.chatRoomId))
@@ -99,10 +109,10 @@ export function ChatRoom() {
         }
       }
     },
-    [isNewChat, currentChatRoomId, navigate]
+    [isNewChat, currentChatRoomId, navigate, userId]
   )
 
-  const { isConnected, sendMessage } = useChatWebSocket({
+  const { isConnected, sendMessage, markAsRead } = useChatWebSocket({
     chatRoomId: currentChatRoomId ?? '',
     rentalItemId: isNewChat ? rentalItemId : undefined,
     onMessage: handleMessage,
@@ -116,6 +126,11 @@ export function ChatRoom() {
       console.error('WebSocket 오류:', error)
     }
   })
+
+  // markAsRead를 ref에 할당하여 handleMessage 콜백에서 사용
+  useEffect(() => {
+    markAsReadRef.current = markAsRead
+  }, [markAsRead])
 
   const handleSendMessage = useCallback(
     (content: string) => {
@@ -173,6 +188,7 @@ export function ChatRoom() {
       <ChatMessageList
         messages={messages}
         currentUserId={userId ?? 0}
+        participants={chatRoomData?.participants ?? []}
       />
 
       {/* 메시지 입력 영역 */}

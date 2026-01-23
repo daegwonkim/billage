@@ -17,7 +17,6 @@ class WebSocketHandshakeInterceptor(
 
     companion object {
         const val USER_ID_KEY = "userId"
-        const val USER_NICKNAME_KEY = "userNickname"
     }
 
     override fun beforeHandshake(
@@ -33,11 +32,10 @@ class WebSocketHandshakeInterceptor(
         val token = cookieUtil.getTokenFromCookie(request, "accessToken")
             ?: return false
 
-        val claims = jwtTokenProvider.getAccessTokenClaims(token)
+        val userId = jwtTokenProvider.getSubject(token)
             ?: return false
 
-        attributes[USER_ID_KEY] = claims.userId
-        attributes[USER_NICKNAME_KEY] = claims.userNickname
+        attributes[USER_ID_KEY] = userId
 
         return true
     }

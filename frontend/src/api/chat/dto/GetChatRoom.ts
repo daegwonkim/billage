@@ -1,11 +1,12 @@
 export interface GetChatRoomResponse {
-  chatRoomId: number
+  id: number
   rentalItem: RentalItem
-  seller: Seller
+  participants: Participant[]
 }
 
 interface RentalItem {
   id: number
+  seller: Seller
   category: string
   title: string
   pricePerDay?: number
@@ -18,4 +19,10 @@ interface Seller {
   nickname: string
   profileImageUrl?: string
   address: string
+}
+
+export interface Participant {
+  id: number
+  nickname: string
+  profileImageUrl?: string
 }

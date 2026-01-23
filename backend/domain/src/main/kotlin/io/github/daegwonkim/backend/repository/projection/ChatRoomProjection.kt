@@ -3,7 +3,7 @@ package io.github.daegwonkim.backend.repository.projection
 import io.github.daegwonkim.backend.enumerate.RentalItemCategory
 
 data class ChatRoomProjection(
-    val chatRoomId: Long,
+    val id: Long,
     val rentalItemId: Long,
     val rentalItemCategory: RentalItemCategory,
     val rentalItemTitle: String,
