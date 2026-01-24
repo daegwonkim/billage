@@ -29,15 +29,19 @@ data class GetRentalItemsResponse(
         val sellerId: Long,
         val title: String,
         val thumbnailImageUrl: String,
-        val address: String,
         val pricePerDay: Int,
         val pricePerWeek: Int,
-        val rentalCount: Int,
-        val likeCount: Int,
-        val viewCount: Int,
+        val address: String,
         val liked: Boolean,
-        val createdAt: Instant
-    )
+        val stats: RentalItemStats,
+        val createdAt: Instant,
+    ) {
+        data class RentalItemStats(
+            val rentalCount: Int,
+            val likeCount: Int,
+            val viewCount: Int,
+        )
+    }
 
     companion object {
         fun from(result: Page<RentalItemsProjection>, content: List<RentalItem>): GetRentalItemsResponse =

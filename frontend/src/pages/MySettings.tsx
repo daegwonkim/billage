@@ -38,9 +38,7 @@ export function MySettings() {
     {
       icon: <Heart size={22} />,
       label: '좋아요 목록',
-      onClick: () => {
-        // TODO: 좋아요 목록 페이지로 이동
-      }
+      onClick: () => navigate('/my/likes')
     }
     // {
     //   icon: <Receipt size={22} />,

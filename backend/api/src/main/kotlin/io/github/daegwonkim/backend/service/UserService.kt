@@ -1,6 +1,7 @@
 package io.github.daegwonkim.backend.service
 
 import io.github.daegwonkim.backend.dto.user.GetProfileResponse
+import io.github.daegwonkim.backend.dto.user.GetUserLikedRentalItemsResponse
 import io.github.daegwonkim.backend.dto.user.GetUserRentalItemsResponse
 import io.github.daegwonkim.backend.exception.business.ResourceNotFoundException
 import io.github.daegwonkim.backend.exception.errorcode.CommonErrorCode
@@ -41,12 +42,36 @@ class UserService(
             .map { rentalItem ->
                 GetUserRentalItemsResponse.RentalItem.from(
                     rentalItem,
-                    rentalItem.thumbnailImageKey?.let {
-                        supabaseStorageClient.getPublicUrl(rentalItemImagesBucket, it)
-                    }
+                    supabaseStorageClient.getPublicUrl(rentalItemImagesBucket, rentalItem.thumbnailImageKey)
                 )
             }
 
         return GetUserRentalItemsResponse(rentalItems)
+    }
+
+    @Transactional(readOnly = true)
+    fun getUserLikedRentalItems(id: Long): GetUserLikedRentalItemsResponse {
+        val rentalItems = rentalItemJooqRepository.findLikedRentalItemsByUserId(id)
+            .map { rentalItem ->
+                GetUserLikedRentalItemsResponse.RentalItem(
+                    id = rentalItem.id,
+                    sellerId = rentalItem.sellerId,
+                    title =  rentalItem.title,
+                    thumbnailImageUrl =
+                        supabaseStorageClient.getPublicUrl(rentalItemImagesBucket, rentalItem.thumbnailImageKey),
+                    pricePerDay = rentalItem.pricePerDay,
+                    pricePerWeek = rentalItem.pricePerWeek,
+                    address = rentalItem.address,
+                    liked = rentalItem.liked,
+                    stats = GetUserLikedRentalItemsResponse.RentalItem.RentalItemStats(
+                        rentalCount = rentalItem.rentalCount,
+                        likeCount = rentalItem.likeCount,
+                        viewCount = rentalItem.viewCount
+                    ),
+                    createdAt = rentalItem.createdAt
+                )
+            }
+
+        return GetUserLikedRentalItemsResponse(rentalItems)
     }
 }

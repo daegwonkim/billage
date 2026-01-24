@@ -19,6 +19,7 @@ import { AuthProvider } from './contexts/AuthContext'
 import { Search } from './pages/Search'
 import { ChatRoom } from './pages/ChatRoom'
 import { ChatRoomList } from './pages/ChatRoomList'
+import { LikesList } from './pages/LikesList'
 import { Toaster } from 'react-hot-toast'
 
 const queryClient = new QueryClient({
@@ -101,6 +102,10 @@ function AppContent() {
             <Route
               path="/my/settings"
               element={<MySettings />}
+            />
+            <Route
+              path="/my/likes"
+              element={<LikesList />}
             />
             <Route
               path="/chat"

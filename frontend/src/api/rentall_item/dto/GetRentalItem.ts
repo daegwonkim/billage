@@ -7,11 +7,15 @@ export interface GetRentalItemResponse {
   imageUrls: string[]
   pricePerDay: number
   pricePerWeek: number
+  liked: boolean
+  createdAt: Date
+  stats: RentalItemDetailStats
+}
+
+export interface RentalItemDetailStats {
   rentalCount: number
   likeCount: number
   viewCount: number
-  liked: boolean
-  createdAt: Date
 }
 
 export interface Seller {

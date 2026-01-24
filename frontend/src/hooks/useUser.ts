@@ -1,6 +1,11 @@
 import type { GetMeResponse } from '@/api/user/dto/GetMe'
+import type { GetUserLikedRentalItemsResponse } from '@/api/user/dto/GetUserLikedRentalItems'
 import type { GetUserRentalItemsResponse } from '@/api/user/dto/GetUserRentalItems'
-import { getMe, getUserRentalItems } from '@/api/user/user'
+import {
+  getMe,
+  getUserLikedRentalItems,
+  getUserRentalItems
+} from '@/api/user/user'
 import { useQuery } from '@tanstack/react-query'
 
 export function useGetMe() {
@@ -18,5 +23,12 @@ export function useGetUserRentalItems(
     queryKey: ['userRentalItems', userId, excludeRentalItemId],
     queryFn: () => getUserRentalItems(userId!, excludeRentalItemId),
     enabled: !!userId
+  })
+}
+
+export function useGetUserLikedRentalItems() {
+  return useQuery<GetUserLikedRentalItemsResponse>({
+    queryKey: ['userLikedRentalItems'],
+    queryFn: () => getUserLikedRentalItems()
   })
 }

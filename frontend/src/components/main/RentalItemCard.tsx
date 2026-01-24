@@ -165,22 +165,22 @@ export function RentalItemCard({ rentalItem, onClick }: RentalItemCardProps) {
                   )}
                 </div>
                 <div className="flex items-center gap-2.5 text-xs text-gray-400">
-                  {rentalItem.rentalCount > 0 && (
+                  {rentalItem.stats.rentalCount > 0 && (
                     <span className="flex items-center gap-0.5">
                       <Package size={14} />
-                      {rentalItem.rentalCount}
+                      {rentalItem.stats.rentalCount}
                     </span>
                   )}
-                  {rentalItem.likeCount > 0 && (
+                  {rentalItem.stats.likeCount > 0 && (
                     <span className="flex items-center gap-0.5">
                       <Heart size={14} />
-                      {rentalItem.likeCount}
+                      {rentalItem.stats.likeCount}
                     </span>
                   )}
-                  {rentalItem.viewCount > 0 && (
+                  {rentalItem.stats.viewCount > 0 && (
                     <span className="flex items-center gap-0.5">
                       <Eye size={14} />
-                      {rentalItem.viewCount}
+                      {rentalItem.stats.viewCount}
                     </span>
                   )}
                 </div>

@@ -17,15 +17,19 @@ export interface GetRentalItemsResponse {
 
 export interface RentalItem {
   id: number
+  sellerId: number
   title: string
   thumbnailImageUrl: string
   address: string
   pricePerDay: number
   pricePerWeek: number
+  liked: boolean
+  createdAt: Date
+  stats: RentalItemStats
+}
+
+export interface RentalItemStats {
   rentalCount: number
   likeCount: number
   viewCount: number
-  liked: boolean
-  createdAt: Date
-  sellerId: number
 }

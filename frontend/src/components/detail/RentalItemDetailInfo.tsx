@@ -16,9 +16,9 @@ export function RentalItemDetailInfo({
   const [isExpanded, setIsExpanded] = useState(false)
 
   const infoItems = [
-    rentalItem.rentalCount > 0 ? `대여 ${rentalItem.rentalCount}` : null,
-    rentalItem.likeCount > 0 ? `관심 ${rentalItem.likeCount}` : null,
-    rentalItem.viewCount > 0 ? `조회 ${rentalItem.viewCount}` : null
+    rentalItem.stats.rentalCount > 0 ? `대여 ${rentalItem.stats.rentalCount}` : null,
+    rentalItem.stats.likeCount > 0 ? `관심 ${rentalItem.stats.likeCount}` : null,
+    rentalItem.stats.viewCount > 0 ? `조회 ${rentalItem.stats.viewCount}` : null
   ].filter(Boolean)
 
   const isLongDescription =

@@ -1,6 +1,7 @@
 package io.github.daegwonkim.backend.controller
 
 import io.github.daegwonkim.backend.dto.user.GetProfileResponse
+import io.github.daegwonkim.backend.dto.user.GetUserLikedRentalItemsResponse
 import io.github.daegwonkim.backend.dto.user.GetUserRentalItemsResponse
 import io.github.daegwonkim.backend.service.UserService
 import io.swagger.v3.oas.annotations.Operation
@@ -35,5 +36,11 @@ class UserController(
         @RequestParam(required = false) excludeRentalItemId: Long?,
     ): GetUserRentalItemsResponse {
         return userService.getUserRentalItems(id, excludeRentalItemId)
+    }
+
+    @Operation(summary = "좋아요 목록 조회", description = "사용자가 좋아요를 등록한 대여 상품 목록을 조회합니다")
+    @GetMapping("/rental-items/likes")
+    fun getLikedRentalItems(@AuthenticationPrincipal id: Long): GetUserLikedRentalItemsResponse {
+        return userService.getUserLikedRentalItems(id)
     }
 }

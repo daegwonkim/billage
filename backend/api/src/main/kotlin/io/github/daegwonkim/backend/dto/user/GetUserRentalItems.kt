@@ -8,12 +8,12 @@ data class GetUserRentalItemsResponse(
     data class RentalItem(
         val id: Long,
         val title: String,
-        val thumbnailImageUrl: String?,
+        val thumbnailImageUrl: String,
         val pricePerDay: Int,
         val pricePerWeek: Int
     ) {
         companion object {
-            fun from(rentalItem: UserRentalItemsProjection, thumbnailImageUrl: String?): RentalItem =
+            fun from(rentalItem: UserRentalItemsProjection, thumbnailImageUrl: String): RentalItem =
                 RentalItem(
                     rentalItem.id,
                     rentalItem.title,

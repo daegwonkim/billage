@@ -13,12 +13,16 @@ data class GetRentalItemResponse(
     val imageUrls: List<String>,
     val pricePerDay: Int,
     val pricePerWeek: Int,
-    val rentalCount: Int,
-    val likeCount: Int,
-    val viewCount: Int,
+    val stats: RentalItemStats,
     val liked: Boolean,
     val createdAt: Instant
 ) {
+    data class RentalItemStats(
+        val rentalCount: Int,
+        val likeCount: Int,
+        val viewCount: Int,
+    )
+
     data class Seller(
         val id: Long,
         val nickname: String,
@@ -45,9 +49,11 @@ data class GetRentalItemResponse(
             imageUrls = imageUrls,
             pricePerDay = item.pricePerDay,
             pricePerWeek = item.pricePerWeek,
-            rentalCount = item.rentalCount,
-            likeCount = item.likeCount,
-            viewCount = item.viewCount,
+            stats = RentalItemStats(
+                rentalCount = item.rentalCount,
+                likeCount = item.likeCount,
+                viewCount = item.viewCount,
+            ),
             liked = item.liked,
             createdAt = item.createdAt
         )

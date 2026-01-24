@@ -199,13 +199,15 @@ class RentalItemService(
             rentalItem.sellerId,
             rentalItem.title,
             supabaseStorageClient.getPublicUrl(rentalItemImagesBucket, rentalItem.thumbnailImageKey),
-            rentalItem.address,
             rentalItem.pricePerDay,
             rentalItem.pricePerWeek,
-            rentalItem.rentalCount,
-            rentalItem.likeCount,
-            rentalItem.viewCount,
+            rentalItem.address,
             rentalItem.liked,
+            GetRentalItemsResponse.RentalItem.RentalItemStats(
+                rentalItem.rentalCount,
+                rentalItem.likeCount,
+                rentalItem.viewCount,
+            ),
             rentalItem.createdAt
         )
 
