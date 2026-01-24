@@ -24,11 +24,11 @@ class CookieUtil(
     }
 
     fun createAccessTokenCookie(token: String): Cookie {
-        return createCookie("accessToken", token, accessTokenExpiration / 10000)
+        return createCookie("accessToken", token, accessTokenExpiration / 1000)
     }
 
     fun createRefreshTokenCookie(token: String): Cookie {
-        return createCookie("refreshToken", token, refreshTokenExpiration / 10000)
+        return createCookie("refreshToken", token, refreshTokenExpiration / 1000)
     }
 
     fun getTokenFromCookie(request: HttpServletRequest, cookieName: String): String? {
