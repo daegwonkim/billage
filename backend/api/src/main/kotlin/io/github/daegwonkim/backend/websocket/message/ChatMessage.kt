@@ -1,4 +1,4 @@
-package io.github.daegwonkim.backend.websocket
+package io.github.daegwonkim.backend.websocket.message
 
 import java.time.Instant
 

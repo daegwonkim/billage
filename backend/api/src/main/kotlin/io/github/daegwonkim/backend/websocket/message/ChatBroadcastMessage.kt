@@ -1,4 +1,4 @@
-package io.github.daegwonkim.backend.websocket
+package io.github.daegwonkim.backend.websocket.message
 
 enum class DestinationType {
     TOPIC,

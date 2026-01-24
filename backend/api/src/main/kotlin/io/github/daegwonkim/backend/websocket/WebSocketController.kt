@@ -1,5 +1,7 @@
 package io.github.daegwonkim.backend.websocket
 
+import io.github.daegwonkim.backend.websocket.message.ChatMessageReadRequest
+import io.github.daegwonkim.backend.websocket.message.ChatMessageRequest
 import org.springframework.messaging.handler.annotation.DestinationVariable
 import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.messaging.handler.annotation.Payload

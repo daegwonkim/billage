@@ -7,6 +7,12 @@ import io.github.daegwonkim.backend.repository.jpa.OutboxEventRepository
 import io.github.daegwonkim.backend.service.ChatParticipantService
 import io.github.daegwonkim.backend.service.ChatRoomService
 import io.github.daegwonkim.backend.service.RentalItemService
+import io.github.daegwonkim.backend.websocket.message.BroadcastDestination
+import io.github.daegwonkim.backend.websocket.message.ChatBroadcastMessage
+import io.github.daegwonkim.backend.websocket.message.ChatMessageResponse
+import io.github.daegwonkim.backend.websocket.message.ChatRoomUpdateResponse
+import io.github.daegwonkim.backend.websocket.message.DestinationType
+import io.github.daegwonkim.backend.websocket.message.MessageType
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

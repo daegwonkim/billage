@@ -1,6 +1,8 @@
 package io.github.daegwonkim.backend.websocket
 
 import io.github.daegwonkim.backend.log.logger
+import io.github.daegwonkim.backend.websocket.message.ChatBroadcastMessage
+import io.github.daegwonkim.backend.websocket.message.DestinationType
 import org.springframework.amqp.rabbit.annotation.RabbitListener
 import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.stereotype.Component
