@@ -22,6 +22,10 @@ Billage는 사용자 간 물건 대여를 중개하는 위치 기반 P2P 대여 
 | Scheduler      | ShedLock                    |
 | Docs           | SpringDoc OpenAPI (Swagger) |
 
+## 아키텍처
+
+<img width="951" height="926" alt="billage drawio" src="https://github.com/user-attachments/assets/eea75a91-b9e7-4403-bf8e-bfce969e3b2c" />
+
 ## 모듈 구조
 
 ```
@@ -32,13 +36,6 @@ backend/
 └── common/     # 공통 예외, 에러 코드, 유틸리티
 ```
 
-- **api** — `domain`, `infra`, `common` 모듈에 의존하며 실행 가능한 JAR를 생성합니다.
-- **domain** — 핵심 비즈니스 엔티티와 데이터 접근 계층을 담당합니다.
-- **infra** — 외부 API 및 인프라 서비스와의 통신을 캡슐화합니다.
-- **common** — 모듈 간 공유되는 예외 계층과 상수를 정의합니다.
-
 ## ERD
 
-
-
-## API 엔드포인트
+<img width="1950" height="1417" alt="billage" src="https://github.com/user-attachments/assets/ebcf8eff-38e2-4175-8935-1436d46ac191" />
