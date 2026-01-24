@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import { Client, type IMessage } from '@stomp/stompjs'
 import SockJS from 'sockjs-client'
 import { useQueryClient } from '@tanstack/react-query'
+import { useAuth } from '@/contexts/AuthContext'
 import type { GetChatRoomsResponse } from '@/api/chat/dto/GetChatRooms'
 
 const WS_BASE_URL = import.meta.env.VITE_API_BASE_URL
@@ -30,8 +31,10 @@ interface NewChatRoomUpdateResponse {
 export function useChatListWebSocket() {
   const clientRef = useRef<Client | null>(null)
   const queryClient = useQueryClient()
+  const { isAuthenticated } = useAuth()
 
   useEffect(() => {
+    if (!isAuthenticated) return
     const client = new Client({
       webSocketFactory: () => new SockJS(`${WS_BASE_URL}/ws`),
       reconnectDelay: 5000,
@@ -136,5 +139,5 @@ export function useChatListWebSocket() {
     return () => {
       client.deactivate()
     }
-  }, [queryClient])
+  }, [queryClient, isAuthenticated])
 }

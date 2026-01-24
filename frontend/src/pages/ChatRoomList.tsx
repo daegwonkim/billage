@@ -26,7 +26,7 @@ export function ChatRoomList() {
     isLoading: chatRoomsLoading,
     isError: chatRoomsError,
     refetch: refetchChatRooms
-  } = useGetChatRooms(activeTab)
+  } = useGetChatRooms(activeTab, { enabled: isAuthenticated })
 
   if (!isAuthenticated) {
     return <LoginPrompt />

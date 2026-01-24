@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { ApiError } from '@/api/error'
 import {
   BrowserRouter,
   Routes,
@@ -20,7 +21,18 @@ import { ChatRoom } from './pages/ChatRoom'
 import { ChatRoomList } from './pages/ChatRoomList'
 import { Toaster } from 'react-hot-toast'
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: (failureCount, error) => {
+        if (error instanceof ApiError && error.status === 401) {
+          return false
+        }
+        return failureCount < 3
+      }
+    }
+  }
+})
 
 function AppContent() {
   const location = useLocation()
