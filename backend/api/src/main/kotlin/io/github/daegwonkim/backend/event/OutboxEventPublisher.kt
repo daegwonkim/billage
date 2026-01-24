@@ -1,6 +1,6 @@
 package io.github.daegwonkim.backend.event
 
-import io.github.daegwonkim.backend.entity.OutboxEventStatus
+import io.github.daegwonkim.backend.enumerate.OutboxEventStatus
 import io.github.daegwonkim.backend.event.dto.OutboxPublishEvent
 import io.github.daegwonkim.backend.log.logger
 import io.github.daegwonkim.backend.repository.jpa.OutboxEventRepository

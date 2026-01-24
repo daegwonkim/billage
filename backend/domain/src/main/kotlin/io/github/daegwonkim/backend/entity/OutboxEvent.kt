@@ -1,5 +1,6 @@
 package io.github.daegwonkim.backend.entity
 
+import io.github.daegwonkim.backend.enumerate.OutboxEventStatus
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
@@ -11,11 +12,6 @@ import jakarta.persistence.Table
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.type.SqlTypes
 import java.time.Instant
-
-enum class OutboxEventStatus {
-    PENDING,
-    PUBLISHED
-}
 
 @Entity
 @Table(name = "outbox_events")
