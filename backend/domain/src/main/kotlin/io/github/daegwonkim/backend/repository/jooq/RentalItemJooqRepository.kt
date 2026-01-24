@@ -53,12 +53,14 @@ class RentalItemJooqRepository(
             DSL.coalesce(likeCounts.field("like_count", Int::class.java), 0).`as`("like_count"),
             likedSubquery(userId))
             .from(RENTAL_ITEMS)
+            .innerJoin(USERS).on(RENTAL_ITEMS.SELLER_ID.eq(USERS.ID))
             .innerJoin(USER_NEIGHBORHOODS).on(USER_NEIGHBORHOODS.USER_ID.eq(RENTAL_ITEMS.SELLER_ID))
             .innerJoin(NEIGHBORHOODS).on(NEIGHBORHOODS.ID.eq(USER_NEIGHBORHOODS.NEIGHBORHOOD_ID))
             .innerJoin(thumbnailImageKey).on(DSL.trueCondition())
             .leftJoin(likeCounts).on(RENTAL_ITEMS.ID.eq(likeCounts.field(RENTAL_ITEM_LIKE_RECORDS.RENTAL_ITEM_ID)))
             .where(buildGetRentalItemsCondition(category = category, keyword = keyword))
             .and(RENTAL_ITEMS.IS_DELETED.eq(false))
+            .and(USERS.IS_WITHDRAWN.eq(false))
             .orderBy(buildSortOrder(sortBy))
 
         val totalCount = dslContext.selectCount()
@@ -101,6 +103,7 @@ class RentalItemJooqRepository(
             .leftJoin(likeCounts).on(RENTAL_ITEMS.ID.eq(likeCounts.field(RENTAL_ITEM_LIKE_RECORDS.RENTAL_ITEM_ID)))
             .where(RENTAL_ITEMS.ID.eq(rentalItemId))
             .and(RENTAL_ITEMS.IS_DELETED.eq(false))
+            .and(USERS.IS_WITHDRAWN.eq(false))
             .fetchOneInto(RentalItemProjection::class.java)
     }
 

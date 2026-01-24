@@ -120,6 +120,11 @@ class AuthService(
         refreshTokenRedisRepository.delete(claims.familyId)
     }
 
+    @Transactional
+    fun withdraw(userId: Long) {
+        userJooqRepository.updateIsWithdrawnById(userId, true)
+    }
+
     // Private helper methods
 
     fun generateVerificationCodeAndSave(phoneNo: String): String {

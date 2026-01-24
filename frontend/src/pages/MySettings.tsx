@@ -12,7 +12,7 @@ import {
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
-import { signOut } from '@/api/auth/auth'
+import { signOut, withdraw } from '@/api/auth/auth'
 import { useState } from 'react'
 
 interface MenuItem {
@@ -235,9 +235,10 @@ export function MySettings() {
                 취소
               </button>
               <button
-                onClick={() => {
-                  // TODO: 회원탈퇴 API 호출
-                  setShowWithdrawModal(false)
+                onClick={async () => {
+                  await withdraw()
+                  logout()
+                  navigate('/')
                 }}
                 className="flex-1 rounded-lg bg-red-600 py-3 font-medium text-white transition-colors hover:bg-red-700">
                 탈퇴하기

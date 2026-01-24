@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.Operation
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -84,5 +85,11 @@ class AuthController(
 
         response.addCookie(cookieUtil.deleteCookie("accessToken"))
         response.addCookie(cookieUtil.deleteCookie("refreshToken"))
+    }
+
+    @Operation(summary = "회원탈퇴", description = "서비스에서 탈퇴합니다")
+    @PostMapping("/withdraw")
+    fun withdraw(@AuthenticationPrincipal userId: Long) {
+        authService.withdraw(userId)
     }
 }

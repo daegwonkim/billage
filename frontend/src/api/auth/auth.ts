@@ -85,3 +85,12 @@ export async function signOut(): Promise<void> {
     }
   })
 }
+
+export async function withdraw(): Promise<void> {
+  await customFetch(`/api/auth/withdraw`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+}
