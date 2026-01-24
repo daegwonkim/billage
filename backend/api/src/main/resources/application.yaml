@@ -11,6 +11,7 @@ spring:
     import:
       - classpath:application-domain.yaml
       - classpath:application-infra.yaml
+      - classpath:application-rabbitmq.yaml
 
 jwt:
   secret: ${SECRET}

@@ -1,0 +1,12 @@
+spring:
+  rabbitmq:
+    addresses: ${CLOUDAMQP_URL}
+    connection-timeout: 5000
+
+outbox:
+  poll-interval-ms: 5000
+  cleanup-older-than-hours: 1
+  max-retry-count: 5
+
+chat:
+  exchange-name: chat.broadcast
