@@ -10,6 +10,7 @@ import io.github.daegwonkim.backend.dto.auth.SendVerificationCodeRequest
 import io.github.daegwonkim.backend.dto.auth.SignInResponse
 import io.github.daegwonkim.backend.exception.errorcode.AuthErrorCode
 import io.github.daegwonkim.backend.exception.business.AuthenticationException
+import io.github.daegwonkim.backend.aop.annotation.SmsRateLimit
 import io.github.daegwonkim.backend.service.AuthService
 import io.github.daegwonkim.backend.util.CookieUtil
 import io.swagger.v3.oas.annotations.Operation
@@ -27,6 +28,7 @@ class AuthController(
     private val authService: AuthService,
     private val cookieUtil: CookieUtil
 ) {
+    @SmsRateLimit(phoneNo = "#request.phoneNo")
     @Operation(summary = "인증코드 전송", description = "사용자에게 인증코드를 전송합니다")
     @PostMapping("/verification-code")
     fun sendVerificationCode(@Valid @RequestBody request: SendVerificationCodeRequest) =

@@ -80,7 +80,11 @@ export function LoginPrompt({
       await sendVerificationCode({ phoneNo: cleanPhoneNo })
       setStep('verification')
     } catch (err) {
-      setError('인증코드 발송에 실패했어요.')
+      if (err instanceof ApiError) {
+        setError(err.getMessage())
+      } else {
+        setError('인증코드 발송에 실패했어요.')
+      }
     } finally {
       setIsLoading(false)
     }

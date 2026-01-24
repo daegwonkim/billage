@@ -39,6 +39,8 @@ const ERROR_MESSAGES: Record<string, string> = {
   NEIGHBORHOOD_VERIFICATION_FAILED:
     '동네 인증에 실패했어요. 현재 위치를 다시 확인해주세요.',
   AUTHENTICATION_FAILED: '인증에 실패했어요.',
+  SMS_RATE_LIMIT_EXCEEDED:
+    '인증코드 발송 횟수를 초과했어요. 잠시 후 다시 시도해주세요.',
 
   USER_NOT_FOUND: '계정을 찾을 수 없어요.',
   RENTAL_ITEM_NOT_FOUND: '대여 상품을 찾을 수 없어요.',
