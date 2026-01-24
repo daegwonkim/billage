@@ -191,6 +191,7 @@ export function RentalItemDetail() {
       <RentalItemDetailHeader
         navigate={navigate}
         onMenuClick={() => setIsMenuOpen(true)}
+        isOwner={isOwner}
       />
       <RentalItemDetailImages imageUrls={imageUrls} />
       <RentalItemDetailSeller rentalItem={rentalItemData} />

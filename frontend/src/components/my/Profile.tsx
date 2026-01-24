@@ -138,9 +138,9 @@ export function Profile() {
         </div>
 
         {/* 프로필 편집 버튼 */}
-        <button className="mt-4 w-full rounded-lg border bg-black py-2.5 text-sm font-medium text-white transition-colors hover:bg-neutral-800">
+        {/* <button className="mt-4 w-full rounded-lg border bg-black py-2.5 text-sm font-medium text-white transition-colors hover:bg-neutral-800">
           프로필 편집
-        </button>
+        </button> */}
       </div>
     </>
   )

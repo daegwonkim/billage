@@ -23,12 +23,12 @@ export function Header() {
               strokeWidth={1.5}
             />
           </button>
-          <button className="cursor-pointer border-none bg-transparent p-0 text-gray-600 transition-colors hover:text-black">
+          {/* <button className="cursor-pointer border-none bg-transparent p-0 text-gray-600 transition-colors hover:text-black">
             <Bell
               size={22}
               strokeWidth={1.5}
             />
-          </button>
+          </button> */}
         </div>
       </div>
     </header>

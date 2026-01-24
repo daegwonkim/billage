@@ -34,7 +34,7 @@ export function MyBillage() {
 
       <Profile />
       <UserRentalItems />
-      <Reviews />
+      {/* <Reviews /> */}
     </div>
   )
 }

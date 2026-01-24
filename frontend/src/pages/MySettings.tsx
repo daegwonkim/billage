@@ -41,14 +41,14 @@ export function MySettings() {
       onClick: () => {
         // TODO: 좋아요 목록 페이지로 이동
       }
-    },
-    {
-      icon: <Receipt size={22} />,
-      label: '거래내역',
-      onClick: () => {
-        // TODO: 거래내역 페이지로 이동
-      }
     }
+    // {
+    //   icon: <Receipt size={22} />,
+    //   label: '거래내역',
+    //   onClick: () => {
+    //     // TODO: 거래내역 페이지로 이동
+    //   }
+    // }
   ]
 
   const settingItems: MenuItem[] = [
@@ -165,14 +165,14 @@ export function MySettings() {
           title="내 활동"
           items={menuItems}
         />
-        <MenuSection
+        {/* <MenuSection
           title="설정"
           items={settingItems}
         />
         <MenuSection
           title="고객지원"
           items={supportItems}
-        />
+        /> */}
         <MenuSection
           title="계정"
           items={accountItems}
@@ -180,9 +180,7 @@ export function MySettings() {
       </div>
 
       {/* 앱 버전 */}
-      <div className="py-6 text-center text-xs text-gray-400">
-        앱 버전 1.0.0
-      </div>
+      <div className="py-6 text-center text-xs text-gray-400">Billage inc.</div>
 
       {/* 로그아웃 확인 모달 */}
       {showLogoutModal && (
