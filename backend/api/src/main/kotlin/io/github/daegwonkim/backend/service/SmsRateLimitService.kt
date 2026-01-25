@@ -21,14 +21,14 @@ class SmsRateLimitService(
         val result = smsRateLimitRedisRepository.acquireSlot(phoneKey, ipKey)
 
         if (result != 0L) {
-            val logMessage = when (result) {
-                1L -> "SMS 단기 발송 제한 초과: phone=$phoneNo"
-                2L -> "SMS 단기 발송 제한 초과: ip=$ip"
-                3L -> "SMS 일일 발송 제한 초과: phone=$phoneNo"
-                4L -> "SMS 일일 발송 제한 초과: ip=$ip"
-                else -> "SMS 발송 제한 초과"
+            val (errorCode, logMessage) = when (result) {
+                1L -> AuthErrorCode.SMS_SHORT_TERM_RATE_LIMIT_EXCEEDED to "SMS 단기 발송 제한 초과: phone=$phoneNo"
+                2L -> AuthErrorCode.SMS_SHORT_TERM_RATE_LIMIT_EXCEEDED to "SMS 단기 발송 제한 초과: ip=$ip"
+                3L -> AuthErrorCode.SMS_DAILY_RATE_LIMIT_EXCEEDED to "SMS 일일 발송 제한 초과: phone=$phoneNo"
+                4L -> AuthErrorCode.SMS_DAILY_RATE_LIMIT_EXCEEDED to "SMS 일일 발송 제한 초과: ip=$ip"
+                else -> AuthErrorCode.SMS_SHORT_TERM_RATE_LIMIT_EXCEEDED to "SMS 발송 제한 초과"
             }
-            throw AuthenticationException(AuthErrorCode.SMS_RATE_LIMIT_EXCEEDED, logMessage)
+            throw AuthenticationException(errorCode, logMessage)
         }
     }
 

@@ -1,3 +1,8 @@
+spring:
+  rabbitmq:
+    addresses: ${CLOUDAMQP_URL}
+    connection-timeout: 5000
+
 coolsms:
   url: https://api.coolsms.co.kr
   apiKey: ${COOLSMS_API_KEY}
@@ -21,3 +26,11 @@ supabase:
     bucket:
       rental-item-images: rental-item-images
       user-profile-images: user-profile-images
+
+outbox:
+  poll-interval-ms: 5000
+  cleanup-older-than-hours: 1
+  max-retry-count: 5
+
+chat:
+  exchange-name: chat.broadcast
