@@ -106,6 +106,7 @@ export default function RentalItemRegister({ mode }: RentalItemRegisterProps) {
   const pricePerDayRef = useRef<HTMLInputElement>(null)
   const pricePerWeekRef = useRef<HTMLInputElement>(null)
 
+  const [imageError, setImageError] = useState<boolean>(false)
   const [categoryError, setCategoryError] = useState<boolean>(false)
   const [titleError, setTitleError] = useState<boolean>(false)
   const [descriptionError, setDescriptionError] = useState<boolean>(false)
@@ -290,6 +291,15 @@ export default function RentalItemRegister({ mode }: RentalItemRegisterProps) {
       setCategoryError(false)
     }
 
+    // 이미지가 최소 1개 이상 있는지 확인
+    const uploadedImages = images.filter(img => img.isUploaded)
+    if (uploadedImages.length === 0) {
+      setImageError(true)
+      hasError = true
+    } else {
+      setImageError(false)
+    }
+
     // 업로드 중인 이미지가 있는지 확인
     const isAnyImageUploading = images.some(img => img.isUploading)
     if (isAnyImageUploading) {
@@ -362,10 +372,10 @@ export default function RentalItemRegister({ mode }: RentalItemRegisterProps) {
           <div className="mb-3 flex items-center">
             <Camera
               size={20}
-              className="mr-2 text-gray-600"
+              className={imageError ? 'mr-2 text-red-500' : 'mr-2 text-gray-600'}
             />
-            <span className="font-medium">사진</span>
-            <span className="ml-2 text-sm text-gray-500">
+            <span className={imageError ? 'font-medium text-red-500' : 'font-medium'}>사진</span>
+            <span className={imageError ? 'ml-2 text-sm text-red-500' : 'ml-2 text-sm text-gray-500'}>
               ({images.length}/10)
             </span>
           </div>
@@ -398,22 +408,31 @@ export default function RentalItemRegister({ mode }: RentalItemRegisterProps) {
             ))}
 
             {images.length < 10 && (
-              <label className="flex aspect-square cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 transition hover:border-gray-400">
+              <label className={`flex aspect-square cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed transition hover:border-gray-400 ${imageError ? 'border-red-500' : 'border-gray-300'}`}>
                 <Plus
                   size={24}
-                  className="mb-1 text-gray-400"
+                  className={imageError ? 'mb-1 text-red-400' : 'mb-1 text-gray-400'}
                 />
-                <span className="text-xs text-gray-500">추가</span>
+                <span className={imageError ? 'text-xs text-red-500' : 'text-xs text-gray-500'}>추가</span>
                 <input
                   type="file"
                   accept="image/*"
                   multiple
-                  onChange={handleImageUpload}
+                  onChange={e => {
+                    setImageError(false)
+                    handleImageUpload(e)
+                  }}
                   className="hidden"
                 />
               </label>
             )}
           </div>
+          {imageError && (
+            <div className="mt-2 flex items-center gap-1.5 text-sm text-red-500">
+              <CircleAlert size={16} />
+              <span>사진은 최소 1장 이상 등록해야 합니다.</span>
+            </div>
+          )}
         </div>
 
         {/* Category */}
